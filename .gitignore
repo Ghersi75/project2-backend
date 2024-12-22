@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# maven cache for docker compose
+mvn-cache/
