@@ -19,8 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Enums.UserRole;
-import com.team2.backend.DTO.UserSignUpDTO;
 
 @Entity
 @Table(name = "users")

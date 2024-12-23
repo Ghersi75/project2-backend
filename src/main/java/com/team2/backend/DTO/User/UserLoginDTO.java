@@ -1,4 +1,4 @@
-package com.team2.backend.DTO;
+package com.team2.backend.DTO.User;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
