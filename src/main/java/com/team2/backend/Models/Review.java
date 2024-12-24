@@ -2,6 +2,9 @@ package com.team2.backend.Models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,10 +31,12 @@ public class Review {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
@@ -45,6 +50,14 @@ public class Review {
     private int dislikes = 0;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<UserReviewInteraction> userInteractions;
     
+    public Review(User user, Game game,String content, int likes, int dislikes){
+        this.user = user;
+        this.game = game;
+        this.content = content;
+        this.likes = likes;
+        this.dislikes = dislikes;
+    }
 }

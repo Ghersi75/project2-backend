@@ -2,6 +2,7 @@ package com.team2.backend.Models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -58,6 +59,7 @@ public class User {
     private List<Game> favoriteGames;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<UserReviewInteraction> reviewInteractions;
 
     public User(UserSignUpDTO userInfo) {

@@ -1,5 +1,7 @@
 package com.team2.backend.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.team2.backend.Enums.ReviewInteraction;
 
 import jakarta.persistence.Column;
@@ -28,10 +30,12 @@ public class UserReviewInteraction {
     private Long id;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
