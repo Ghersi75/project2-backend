@@ -10,9 +10,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NewReviewDTO {
-
+public class UpdateReviewDTO {
     @NotEmpty(message = "Description cannot be empty")
     @Size(max = 500, message = "Description must be less than 500 characters")
     private String content;
+
+    @Positive
+    private int likes;
+
+    @Positive
+    private int dislikes;
 }
