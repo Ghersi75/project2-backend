@@ -1,7 +1,6 @@
 package com.team2.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.team2.backend.Enums.ReviewInteraction;
 
 import jakarta.persistence.Column;
