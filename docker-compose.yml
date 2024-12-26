@@ -8,7 +8,7 @@ services:
     container_name: projec2-db
     environment:
       POSTGRES_DB: db
-      POSTGRES_USER: postgres
+      POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     volumes:
       - ./src/main/resources/initdb:/docker-entrypoint-initdb.d
@@ -20,8 +20,8 @@ services:
     container_name: project2-backend
     working_dir: /app
     environment:
-      DATABASE_URL: jdbc:postgresql://host.docker.internal:5432/postgres
-      DATABASE_USERNAME: postgres
+      DATABASE_URL: jdbc:postgresql://database:5432/db
+      DATABASE_USERNAME: user
       DATABASE_PASSWORD: password
     ports:
       - "8081:8081"
