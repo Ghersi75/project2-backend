@@ -13,10 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserReviewInteractionDTO {
     private Long id;
-
     private User user;
-
     private Review review;
-
     private ReviewInteraction interaction;
 }
