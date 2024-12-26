@@ -7,13 +7,17 @@ import org.springframework.stereotype.Service;
 
 import com.team2.backend.entity.User;
 
-import repository.UserRepository;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.util.JwtUtil;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+     @Autowired
+    private JwtUtil jwtUtil;
 
     /**
      * Registers a new user.
@@ -24,7 +28,7 @@ public class UserService {
      */
     public String createUser(User user)  throws Exception{
      
-        if (userRepository.existsByUsername(user.getUsername())) {
+        if (!userRepository.findByUsername(user.getUsername()).isEmpty()) {
             throw new Exception("Username is already in use.");
         }
 
@@ -34,7 +38,7 @@ public class UserService {
         // Save to database
         userRepository.save(user);
 
-        String token = "mock-token"; // Replace with actual token generation logic.
+        String token = jwtUtil.generateToken(user.getUsername());
 
         return token;
     }
@@ -63,7 +67,7 @@ public class UserService {
         }
 
         // If using JWT, generate a token here (optional)
-        String token = "mock-token"; // Replace with actual token generation logic.
+        String token = jwtUtil.generateToken(user.getUsername());
 
         return token;
     }
