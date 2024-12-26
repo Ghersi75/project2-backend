@@ -2,6 +2,7 @@ package com.team2.backend.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,13 +47,17 @@ public class UserController {
             // Call the UserService to register the user
             String token = userService.createUser(user);
 
-            // Convert User entity to UserResponseDTO
-             UserResponseDTO responseDTO = new UserResponseDTO();
-             responseDTO.setMessage("Register successful.");
-             responseDTO.setToken(token); // Optional if using tokens like JWT.
-            
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+            .httpOnly(true)
+            .secure(true) // Only send over HTTPS
+            .path("/")
+            .maxAge(24 * 60 * 60) // 1 day
+            .sameSite("Strict") // Protect against CSRF
+            .build();
 
-            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+
+            return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body("Account Registered: Login successful.");
+
         } catch (Exception e) {
             // Handle exceptions by returning a 400 Bad Request status with the error message
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -74,12 +79,16 @@ public class UserController {
                 loginRequestDTO.getPassword()
             );
 
-            // Prepare response DTO
-            UserResponseDTO responseDTO = new UserResponseDTO();
-            responseDTO.setMessage("Login successful.");
-            responseDTO.setToken(token); // Optional if using tokens like JWT.
+            ResponseCookie cookie = ResponseCookie.from("token", token)
+            .httpOnly(true)
+            .secure(true) // Only send over HTTPS
+            .path("/")
+            .maxAge(24 * 60 * 60) // 1 day
+            .sameSite("Strict") // Protect against CSRF
+            .build();
 
-            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+
+            return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body("Login successful.");
         } catch (Exception e) {
             // Handle failed authentication attempts
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
