@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameDTO {
-    private Long id;
     private String steamid;
     private String title;
     private String description;
-    private List<Review> reviews;
 }
