@@ -12,6 +12,9 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - ./src/main/resources/initdb:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432" # Expose database for debugging
+
 
   backend:
     depends_on:
@@ -30,4 +33,4 @@ services:
       # https://containers.fan/posts/speed-up-maven-docker-builds-with-cache
       # Create local maven cache of dependecies so it doesnt download each time docker container is removed and recreated
       - ./mvn-cache/:/root/.m2
-    command: [ "sh", "-c", "mvn clean spring-boot:run" ]
+    command: [ "sh", "-c", "mvn clean test && mvn clean spring-boot:run" ]
