@@ -1,6 +1,8 @@
 package com.team2.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.team2.backend.DTO.Game.GameDTO;
+import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Enums.ReviewInteraction;
 
 import jakarta.persistence.Column;
@@ -41,5 +43,11 @@ public class UserReviewInteraction {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReviewInteraction interaction;
+    
 
+    public UserReviewInteraction(UserReviewInteractionDTO userreview){
+        this.user = userreview.getUser();
+        this.review = userreview.getReview();
+        this.interaction = userreview.getInteraction();
+    }
 }

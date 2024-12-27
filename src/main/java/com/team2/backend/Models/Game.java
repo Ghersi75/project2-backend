@@ -3,6 +3,7 @@ package com.team2.backend.Models;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.team2.backend.DTO.Game.GameDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -39,4 +40,11 @@ public class Game {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviews;
+
+    public Game(GameDTO game){
+        this.steamid = game.getSteamid();
+        this.title = game.getTitle();
+        this.description = game.getDescription();
+    }
 }
+
