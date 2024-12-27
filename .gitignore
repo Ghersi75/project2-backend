@@ -36,3 +36,5 @@ build/
 mvn-cache/
 
 docker-compose.yml
+pom.xml
+src/main/resources/application.properties
