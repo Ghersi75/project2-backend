@@ -35,7 +35,7 @@
 
 
 #local version
-version: '3.8'
+# version: '3.8'
 
 services:
   backend:
@@ -48,7 +48,7 @@ services:
       DATABASE_URL: jdbc:mysql://host.docker.internal:3306/game_forum
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: password
-      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
     ports:
       - "8081:8081"
     volumes:
@@ -71,9 +71,9 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
