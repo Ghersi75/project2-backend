@@ -12,6 +12,7 @@ import com.team2.backend.Models.UserReviewInteraction;
 import com.team2.backend.Models.User;
 import com.team2.backend.Models.Game;
 import com.team2.backend.Enums.UserRole;
+import com.team2.backend.DTO.Review.NewReviewDTO;
 import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Enums.ReviewInteraction;
 import com.team2.backend.Exceptions.ResourceNotFoundException;
@@ -32,86 +33,41 @@ public class ReviewService {
     @Autowired
     private GameRepository gameRepository;
 
-    @Autowired
-    private UserReviewInteractionRepository userReviewInteractionRepository;
+    public Review addReview(NewReviewDTO reviewDTO) {
+        User user = getLoggedInUser(); //this will be changed, it's just for testing
+        if (user == null) {
+            throw new UnauthorizedException("You must be logged in to add a review");
+        }
 
-    public Review addReview(Long gameId, String content, int rating) {
-        User user = getLoggedInUser();
-        if (user == null) throw new UnauthorizedException("You must be logged in to leave a review");
-
-        Game game = gameRepository.findById(gameId)
-                                  .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+        Game game = gameRepository.findById(reviewDTO.getGameId())
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
 
         Review review = new Review();
         review.setUser(user);
         review.setGame(game);
-        review.setContent(content);
+        review.setContent(reviewDTO.getContent());
 
         return reviewRepository.save(review);
     }
 
-    public void likeReview(Long reviewId) {
-        User user = getLoggedInUser(); 
-        if (user == null) throw new UnauthorizedException("You must be logged in to like a review");
-
-        Review review = reviewRepository.findById(reviewId)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
-
-        if (review.getUser().equals(user)) {
-            throw new ForbiddenException("You cannot like your own review");
-        }
-        Optional<UserReviewInteraction> interactionOpt = userReviewInteractionRepository
-                .findByUserAndReview(user, review);
-
-        if (interactionOpt.isPresent() && interactionOpt.get().getInteraction() == ReviewInteraction.LIKED) {
-            throw new ForbiddenException("You have already liked this review");
-        }
-
-        review.setLikes(review.getLikes() + 1);
-        reviewRepository.save(review);
-
-        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(user, review, ReviewInteraction.LIKED);
-        userReviewInteractionRepository.save(interactionDTO);
-    }
-
-    public void dislikeReview(Long reviewId) {
+    public void deleteReview(Long id) {
         User user = getLoggedInUser();
-        if (user == null) throw new UnauthorizedException("You must be logged in to dislike a review");
-
-        Review review = reviewRepository.findById(reviewId)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
-
-        if (review.getUser().equals(user)) {
-            throw new ForbiddenException("You cannot dislike your own review");
+        if (user == null) {
+            throw new UnauthorizedException("You must be logged in to delete a review");
         }
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
-        Optional<UserReviewInteraction> interactionOpt = userReviewInteractionRepository
-                .findByUserAndReview(user, review);
-
-        if (interactionOpt.isPresent() && interactionOpt.get().getInteraction() == ReviewInteraction.DISLIKED) {
-            throw new ForbiddenException("You have already disliked this review");
+        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUser().equals(user)) {
+            throw new ForbiddenException("You can only delete your own reviews");
         }
-
-        review.setDislikes(review.getDislikes() + 1);
-        reviewRepository.save(review);
-
-        UserReviewInteraction interaction = new UserReviewInteraction(user, review, ReviewInteraction.DISLIKED);
-        userReviewInteractionRepository.save(interaction);
+        reviewRepository.delete(review);
     }
 
-    public void deleteReview(Long reviewId) {
-        User user = getLoggedInUser(); 
-        if (user == null) throw new UnauthorizedException("You must be logged in to delete a review");
 
-        Review review = reviewRepository.findById(reviewId)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
-
-        if (review.getUser().equals(user)) {
-            reviewRepository.delete(review);
-        } else if (user.getUserRole() == UserRole.MODERATOR) {
-            reviewRepository.delete(review);
-        } else {
-            throw new ForbiddenException("You can only delete your own review or if you're a moderator");
-        }
+    //Temporary
+    private User getLoggedInUser() {
+        return userRepository.findByUsername("john_doe")
+                .orElse(null);
     }
 }
