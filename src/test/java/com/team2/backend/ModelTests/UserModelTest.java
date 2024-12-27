@@ -76,10 +76,8 @@ public class UserModelTest {
         favoriteGames.add(game1);
         favoriteGames.add(game2);
 
-        // Act
         user.setFavoriteGames(favoriteGames);
 
-        // Assert
         assertNotNull(user.getFavoriteGames());
         assertEquals(2, user.getFavoriteGames().size());
         assertTrue(user.getFavoriteGames().contains(game1));
@@ -88,7 +86,6 @@ public class UserModelTest {
 
     @Test
     void testAddReviews() {
-        // Arrange
         User user = new User();
         Review review1 = new Review();
         Review review2 = new Review();
