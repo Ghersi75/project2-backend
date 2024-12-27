@@ -3,8 +3,8 @@ package com.team2.backend.Enums;
 import com.team2.backend.Exceptions.*;
 
 public enum ReviewInteraction {
-    LIKED("LIKED"),
-    DISLIKED("DISLIKED");
+    LIKE("LIKE"),
+    DISLIKE("DISLIKE");
   
     private final String value;
   
@@ -23,6 +23,6 @@ public enum ReviewInteraction {
         }
       }
   
-      throw new InvalidEnumValueException("Invalid review. Value must be LIKED or DISLIKED");
+      throw new InvalidEnumValueException("Invalid review. Value must be LIKE or DISLIKE");
     }
 }
