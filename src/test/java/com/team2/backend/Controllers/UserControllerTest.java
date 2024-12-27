@@ -1,105 +1,125 @@
 package com.team2.backend.Controllers;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import static org.mockito.Mockito.when;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.backend.DTO.User.UserLoginDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
+import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Service.UserService;
 
- 
+@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(MockitoExtension.class)
+@WebMvcTest(UserController.class)
 public class UserControllerTest {
+    @Autowired
+    private MockMvc mockMvc;
 
-      private MockMvc mockMvc;
-
-    @Mock
+    @MockBean
     private UserService userService;
 
     @InjectMocks
     private UserController userController;
 
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper(); // Initialize ObjectMapper here
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
-        objectMapper = new ObjectMapper();
-    }
+
     @Test
-void testRegisterUser_Success() throws Exception {
-    // Mock input and output
-    UserSignUpDTO request = new UserSignUpDTO();
-    request.setDisplayName("Test User");
-    request.setUsername("testuser");
-    request.setPassword("password123");
+    void testRegisterUser_Success() throws Exception {
+        // Mock input and output
+        UserSignUpDTO request = new UserSignUpDTO();
+        request.setDisplayName("Test User");
+        request.setUsername("testuser");
+        request.setPassword("password123");
 
-   
+        // Mock behavior of UserService
+        String mockToken = "mock-token";
+        when(userService.createUser(ArgumentMatchers.any(User.class))).thenReturn(mockToken);
 
-    // Mock behavior of UserService
-    String mockToken = "mock-token";
-    when(userService.createUser(ArgumentMatchers.any(User.class))).thenReturn(mockToken);
+        // Perform POST request and verify response
+        this.mockMvc.perform(post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Set-Cookie", Matchers.containsString("token=" + mockToken))) // Check for
+                                                                                                         // the token
+                                                                                                         // cookie
+                .andExpect(jsonPath("$.message").value("Register successful."))
+                .andExpect(jsonPath("$.token").value(mockToken));
+    }
 
-    // Perform POST request and verify response
-    mockMvc.perform(post("/register")
-    .contentType(MediaType.APPLICATION_JSON)
-    .content(new ObjectMapper().writeValueAsString(request)))
-.andExpect(status().isOk())
-.andExpect(header().string("Set-Cookie", Matchers.containsString("token=" + mockToken))) // Check for the token cookie
-.andExpect(jsonPath("$.message").value("Register successful."))
-.andExpect(jsonPath("$.token").value(mockToken)); 
-}
+    @Test
+    void testRegisterUser_BadRequest() throws Exception {
+        // Mock input with invalid data
+        UserSignUpDTO request = new UserSignUpDTO();
+        request.setDisplayName("Test User");
+        request.setUsername(""); // Empty username
+        request.setPassword("password123");
 
-@Test
-void testRegisterUser_BadRequest() throws Exception {
-    // Mock input with invalid data
-    UserSignUpDTO request = new UserSignUpDTO();
-    request.setDisplayName("Test User");
-    request.setUsername(""); // Empty username
-    request.setPassword("password123");
+        // Perform POST request and verify response
+        this.mockMvc.perform(post("/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.username").value("Username cannot be blank"));
+    }
 
-    // Perform POST request and verify response
-    mockMvc.perform(post("/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isBadRequest());
-}
+    @Test
+    void testLoginUser_Success() throws Exception {
+        // Mock the request DTO
+        UserLoginDTO loginRequestDTO = new UserLoginDTO();
+        loginRequestDTO.setUsername("testUser");
+        loginRequestDTO.setPassword("testPassword");
 
-@Test
-void testLoginUser_Success() throws Exception {
-    // Mock the request DTO
-    UserLoginDTO loginRequestDTO = new UserLoginDTO();
-    loginRequestDTO.setUsername("testUser");
-    loginRequestDTO.setPassword("testPassword");
+        // Mock the service call
+        String mockToken = "mock-token";
+        when(userService.authenticateUser("testUser", "testPassword")).thenReturn(mockToken);
 
-    // Mock the service call
-    String mockToken = "mock-token";
-    when(userService.authenticateUser("testUser", "testPassword")).thenReturn(mockToken);
+        // Perform the request and verify the response
+        this.mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Set-Cookie", Matchers.containsString("token=" + mockToken))) // Check for
+                                                                                                         // the token
+                                                                                                         // cookie
+                .andExpect(jsonPath("$.message").value("Login successful."))
+                .andExpect(jsonPath("$.token").value(mockToken));
+    }
 
-    // Perform the request and verify the response
-    mockMvc.perform(post("/login")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
-        .andExpect(status().isOk())
-        .andExpect(header().string("Set-Cookie", Matchers.containsString("token=" + mockToken))) // Check for the token cookie
-        .andExpect(jsonPath("$.message").value("Login successful."))
-        .andExpect(jsonPath("$.token").value(mockToken)); 
-}
+    @Test
+    void testLoginUser_BadRequest() throws Exception {
+        // Mock the request DTO
+        UserLoginDTO loginRequestDTO = new UserLoginDTO();
+        loginRequestDTO.setUsername("testUser");
+        loginRequestDTO.setPassword("testPassword");
 
+        // Mock the service call
+        String mockToken = "mock-token";
+        when(userService.authenticateUser("testUser", "testPassword")).thenThrow(new InvalidCredentialsException("Invalid username"));
+
+        // Perform the request and verify the response
+        this.mockMvc.perform(post("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
+                .andExpect(status().isUnauthorized())                                                                                                   // the token                                                                                         // cookie
+                .andExpect(jsonPath("$.message").value("Invalid username"));
+    }
 
 }

@@ -28,6 +28,9 @@ public class UserService {
      * @throws Exception if the email or username is already in use.
      */
     public String createUser(User user){
+        if (user.getUsername() == null || user.getUsername().isEmpty()) {
+            throw new InvalidCredentialsException("Username cannot be empty.");
+        }
         if (!userRepository.findByUsername(user.getUsername()).isEmpty()) {
             throw new UserAlreadyExistsException("Username is already in use.");
         }
