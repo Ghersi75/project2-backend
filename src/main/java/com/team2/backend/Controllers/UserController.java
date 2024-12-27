@@ -6,8 +6,11 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
+import com.team2.backend.DTO.User.ChangePasswordDTO;
 import com.team2.backend.DTO.User.UserLoginDTO;
 import com.team2.backend.DTO.User.UserResponseDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
@@ -25,72 +28,88 @@ import jakarta.validation.Valid;
 @RestController
 public class UserController {
 
-    // Injects the UserService instance for handling user-related business logic.
-    @Autowired
-    private UserService userService;
+        // Injects the UserService instance for handling user-related business logic.
+        @Autowired
+        private UserService userService;
 
-    /**
-     * Endpoint to register a new user.
-     * 
-     * @param userRequestDTO The user details sent in the request body as a JSON object.
-     * @return A ResponseEntity containing either the newly created user object
-     *         with a 200 OK status, or an error message with a 400 Bad Request status.
-     */
-    @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
-            // Convert UserRequestDTO to User entity
-            User user = new User();
-            user.setUsername(userSignUpDTO.getUsername());
-            user.setPassword(userSignUpDTO.getPassword());
-            user.setDisplayName(userSignUpDTO.getDisplayName());
-            user.setUserRole(UserRole.CONTRIBUTOR);
-            
+        /**
+         * Endpoint to register a new user.
+         * 
+         * @param userRequestDTO The user details sent in the request body as a JSON
+         *                       object.
+         * @return A ResponseEntity containing either the newly created user object
+         *         with a 200 OK status, or an error message with a 400 Bad Request
+         *         status.
+         */
+        @PostMapping("/register")
+        public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserSignUpDTO userSignUpDTO) {
+                // Convert UserRequestDTO to User entity
+                User user = new User();
+                user.setUsername(userSignUpDTO.getUsername());
+                user.setPassword(userSignUpDTO.getPassword());
+                user.setDisplayName(userSignUpDTO.getDisplayName());
+                user.setUserRole(UserRole.CONTRIBUTOR);
 
-            // Call the UserService to register the user
-            String token = userService.createUser(user);
+                // Call the UserService to register the user
+                String token = userService.createUser(user);
 
-            // Create response DTO
-            UserResponseDTO responseDTO = new UserResponseDTO("Register successful.", token);
+                // Create response DTO
+                UserResponseDTO responseDTO = new UserResponseDTO("Register successful.", token);
 
-            ResponseCookie cookie = ResponseCookie.from("token", token)
-            .httpOnly(true)
-            .secure(true) // Only send over HTTPS
-            .path("/")
-            .maxAge(24 * 60 * 60) // 1 day
-            .sameSite("Strict") // Protect against CSRF
-            .build();
+                ResponseCookie cookie = ResponseCookie.from("token", token)
+                                .httpOnly(true)
+                                .secure(true) // Only send over HTTPS
+                                .path("/")
+                                .maxAge(24 * 60 * 60) // 1 day
+                                .sameSite("Strict") // Protect against CSRF
+                                .build();
 
+                return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body(responseDTO);
 
-            return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body(responseDTO);
+        }
 
-        
-    }
+        /**
+         * Endpoint to log in a user.
+         *
+         * @param loginRequestDTO The login credentials provided in the request body.
+         * @return A ResponseEntity containing a success message or error message.
+         */
+        @PostMapping("/login")
+        public ResponseEntity<UserResponseDTO> loginUser(@Valid @RequestBody UserLoginDTO loginRequestDTO) {
 
-    /**
-     * Endpoint to log in a user.
-     *
-     * @param loginRequestDTO The login credentials provided in the request body.
-     * @return A ResponseEntity containing a success message or error message.
-     */
-    @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> loginUser(@Valid @RequestBody UserLoginDTO loginRequestDTO) {
-        
-            // Call the UserService to authenticate the user
-            String token = userService.authenticateUser(loginRequestDTO.getUsername(), loginRequestDTO.getPassword());
+                // Call the UserService to authenticate the user
+                String token = userService.authenticateUser(loginRequestDTO.getUsername(),
+                                loginRequestDTO.getPassword());
 
-            // Create response DTO
-            UserResponseDTO responseDTO = new UserResponseDTO("Login successful.", token);
+                // Create response DTO
+                UserResponseDTO responseDTO = new UserResponseDTO("Login successful.", token);
 
-            ResponseCookie cookie = ResponseCookie.from("token", token)
-            .httpOnly(true)
-            .secure(true) // Only send over HTTPS
-            .path("/")
-            .maxAge(24 * 60 * 60) // 1 day
-            .sameSite("Strict") // Protect against CSRF
-            .build();
+                ResponseCookie cookie = ResponseCookie.from("token", token)
+                                .httpOnly(true)
+                                .secure(true) // Only send over HTTPS
+                                .path("/")
+                                .maxAge(24 * 60 * 60) // 1 day
+                                .sameSite("Strict") // Protect against CSRF
+                                .build();
 
+                return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body(responseDTO);
 
-            return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body(responseDTO);
-       
-    }
+        }
+
+        @PostMapping("/change-password")
+        public ResponseEntity<String> changePassword(@RequestParam Long userId,
+                        @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
+                userService.changePassword(userId, changePasswordDTO);
+                return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
+
+        }
+
+        @PostMapping("/change-display-name")
+        public ResponseEntity<String> changeDisplayName(@RequestParam Long userId,
+                        @RequestBody ChangeDisplayNameDTO nameDTO) {
+                userService.changeDisplayName(userId, nameDTO.getNewDisplayName());
+                return ResponseEntity.ok("Display name changed successfully to: " + nameDTO.getNewDisplayName());
+
+        }
+
 }
