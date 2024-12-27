@@ -3,19 +3,26 @@ package com.team2.backend.Service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.team2.backend.DTO.User.ChangePasswordDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Exceptions.UserAlreadyExistsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Repository.UserRepository;
 import com.team2.backend.util.JwtUtil;
 
+import jakarta.validation.Valid;
+
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
      @Autowired
     private JwtUtil jwtUtil;
@@ -35,7 +42,7 @@ public class UserService {
             throw new UserAlreadyExistsException("Username is already in use.");
         }
         // Encrypt the password
-        user.setPassword(user.getPassword());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Save to database
         userRepository.save(user);
         String token = jwtUtil.generateToken(user.getUsername());
@@ -58,12 +65,40 @@ public class UserService {
         }
         User user = optionalUser.get();
         // Verify the password (ensure you store hashed passwords in the database)
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new InvalidCredentialsException("Invalid password.");
         }
         // If using JWT, generate a token here (optional)
         String token = jwtUtil.generateToken(user.getUsername());
         return token;
+    }
+
+    public void changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Old password is incorrect.");
+        }
+        if (changePasswordDTO.getOldPassword().equals(changePasswordDTO.getNewPassword())) {
+            throw new InvalidCredentialsException("New password cannot be the same as the old password.");  
+        }
+        if(!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword())) {
+            throw new InvalidCredentialsException("New password and confirmation do not match.");
+        }
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+
+        userRepository.save(user);
+
+    }
+
+    public void changeDisplayName(Long userId, String newDisplayName) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        if (newDisplayName == null || newDisplayName.trim().isEmpty()) {
+            throw new InvalidCredentialsException("Display name is required");
+        }
+        user.setDisplayName(newDisplayName);
+        userRepository.save(user);
     }
     
 }
