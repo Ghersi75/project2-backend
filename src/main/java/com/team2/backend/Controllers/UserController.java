@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +29,8 @@ import jakarta.validation.Valid;
  * the business logic to the UserService layer.
  */
 @RestController
+@CrossOrigin(origins = "http://localhost:5432", allowCredentials = "true")
+@RequestMapping("/user")
 public class UserController {
 
         // Injects the UserService instance for handling user-related business logic.
@@ -97,7 +101,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/change-username")
+        @PostMapping("/username")
         public ResponseEntity<String> changeUsername(@RequestParam Long userId,
                         @Valid @RequestBody ChangeUsernameDTO changeUsernameDTO) {
                 userService.changeUsername(userId, changeUsernameDTO);
@@ -105,7 +109,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/change-password")
+        @PostMapping("/password")
         public ResponseEntity<String> changePassword(@RequestParam Long userId,
                         @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
                 userService.changePassword(userId, changePasswordDTO);
@@ -113,20 +117,12 @@ public class UserController {
 
         }
 
-        @PostMapping("/change-display-name")
+        @PostMapping("/displayname")
         public ResponseEntity<String> changeDisplayName(@RequestParam Long userId,
                         @RequestBody ChangeDisplayNameDTO nameDTO) {
                 userService.changeDisplayName(userId, nameDTO);
                 return ResponseEntity.ok("Display name changed successfully to: " + nameDTO.getNewDisplayName());
 
         }
-
-        // @PostMapping("/favorite-game")
-        // public ResponseEntity<String> changeFavoriteGame(@RequestParam(name = "userId") Long userId,
-        //                 @RequestParam(name = "gameId") Long gameId, String reaction) {
-        //         userService.changeFavoriteGame(userId, gameId, reaction);
-        
-                        
-        // } 
 
 }

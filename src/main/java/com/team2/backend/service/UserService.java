@@ -15,8 +15,6 @@ import com.team2.backend.Models.User;
 import com.team2.backend.Repository.UserRepository;
 import com.team2.backend.util.JwtUtil;
 
-import jakarta.validation.Valid;
-
 @Service
 public class UserService {
 
@@ -108,7 +106,6 @@ public class UserService {
         userRepository.save(user);
 
     }
-
     
     public void changeDisplayName(Long userId, ChangeDisplayNameDTO changeDisplayNameDTO) {
         String newDisplayName = changeDisplayNameDTO.getNewDisplayName();
@@ -126,6 +123,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
+    
     
 }

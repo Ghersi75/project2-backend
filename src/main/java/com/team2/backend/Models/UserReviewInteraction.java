@@ -1,7 +1,6 @@
 package com.team2.backend.Models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.team2.backend.DTO.Game.GameDTO;
 import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Enums.ReviewInteraction;
 
