@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
 import com.team2.backend.DTO.User.ChangePasswordDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Exceptions.UserAlreadyExistsException;
@@ -224,15 +225,18 @@ public class UserServiceTest {
         // Arrange
         Long userId = 1L;
         String newDisplayName = "New Display Name";
+        String Password = "Password123";
+
         User existingUser = new User();
         existingUser.setId(userId);
         existingUser.setDisplayName("Old Display Name");
+        existingUser.setPassword(passwordEncoder.encode(Password));  // Set encoded password
 
         // Mock the repository method to return the existing user
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
 
         // Act
-        userService.changeDisplayName(userId, newDisplayName);
+        userService.changeDisplayName(userId, new ChangeDisplayNameDTO(newDisplayName,Password));
         System.out.println(existingUser.getDisplayName());
 
         // Assert
@@ -245,13 +249,14 @@ public class UserServiceTest {
         // Arrange
         Long userId = 1L;
         String newDisplayName = "New Display Name";
+        String Password = "Password123";
 
         // Mock repository to return an empty Optional (user not found)
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // Act and Assert
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            userService.changeDisplayName(userId, newDisplayName);
+            userService.changeDisplayName(userId,new ChangeDisplayNameDTO(newDisplayName,Password));
         });
 
         assertEquals("User not found", exception.getMessage()); // Verify exception message

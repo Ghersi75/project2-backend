@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
 import com.team2.backend.DTO.User.ChangePasswordDTO;
+import com.team2.backend.DTO.User.ChangeUsernameDTO;
 import com.team2.backend.DTO.User.UserLoginDTO;
 import com.team2.backend.DTO.User.UserResponseDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
@@ -96,6 +97,14 @@ public class UserController {
 
         }
 
+        @PostMapping("/change-username")
+        public ResponseEntity<String> changeUsername(@RequestParam Long userId,
+                        @Valid @RequestBody ChangeUsernameDTO changeUsernameDTO) {
+                userService.changeUsername(userId, changeUsernameDTO);
+                return ResponseEntity.status(HttpStatus.OK).body("Username changed successfully.");
+
+        }
+
         @PostMapping("/change-password")
         public ResponseEntity<String> changePassword(@RequestParam Long userId,
                         @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
@@ -107,9 +116,17 @@ public class UserController {
         @PostMapping("/change-display-name")
         public ResponseEntity<String> changeDisplayName(@RequestParam Long userId,
                         @RequestBody ChangeDisplayNameDTO nameDTO) {
-                userService.changeDisplayName(userId, nameDTO.getNewDisplayName());
+                userService.changeDisplayName(userId, nameDTO);
                 return ResponseEntity.ok("Display name changed successfully to: " + nameDTO.getNewDisplayName());
 
         }
+
+        // @PostMapping("/favorite-game")
+        // public ResponseEntity<String> changeFavoriteGame(@RequestParam(name = "userId") Long userId,
+        //                 @RequestParam(name = "gameId") Long gameId, String reaction) {
+        //         userService.changeFavoriteGame(userId, gameId, reaction);
+        
+                        
+        // } 
 
 }

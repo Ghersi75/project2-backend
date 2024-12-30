@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameDTO {
+public class FavoriteGameDTO {
     private String steamid;
-    private String title;
-    private String description;
 }
