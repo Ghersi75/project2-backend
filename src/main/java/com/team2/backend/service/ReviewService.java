@@ -13,12 +13,14 @@ import com.team2.backend.Models.User;
 import com.team2.backend.Models.Game;
 import com.team2.backend.Enums.UserRole;
 import com.team2.backend.DTO.Review.NewReviewDTO;
+import com.team2.backend.DTO.Review.UpdateReviewDTO;
 import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Enums.ReviewInteraction;
 import com.team2.backend.Exceptions.ResourceNotFoundException;
 import com.team2.backend.Exceptions.ForbiddenException;
 import com.team2.backend.Exceptions.UserNotFoundException;
 
+import java.util.List;
 
 @Service
 public class ReviewService {
@@ -34,6 +36,21 @@ public class ReviewService {
 
     @Autowired
     private GameRepository gameRepository;
+
+
+    public List<Review> getAllReviewsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return reviewRepository.findByUser(user);
+    }
+
+    public List<Review> getAllReviewsByGame(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+  
+        return reviewRepository.findByGame(game);
+    }
 
     public Review addReview(Long userId, NewReviewDTO reviewDTO) {
         User user = userRepository.findById(userId)
@@ -60,6 +77,19 @@ public class ReviewService {
             throw new ForbiddenException("You can only delete your own reviews");
         }
         reviewRepository.delete(review);
+    }
+
+    public Review updateReview(Long userId, Long reviewId, UpdateReviewDTO updateReviewDTO) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new UserNotFoundException("User not found"));
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUser().equals(user)) {
+                throw new ForbiddenException("You can only edit your own reviews");
+        }
+        review.setContent(updateReviewDTO.getContent());
+
+        return reviewRepository.save(review);
     }
 
 

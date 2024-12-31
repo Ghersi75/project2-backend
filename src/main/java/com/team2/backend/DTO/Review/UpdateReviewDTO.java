@@ -16,8 +16,8 @@ public class UpdateReviewDTO {
     private String content;
 
     @Positive
-    private int likes;
+    private Integer likes; // Changed to Integer to allow null values
 
     @Positive
-    private int dislikes;
+    private Integer dislikes; // Changed to Integer to allow null values
 }
