@@ -1,9 +1,5 @@
 package com.team2.backend.DTO.Game;
 
-import java.util.List;
-
-import com.team2.backend.Models.Review;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
 import com.team2.backend.DTO.User.ChangePasswordDTO;
+import com.team2.backend.DTO.User.ChangeUsernameDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Exceptions.UserAlreadyExistsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Repository.UserRepository;
 import com.team2.backend.util.JwtUtil;
-
-import jakarta.validation.Valid;
 
 @Service
 public class UserService {
@@ -73,6 +73,22 @@ public class UserService {
         return token;
     }
 
+    public void changeUsername(Long userId, ChangeUsernameDTO changeUsernameDTO) {
+        String newUsername = changeUsernameDTO.getNewUsername();
+        String password = changeUsernameDTO.getPassword();
+
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        if (!passwordEncoder.matches(password,user.getPassword())) {
+            throw new InvalidCredentialsException("Password is incorrect.");
+        }
+        if (newUsername == null || newUsername.trim().isEmpty()) {
+            throw new InvalidCredentialsException("Username name is required");
+        }
+        user.setUsername(newUsername);
+        userRepository.save(user);
+    }
+
     public void changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
         User user = userRepository.findById(userId)
         .orElseThrow(() -> new InvalidCredentialsException("User not found"));
@@ -90,15 +106,23 @@ public class UserService {
         userRepository.save(user);
 
     }
+    
+    public void changeDisplayName(Long userId, ChangeDisplayNameDTO changeDisplayNameDTO) {
+        String newDisplayName = changeDisplayNameDTO.getNewDisplayName();
+        String password = changeDisplayNameDTO.getPassword();
 
-    public void changeDisplayName(Long userId, String newDisplayName) {
         User user = userRepository.findById(userId)
         .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        if (!passwordEncoder.matches(password,user.getPassword())) {
+            throw new InvalidCredentialsException("Password is incorrect.");
+        }
         if (newDisplayName == null || newDisplayName.trim().isEmpty()) {
             throw new InvalidCredentialsException("Display name is required");
         }
         user.setDisplayName(newDisplayName);
         userRepository.save(user);
     }
+
+    
     
 }

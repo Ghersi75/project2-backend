@@ -53,7 +53,7 @@ public class UserControllerTest {
         when(userService.createUser(ArgumentMatchers.any(User.class))).thenReturn(mockToken);
 
         // Perform POST request and verify response
-        this.mockMvc.perform(post("/register")
+        this.mockMvc.perform(post("/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -73,7 +73,7 @@ public class UserControllerTest {
         request.setPassword("password123");
 
         // Perform POST request and verify response
-        this.mockMvc.perform(post("/register")
+        this.mockMvc.perform(post("/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -92,7 +92,7 @@ public class UserControllerTest {
         when(userService.authenticateUser("testUser", "testPassword")).thenReturn(mockToken);
 
         // Perform the request and verify the response
-        this.mockMvc.perform(post("/login")
+        this.mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
                 .andExpect(status().isOk())
@@ -115,7 +115,7 @@ public class UserControllerTest {
         when(userService.authenticateUser("testUser", "testPassword")).thenThrow(new InvalidCredentialsException("Invalid username"));
 
         // Perform the request and verify the response
-        this.mockMvc.perform(post("/login")
+        this.mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
                 .andExpect(status().isUnauthorized())                                                                                                   // the token                                                                                         // cookie
