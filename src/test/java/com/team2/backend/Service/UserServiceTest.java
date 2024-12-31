@@ -57,7 +57,7 @@ public class UserServiceTest {
         user.setPassword("password");
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        when(jwtUtil.generateToken("testuser",UserRole.CONTRIBUTOR)).thenReturn("dummyToken");
+        when(jwtUtil.generateToken("testuser",UserRole.CONTRIBUTOR,"Display NAme")).thenReturn("dummyToken");
 
         String encryptedPassword = "encryptedPassword123";
         when(passwordEncoder.encode("password")).thenReturn(encryptedPassword);
@@ -97,7 +97,7 @@ public class UserServiceTest {
         user.setPassword(hashedPassword);
 
         when(userRepository.findByUsername("validuser")).thenReturn(Optional.of(user));
-        when(jwtUtil.generateToken("validuser",UserRole.CONTRIBUTOR)).thenReturn("dummyToken");
+        when(jwtUtil.generateToken("validuser",UserRole.CONTRIBUTOR,"Display Name")).thenReturn("dummyToken");
         // Mock password verification (use BCrypt to simulate password matching)
         when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(true);
 
