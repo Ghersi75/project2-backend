@@ -45,7 +45,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Save to database
         userRepository.save(user);
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername(),user.getUserRole());
         return token;
     }
 
@@ -69,7 +69,7 @@ public class UserService {
             throw new InvalidCredentialsException("Invalid password.");
         }
         // If using JWT, generate a token here (optional)
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername(),user.getUserRole());
         return token;
     }
 

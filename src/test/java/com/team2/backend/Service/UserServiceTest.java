@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.team2.backend.DTO.User.ChangePasswordDTO;
+import com.team2.backend.Enums.UserRole;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Exceptions.UserAlreadyExistsException;
 import com.team2.backend.Models.User;
@@ -56,7 +57,7 @@ public class UserServiceTest {
         user.setPassword("password");
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        when(jwtUtil.generateToken("testuser")).thenReturn("dummyToken");
+        when(jwtUtil.generateToken("testuser",UserRole.CONTRIBUTOR)).thenReturn("dummyToken");
 
         String encryptedPassword = "encryptedPassword123";
         when(passwordEncoder.encode("password")).thenReturn(encryptedPassword);
@@ -96,7 +97,7 @@ public class UserServiceTest {
         user.setPassword(hashedPassword);
 
         when(userRepository.findByUsername("validuser")).thenReturn(Optional.of(user));
-        when(jwtUtil.generateToken("validuser")).thenReturn("dummyToken");
+        when(jwtUtil.generateToken("validuser",UserRole.CONTRIBUTOR)).thenReturn("dummyToken");
         // Mock password verification (use BCrypt to simulate password matching)
         when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(true);
 

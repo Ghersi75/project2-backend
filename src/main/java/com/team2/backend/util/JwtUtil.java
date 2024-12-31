@@ -9,6 +9,8 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Component;
 
+import com.team2.backend.Enums.UserRole;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -26,6 +28,11 @@ public class JwtUtil {
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+     
+     public String extractRole(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("user_role", String.class); 
+    }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
@@ -40,8 +47,9 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, UserRole role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("user_role", role.toString()); 
         return createToken(claims, username);
     }
 
