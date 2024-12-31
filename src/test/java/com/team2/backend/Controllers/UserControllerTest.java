@@ -23,8 +23,9 @@ import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Service.UserService;
+import com.team2.backend.util.JwtUtil;
 
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc(addFilters = false) // Disable Spring Security
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -34,11 +35,13 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    @MockBean
+    private JwtUtil jwtUtil;
+
     @InjectMocks
     private UserController userController;
 
     private ObjectMapper objectMapper = new ObjectMapper(); // Initialize ObjectMapper here
-
 
     @Test
     void testRegisterUser_Success() throws Exception {
@@ -57,7 +60,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Set-Cookie", Matchers.containsString("token=" + mockToken))) // Check for
+                .andExpect(header().string("Set-Cookie", Matchers.containsString("token=" + mockToken))) // Check for //
                                                                                                          // the token
                                                                                                          // cookie
                 .andExpect(jsonPath("$.message").value("Register successful."))
@@ -112,13 +115,14 @@ public class UserControllerTest {
 
         // Mock the service call
         String mockToken = "mock-token";
-        when(userService.authenticateUser("testUser", "testPassword")).thenThrow(new InvalidCredentialsException("Invalid username"));
+        when(userService.authenticateUser("testUser", "testPassword"))
+                .thenThrow(new InvalidCredentialsException("Invalid username"));
 
         // Perform the request and verify the response
         this.mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
-                .andExpect(status().isUnauthorized())                                                                                                   // the token                                                                                         // cookie
+                .andExpect(status().isUnauthorized()) // the token // cookie
                 .andExpect(jsonPath("$.message").value("Invalid username"));
     }
 
