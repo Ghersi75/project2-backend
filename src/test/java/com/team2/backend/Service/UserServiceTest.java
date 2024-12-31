@@ -28,6 +28,8 @@ import com.team2.backend.Exceptions.UserAlreadyExistsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Repository.UserRepository;
 import com.team2.backend.util.JwtUtil;
+import com.team2.backend.service.UserService;
+
 
 public class UserServiceTest {
     @Mock

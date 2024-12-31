@@ -44,9 +44,9 @@ public class UserReviewInteraction {
     private ReviewInteraction interaction;
     
 
-    public UserReviewInteraction(UserReviewInteractionDTO userreview){
-        this.user = userreview.getUser();
-        this.review = userreview.getReview();
-        this.interaction = userreview.getInteraction();
+    public UserReviewInteraction(User user, Review review, ReviewInteraction interaction) {
+        this.user = user;
+        this.review = review;
+        this.interaction = interaction;
     }
 }

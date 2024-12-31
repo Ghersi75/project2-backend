@@ -22,7 +22,7 @@ import com.team2.backend.DTO.User.UserLoginDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Models.User;
-import com.team2.backend.Service.UserService;
+import com.team2.backend.service.UserService;
 
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)

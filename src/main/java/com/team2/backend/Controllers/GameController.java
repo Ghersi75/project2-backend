@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.team2.backend.DTO.Game.GameDTO;
-import com.team2.backend.Service.GameService;
+import com.team2.backend.service.GameService;
 import com.team2.backend.Models.Game;
 import java.util.*;
 
 @RestController
 @RequestMapping("/game")
-@CrossOrigin(origins = "http://localhost:5432", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 public class GameController {
 
     @Autowired

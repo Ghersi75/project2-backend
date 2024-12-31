@@ -1,8 +1,6 @@
 package com.team2.backend.DTO.UserReviewInteraction;
 
 import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Models.Review;
-import com.team2.backend.Models.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserReviewInteractionDTO {
-    private User user;
-    private Review review;
+    private Long userId;       // Only include the user ID
+    private Long reviewId;     // Only include the review ID
     private ReviewInteraction interaction;
 }

@@ -13,4 +13,13 @@ public class NewReviewDTO {
     @NotEmpty(message = "Description cannot be empty")
     @Size(max = 500, message = "Description must be less than 500 characters")
     private String content;
+    private Long gameId;
+
+    public Long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
 }

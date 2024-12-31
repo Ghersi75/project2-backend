@@ -19,7 +19,7 @@ import com.team2.backend.DTO.User.UserResponseDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Enums.UserRole;
 import com.team2.backend.Models.User;
-import com.team2.backend.Service.UserService;
+import com.team2.backend.service.UserService;
 
 import jakarta.validation.Valid;
 
