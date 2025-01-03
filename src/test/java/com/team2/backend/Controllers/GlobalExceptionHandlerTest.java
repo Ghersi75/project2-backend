@@ -13,12 +13,12 @@ import com.team2.backend.Exceptions.Status401Exception;
 import com.team2.backend.Controllers.*;
 
 public class GlobalExceptionHandlerTest {
-    // @Test
-    // void testInvalidCredentialsExceptionHandler() {
-    //     GlobalExceptionHandler handler = new GlobalExceptionHandler();
+    @Test
+    void testInvalidCredentialsExceptionHandler() {
+        GlobalExceptionHandler handler = new GlobalExceptionHandler();
 
-    //     GlobalExceptionHandler ex = new GlobalExceptionHandler("Invalid username.");
-    //     Map<String, String> response = handler.GlobalExceptionHandler(ex);
+        InvalidCredentialsException ex = new InvalidCredentialsException("Invalid username.");
+        ResponseEntity<Map<String, String>> response = handler.handleInvalidCredentialsException(ex);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertEquals(Map.of("error", "Invalid username."), response.getBody());
