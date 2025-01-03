@@ -73,7 +73,7 @@ public class UserService {
         return token;
     }
 
-    public void changeUsername(Long userId, ChangeUsernameDTO changeUsernameDTO) {
+    public String changeUsername(Long userId, ChangeUsernameDTO changeUsernameDTO) {
         String newUsername = changeUsernameDTO.getNewUsername();
         String password = changeUsernameDTO.getPassword();
 
@@ -87,9 +87,12 @@ public class UserService {
         }
         user.setUsername(newUsername);
         userRepository.save(user);
+
+        String token = jwtUtil.generateToken(user.getUsername(),user.getUserRole(),user.getDisplayName());
+        return token;
     }
 
-    public void changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
+    public String changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
         User user = userRepository.findById(userId)
         .orElseThrow(() -> new InvalidCredentialsException("User not found"));
         if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
@@ -102,12 +105,13 @@ public class UserService {
             throw new InvalidCredentialsException("New password and confirmation do not match.");
         }
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
-
         userRepository.save(user);
 
+        String token = jwtUtil.generateToken(user.getUsername(),user.getUserRole(),user.getDisplayName());
+        return token;
     }
     
-    public void changeDisplayName(Long userId, ChangeDisplayNameDTO changeDisplayNameDTO) {
+    public String changeDisplayName(Long userId, ChangeDisplayNameDTO changeDisplayNameDTO) {
         String newDisplayName = changeDisplayNameDTO.getNewDisplayName();
         String password = changeDisplayNameDTO.getPassword();
 
@@ -121,6 +125,9 @@ public class UserService {
         }
         user.setDisplayName(newDisplayName);
         userRepository.save(user);
+
+        String token = jwtUtil.generateToken(user.getUsername(),user.getUserRole(),user.getDisplayName());
+        return token;
     }
 
     
