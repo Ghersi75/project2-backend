@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.team2</groupId>
     <artifactId>backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1</version>
     <name>backend</name>
     <description>Demo project for Spring Boot</description>
     <url />
@@ -181,6 +181,9 @@
     <profiles>
         <profile>
             <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <active.profile>dev</active.profile>
             </properties>
