@@ -14,4 +14,8 @@ jobs:
       - name: Setup maven
         uses: s4u/setup-maven-action@v1.18.0
 
-      - run: mvn clean package -Pprod
+      - name: Verify Maven Installation
+        run: mvn -v
+      
+      - name: Run Maven Build with Debug Logs
+        run: mvn clean compile -Pprod -X
