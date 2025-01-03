@@ -15,3 +15,4 @@ jobs:
         uses: s4u/setup-maven-action@3.9.0
 
       - run: mvn clean package -Pprod
+      
