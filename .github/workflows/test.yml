@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # https://github.com/marketplace/actions/setup-maven-action
+      # Apparently this takes care of checkout already
       - name: Setup maven
         uses: s4u/setup-maven-action@3.9.9
 
