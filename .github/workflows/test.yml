@@ -1,17 +1,30 @@
-name: Maven Package
+name: Maven Build
 
 on:
   push:
-    branches: [jenkins-testing]
+    branches:
+      - jenkins-testing
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # https://github.com/marketplace/actions/setup-maven-action
-      # Apparently this takes care of checkout already
-      - name: Setup maven
-        uses: s4u/setup-maven-action@v1.18.0
+      # Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - run: mvn clean package -Pprod
+      # Set up Java environment
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+
+      # Install Maven
+      - name: Install Maven
+        run: sudo apt-get update && sudo apt-get install -y maven
+
+      # Run Maven commands
+      - name: Run Maven Build
+        run: mvn clean compile -Pprod -X
