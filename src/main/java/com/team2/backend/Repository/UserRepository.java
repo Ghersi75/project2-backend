@@ -10,4 +10,6 @@ import com.team2.backend.Models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User,Long>{
     Optional<User> findByUsername(String username);
+
+    Optional<User> findById(User user);
 }
