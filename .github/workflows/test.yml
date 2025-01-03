@@ -12,6 +12,6 @@ jobs:
       # https://github.com/marketplace/actions/setup-maven-action
       # Apparently this takes care of checkout already
       - name: Setup maven
-        uses: s4u/setup-maven-action@v3
+        uses: s4u/setup-maven-action@v1.18.0
 
       - run: mvn clean package -Pprod
