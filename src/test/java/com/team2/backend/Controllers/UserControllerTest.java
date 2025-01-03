@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.backend.DTO.User.UserLoginDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Exceptions.InvalidCredentialsException;
+import com.team2.backend.Exceptions.Status401.InvalidCredentialsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Service.UserService;
 import com.team2.backend.util.JwtUtil;

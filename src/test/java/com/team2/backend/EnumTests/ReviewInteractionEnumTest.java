@@ -1,7 +1,8 @@
 package com.team2.backend.EnumTests;
 
 import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Exceptions.InvalidEnumValueException;
+import com.team2.backend.Exceptions.Status400.InvalidEnumValueException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

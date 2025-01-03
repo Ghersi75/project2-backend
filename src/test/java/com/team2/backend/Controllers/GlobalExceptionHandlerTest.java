@@ -8,18 +8,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.team2.backend.Exceptions.InvalidCredentialsException;
+import com.team2.backend.Exceptions.Status401.InvalidCredentialsException;
+import com.team2.backend.Exceptions.Status401.Status401Exception;
 
 public class GlobalExceptionHandlerTest {
     @Test
     void testInvalidCredentialsExceptionHandler() {
         GlobalExceptionHandler handler = new GlobalExceptionHandler();
 
-        InvalidCredentialsException ex = new InvalidCredentialsException("Invalid username.");
-        ResponseEntity<Map<String, String>> response = handler.handleInvalidCredentialsException(ex);
+        Status401Exception ex = new Status401Exception("Invalid username.");
+        Map<String, String> response = handler.Status401Handler(ex);
 
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals(Map.of("message", "Invalid username."), response.getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response);
+        assertEquals(Map.of("message", "Invalid username."), response);
     }
 
 }

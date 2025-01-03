@@ -11,9 +11,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.team2.backend.DTO.Game.GameDTO;
-import com.team2.backend.Exceptions.InvalidFavoriteGameException;
-import com.team2.backend.Exceptions.UserNotFoundException;
-import com.team2.backend.Exceptions.GameNotFoundException;
+import com.team2.backend.Exceptions.Status409.*;
+import com.team2.backend.Exceptions.Status400.*;
 import com.team2.backend.Models.Game;
 import com.team2.backend.Models.User;
 import com.team2.backend.Repository.UserRepository;

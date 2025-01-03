@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.team2.backend.Enums.UserRole;
-import com.team2.backend.Exceptions.InvalidEnumValueException;
+import com.team2.backend.Exceptions.Status400.InvalidEnumValueException;
 
 public class UserRoleEnumTest {
     @Test
