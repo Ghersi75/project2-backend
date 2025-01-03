@@ -1,4 +1,4 @@
-package com.team2.backend.Exceptions.Status400;
+package com.team2.backend.Exceptions;
 
 public class UserNotFoundException extends Status400Exception {
     public UserNotFoundException(String message) {

@@ -9,8 +9,9 @@ import com.team2.backend.Repository.GameRepository;
 import com.team2.backend.Models.User;
 import com.team2.backend.Models.Game;
 import com.team2.backend.DTO.Game.*;
-import com.team2.backend.Exceptions.Status400.*;
-import com.team2.backend.Exceptions.Status409.*;
+import com.team2.backend.Exceptions.GameNotFoundException;
+import com.team2.backend.Exceptions.InvalidFavoriteGameException;
+import com.team2.backend.Exceptions.UserNotFoundException;
 
 import java.util.*;
 

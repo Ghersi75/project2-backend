@@ -1,7 +1,7 @@
 package com.team2.backend.ModelTests;
 
 import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Exceptions.Status400.InvalidEnumValueException;
+import com.team2.backend.Exceptions.InvalidEnumValueException;
 import com.team2.backend.Models.Game;
 import com.team2.backend.Models.Review;
 import com.team2.backend.Models.User;

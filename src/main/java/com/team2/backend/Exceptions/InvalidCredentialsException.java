@@ -1,4 +1,4 @@
-package com.team2.backend.Exceptions.Status401;
+package com.team2.backend.Exceptions;
 
 public class InvalidCredentialsException extends Status401Exception {
     public InvalidCredentialsException(String message) {

@@ -1,7 +1,6 @@
 package com.team2.backend.Enums;
 
 import com.team2.backend.Exceptions.*;
-import com.team2.backend.Exceptions.Status400.InvalidEnumValueException;
 
 public enum ReviewInteraction {
     LIKE("LIKE"),
