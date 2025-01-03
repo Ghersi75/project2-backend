@@ -11,6 +11,7 @@ import com.team2.backend.DTO.Review.UpdateReviewDTO;
 import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Enums.ReviewInteraction;
 import com.team2.backend.Models.Review;
+import com.team2.backend.Kafka.Producer.ReviewInteractionProducer;
 
 import jakarta.validation.Valid;
 
@@ -22,6 +23,9 @@ public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private ReviewInteractionProducer reviewInteractionProducer;
 
     @PostMapping("/{userId}")
         public ResponseEntity<Review> addReview(@PathVariable Long userId, @RequestBody @Valid NewReviewDTO reviewDTO) {
@@ -51,6 +55,9 @@ public class ReviewController {
         public ResponseEntity<String> likeReview(@RequestParam(name = "userId") Long userId,
                                          @RequestBody UserReviewInteractionDTO interactionDTO) {
         reviewService.likeOrDislikeReview(userId, interactionDTO);
+
+        interactionDTO.setInteraction(ReviewInteraction.LIKE);
+        reviewInteractionProducer.sendReviewInteraction(interactionDTO);
         return ResponseEntity.ok("Review liked successfully");
     }
 
@@ -58,6 +65,9 @@ public class ReviewController {
         public ResponseEntity<String> dislikeReview(@RequestParam(name = "userId") Long userId,
                                             @RequestBody UserReviewInteractionDTO interactionDTO) {
         reviewService.likeOrDislikeReview(userId, interactionDTO);
+
+        interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
+        reviewInteractionProducer.sendReviewInteraction(interactionDTO);
         return ResponseEntity.ok("Review disliked successfully");
     }
 
