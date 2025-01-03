@@ -1,16 +1,15 @@
 pipeline {
   agent any
   stages {
-    stage('Build Project') {
+    stage('Give Permissions') {
       steps {
-        sh './mvnw clean package -Pprod'
+        sh 'chmod +x -R ${env.WORKSPACE}'
       }
     }
 
-    stage('Build Docker Image') {
+    stage('Maven Package') {
       steps {
-        sh '''docker build -t ${DOCKER_IMAGE} .
-'''
+        sh './mvnw clean package -Pprod'
       }
     }
 
