@@ -80,7 +80,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.username").value("Username cannot be blank"));
+                .andExpect(jsonPath("$.error").value("Username cannot be blank"));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
                 .andExpect(status().isUnauthorized()) // the token // cookie
-                .andExpect(jsonPath("$.message").value("Invalid username"));
+                .andExpect(jsonPath("$.error").value("Invalid username"));
     }
 
 }
