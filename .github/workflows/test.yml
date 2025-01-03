@@ -12,7 +12,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Setup maven
-        uses: s4u/setup-maven-action@3.9.0
+        uses: s4u/setup-maven-action@3.9.9
 
       - run: mvn clean package -Pprod
-      
