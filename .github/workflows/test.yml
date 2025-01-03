@@ -1,18 +1,18 @@
-name: Maven Package
+name: Maven Build
 
 on:
   push:
-    branches: [jenkins-testing]
+    branches:
+      - jenkins-testing
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # https://github.com/marketplace/actions/setup-maven-action
-      # Apparently this takes care of checkout already
-      - name: Setup maven
-        uses: s4u/setup-maven-action@v1.18.0
+      # Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Verify Maven Installation
         run: mvn -v
