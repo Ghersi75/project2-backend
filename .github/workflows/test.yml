@@ -1,0 +1,17 @@
+name: Maven Package
+
+on:
+  push:
+    branches: [jenkins-testing]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup maven
+        uses: s4u/setup-maven-action@3.9.0
+
+      - run: mvn clean package -Pprod
