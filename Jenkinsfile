@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Give Permissions') {
       steps {
-        sh 'chmod +x -R ${env.WORKSPACE}'
+        sh 'chmod +x -R ${WORKSPACE}'
       }
     }
 
