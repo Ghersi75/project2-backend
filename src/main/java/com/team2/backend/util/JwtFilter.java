@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,15 +17,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter  {
+public class JwtFilter extends OncePerRequestFilter {
 
-     @Autowired
+    @Autowired
     private JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-   final String authorizationHeader = request.getHeader("Authorization");
+        final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
         String token = null;
@@ -46,8 +48,8 @@ public class JwtFilter extends OncePerRequestFilter  {
 
             if (jwtUtil.validateToken(token, username)) {
                 // Create authentication object
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, List.of(new SimpleGrantedAuthority(role)));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
+                        null, List.of(new SimpleGrantedAuthority(role)));
 
                 // Set the authentication in the security context
                 SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -58,5 +60,4 @@ public class JwtFilter extends OncePerRequestFilter  {
         filterChain.doFilter(request, response);
     }
 
-    
 }
