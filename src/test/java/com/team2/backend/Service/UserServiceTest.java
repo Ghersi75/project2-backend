@@ -129,7 +129,6 @@ public class UserServiceTest {
                                                                                 
     }
 
-   
     @Test
     void testChangePassword_Success() {
         Long userId = 1L;

@@ -6,6 +6,7 @@ import com.team2.backend.Models.Game;
 import com.team2.backend.Models.Review;
 import com.team2.backend.Models.User;
 import com.team2.backend.Models.UserReviewInteraction;
+import com.team2.backend.DTO.Review.NewReviewDTO;
 import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,8 @@ public class ReviewModelTest {
         Game game = new Game();
         game.setTitle("Test Game");
 
-        Review review = new Review(user, game, "Great game!", 5, 0);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
+        Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
         interaction.setReview(review);
@@ -91,10 +93,11 @@ public class ReviewModelTest {
         game.setTitle("Test Game");
 
         String content = "Amazing game!";
-        int likes = 20;
-        int dislikes = 1;
+        int likes = 0;
+        int dislikes = 0;
 
-        Review review = new Review(user, game, content, likes, dislikes);
+        NewReviewDTO newReviewDTO = new NewReviewDTO(content,game);
+        Review review = new Review(user, newReviewDTO);
 
         assertNotNull(review);
         assertEquals(user, review.getUser());
@@ -136,7 +139,8 @@ public class ReviewModelTest {
         Game game = new Game();
         game.setTitle("Test Game");
 
-        Review review = new Review(user, game, "Great review!", 5, 0);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
+        Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interactionLike = new UserReviewInteraction();
         interactionLike.setReview(review);
@@ -170,7 +174,8 @@ public class ReviewModelTest {
         Game game = new Game();
         game.setTitle("Test Game");
 
-        Review review = new Review(user, game, "Nice review!", 8, 2);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
+        Review review = new Review(user, newReviewDTO);
 
         UserReviewInteractionDTO dto = new UserReviewInteractionDTO();
         dto.setUser(user);

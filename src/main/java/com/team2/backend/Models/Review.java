@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.team2.backend.DTO.Review.NewReviewDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -53,11 +54,11 @@ public class Review {
     @JsonManagedReference
     private List<UserReviewInteraction> userInteractions;
     
-    public Review(User user, Game game,String content, int likes, int dislikes){
+    public Review(User user, NewReviewDTO newReviewDTO){
         this.user = user;
-        this.game = game;
-        this.content = content;
-        this.likes = likes;
-        this.dislikes = dislikes;
+        this.game = newReviewDTO.getGame();
+        this.content = newReviewDTO.getContent();
+        this.likes = 0;
+        this.dislikes = 0;
     }
 }

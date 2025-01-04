@@ -1,6 +1,5 @@
 package com.team2.backend.Service;
 
-import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +17,8 @@ import com.team2.backend.Repository.GameRepository;
 import com.team2.backend.Repository.ReviewRepository;
 import com.team2.backend.Repository.UserRepository;
 import com.team2.backend.Repository.UserReviewInteractionRepository;
+
+import java.util.List;
 
 @Service
 public class ReviewService {
@@ -37,31 +38,42 @@ public class ReviewService {
     @Autowired
     private GameRepository gameRepository;
 
-    public void createReview(NewReviewDTO reviewDTO) {
-        // Save review to the database
-        // ...
-       User user = userRepository.findById(reviewDTO.getUserId())
+    public List<Review> getAllReviewsByUser(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-       Game game =  gameRepository.findById(reviewDTO.getGameId())
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
-                Review review = new Review();
-                
-                review.setUser(user);
-                review.setGame(game);
-                review.setContent(reviewDTO.getContent());
-        reviewRepository.save(review);
-        // Send review to Kafka
-        kafkaProducerService.sendMessage("reviews", "New review created: " + review.getContent());
+        return reviewRepository.findByUser(user);
     }
 
-    public void deleteReview(Long reviewId) {
+    public List<Review> getAllReviewsByGame(Long gameId) {
+        Game game = gameRepository.findById(gameId)
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+  
+        return reviewRepository.findByGame(game);
+    }
+
+    public Review addReview(Long userId, NewReviewDTO reviewDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Game game = gameRepository.findById(reviewDTO.getGame().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
+
+        Review review = new Review(user, reviewDTO);
+
+        return reviewRepository.save(review);
+    }
+
+    public void deleteReview(Long userId, Long reviewId) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new UserNotFoundException("User not found"));
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
-
+        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUser().equals(user)) {
+            throw new ForbiddenException("You can only delete your own reviews");
+        }
         reviewRepository.delete(review);
-        kafkaProducerService.sendMessage("reviews", "Review deleted: " + review.getContent());
     }
 
     public Review updateReview(Long userId, Long reviewId, UpdateReviewDTO updateReviewDTO) {
