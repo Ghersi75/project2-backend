@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  spring-app:
+    image:
+
+    environment:
+      POSTGRES_DB: revature-project-2.c3so40ucqu6u.us-east-2.rds.amazonaws.com
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: $7p60P6l13q;
+  kafka:
+    depends_on:
+      - spring-app
