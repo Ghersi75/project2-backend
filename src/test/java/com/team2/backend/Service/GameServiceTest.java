@@ -50,7 +50,7 @@ public class GameServiceTest {
         game.setAppid("123");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(gameRepository.findBySteamid("123")).thenReturn(Optional.of(game));
+        when(gameRepository.findByAppid("123")).thenReturn(Optional.of(game));
 
         gameService.addFavoriteGame(userId, gameDTO);
 
@@ -69,7 +69,7 @@ public class GameServiceTest {
         user.setFavoriteGames(new ArrayList<>());
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(gameRepository.findBySteamid("123")).thenReturn(Optional.empty());
+        when(gameRepository.findByAppid("123")).thenReturn(Optional.empty());
         when(gameRepository.save(any(Game.class))).thenReturn(new Game(gameDTO));
 
         gameService.addFavoriteGame(userId, gameDTO);
@@ -91,7 +91,7 @@ public class GameServiceTest {
         user.setFavoriteGames(Collections.singletonList(game));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(gameRepository.findBySteamid("123")).thenReturn(Optional.of(game));
+        when(gameRepository.findByAppid("123")).thenReturn(Optional.of(game));
 
         InvalidFavoriteGameException exception = assertThrows(
                 InvalidFavoriteGameException.class,
@@ -114,7 +114,7 @@ public class GameServiceTest {
         user.getFavoriteGames().add(game);
         
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(gameRepository.findBySteamid("123")).thenReturn(Optional.of(game));
+        when(gameRepository.findByAppid("123")).thenReturn(Optional.of(game));
         gameService.deleteFavoriteGame(userId, gameDTO);
     
         assertTrue(user.getFavoriteGames().isEmpty(), "The game should be removed from the user's favorites.");
@@ -133,7 +133,7 @@ public class GameServiceTest {
         user.setFavoriteGames(new ArrayList<>());
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(gameRepository.findBySteamid("123")).thenReturn(Optional.of(new Game()));
+        when(gameRepository.findByAppid("123")).thenReturn(Optional.of(new Game()));
 
         InvalidFavoriteGameException exception = assertThrows(
                 InvalidFavoriteGameException.class,
@@ -151,7 +151,7 @@ public class GameServiceTest {
         user.setId(userId);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(gameRepository.findBySteamid("123")).thenReturn(Optional.empty());
+        when(gameRepository.findByAppid("123")).thenReturn(Optional.empty());
 
         GameNotFoundException exception = assertThrows(
                 GameNotFoundException.class,

@@ -89,7 +89,7 @@ class GameControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].title").value("Game 1"))
-                .andExpect(jsonPath("$[1].title").value("Game 2"));
+                .andExpect(jsonPath("$[0].appid").value("12345"))
+                .andExpect(jsonPath("$[1].appid").value("67890"));
     }
 }
