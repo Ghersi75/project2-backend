@@ -10,7 +10,7 @@ chmod +x -R ${WORKSPACE}'''
 
     stage('Maven Package') {
       steps {
-        sh './mvnw clean package -Pprod'
+        sh './mvnw clean package -Pprod '
       }
     }
 
