@@ -57,7 +57,7 @@ public class UserServiceTest {
         user.setDisplayName("Display NAme");
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
-        when(jwtUtil.generateToken("testuser",UserRole.CONTRIBUTOR,"Display NAme")).thenReturn("dummyToken");
+        when(jwtUtil.generateToken("testuser", UserRole.CONTRIBUTOR, "Display NAme")).thenReturn("dummyToken");
 
         String encryptedPassword = "encryptedPassword123";
         when(passwordEncoder.encode("password")).thenReturn(encryptedPassword);
@@ -65,8 +65,8 @@ public class UserServiceTest {
         String token = userService.createUser(user);
 
         assertEquals("dummyToken", token);
-        assertEquals(encryptedPassword, user.getPassword()); 
-        verify(userRepository, times(1)).save(user); 
+        assertEquals(encryptedPassword, user.getPassword());
+        verify(userRepository, times(1)).save(user);
         verify(passwordEncoder, times(1)).encode("password");
 
     }
@@ -94,7 +94,7 @@ public class UserServiceTest {
         user.setDisplayName("Display NAme");
 
         when(userRepository.findByUsername("validuser")).thenReturn(Optional.of(user));
-        when(jwtUtil.generateToken("validuser",UserRole.CONTRIBUTOR,"Display NAme")).thenReturn("dummyToken");
+        when(jwtUtil.generateToken("validuser", UserRole.CONTRIBUTOR, "Display NAme")).thenReturn("dummyToken");
         // Mock password verification (use BCrypt to simulate password matching)
         when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(true);
 
@@ -127,29 +127,28 @@ public class UserServiceTest {
                 () -> userService.authenticateUser("validuser", "wrongpassword"));
         verify(userRepository, times(1)).findByUsername("validuser");
         verify(passwordEncoder, times(1)).matches("wrongpassword", hashedPassword);
-                                                                                
+
     }
 
-   
     @Test
     void testChangePassword_Success() {
         Long userId = 1L;
         String oldPassword = "oldPassword123";
         String newPassword = "newPassword123";
         String confirmPassword = "newPassword123";
-    
+
         User existingUser = new User();
         existingUser.setId(userId);
-        existingUser.setPassword(passwordEncoder.encode(oldPassword)); 
-    
+        existingUser.setPassword(passwordEncoder.encode(oldPassword));
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        when(passwordEncoder.matches(oldPassword, existingUser.getPassword())).thenReturn(true);  
+        when(passwordEncoder.matches(oldPassword, existingUser.getPassword())).thenReturn(true);
         when(passwordEncoder.encode(newPassword)).thenReturn("encodedNewPassword");
-    
+
         userService.changePassword(userId, new ChangePasswordDTO(oldPassword, newPassword, confirmPassword));
-    
+
         verify(passwordEncoder, times(1)).encode(newPassword);
-        verify(userRepository, times(1)).save(existingUser);  
+        verify(userRepository, times(1)).save(existingUser);
         assertEquals("encodedNewPassword", existingUser.getPassword());
     }
 
@@ -161,10 +160,10 @@ public class UserServiceTest {
         String confirmPassword = "newPassword123";
         User existingUser = new User();
         existingUser.setId(userId);
-        existingUser.setPassword(passwordEncoder.encode("incorrectOldPassword"));  
+        existingUser.setPassword(passwordEncoder.encode("incorrectOldPassword"));
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        Mockito.when(passwordEncoder.matches(oldPassword, existingUser.getPassword())).thenReturn(false);  
+        Mockito.when(passwordEncoder.matches(oldPassword, existingUser.getPassword())).thenReturn(false);
 
         InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
             userService.changePassword(userId, new ChangePasswordDTO(oldPassword, newPassword, confirmPassword));
@@ -181,16 +180,16 @@ public class UserServiceTest {
         String confirmPassword = "mismatchedPassword123";
         User existingUser = new User();
         existingUser.setId(userId);
-        existingUser.setPassword(passwordEncoder.encode(oldPassword));  
+        existingUser.setPassword(passwordEncoder.encode(oldPassword));
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
-        Mockito.when(passwordEncoder.matches(oldPassword, existingUser.getPassword())).thenReturn(true); 
+        Mockito.when(passwordEncoder.matches(oldPassword, existingUser.getPassword())).thenReturn(true);
 
         InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
             userService.changePassword(userId, new ChangePasswordDTO(oldPassword, newPassword, confirmPassword));
         });
 
-        assertEquals("New password and confirmation do not match.", exception.getMessage()); 
+        assertEquals("New password and confirmation do not match.", exception.getMessage());
     }
 
     @Test
@@ -198,17 +197,17 @@ public class UserServiceTest {
         Long userId = 1L;
         String newDisplayName = "New Display Name";
         String password = "Password123";
-    
+
         User existingUser = new User();
         existingUser.setId(userId);
         existingUser.setDisplayName("Old Display Name");
         existingUser.setPassword(passwordEncoder.encode(password));
-    
+
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
         Mockito.when(passwordEncoder.matches(password, existingUser.getPassword())).thenReturn(true);
-    
+
         userService.changeDisplayName(userId, new ChangeDisplayNameDTO(newDisplayName, password));
-    
+
         assertEquals(newDisplayName, existingUser.getDisplayName());
         Mockito.verify(userRepository, Mockito.times(1)).save(existingUser);
     }
@@ -222,7 +221,7 @@ public class UserServiceTest {
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            userService.changeDisplayName(userId,new ChangeDisplayNameDTO(newDisplayName,Password));
+            userService.changeDisplayName(userId, new ChangeDisplayNameDTO(newDisplayName, Password));
         });
 
         assertEquals("User not found", exception.getMessage());
@@ -259,8 +258,7 @@ public class UserServiceTest {
 
         InvalidCredentialsException exception = assertThrows(
                 InvalidCredentialsException.class,
-                () -> userService.changeUsername(userId, changeUsernameDTO)
-        );
+                () -> userService.changeUsername(userId, changeUsernameDTO));
         assertEquals("User not found", exception.getMessage());
 
         Mockito.verify(userRepository, Mockito.never()).save(Mockito.any(User.class));
@@ -284,8 +282,7 @@ public class UserServiceTest {
 
         InvalidCredentialsException exception = assertThrows(
                 InvalidCredentialsException.class,
-                () -> userService.changeUsername(userId, changeUsernameDTO)
-        );
+                () -> userService.changeUsername(userId, changeUsernameDTO));
         assertEquals("Password is incorrect.", exception.getMessage());
 
         Mockito.verify(userRepository, Mockito.never()).save(Mockito.any(User.class));
@@ -309,8 +306,7 @@ public class UserServiceTest {
 
         InvalidCredentialsException exception = assertThrows(
                 InvalidCredentialsException.class,
-                () -> userService.changeUsername(userId, changeUsernameDTO)
-        );
+                () -> userService.changeUsername(userId, changeUsernameDTO));
         assertEquals("Username name is required", exception.getMessage());
         Mockito.verify(userRepository, Mockito.never()).save(Mockito.any(User.class));
     }

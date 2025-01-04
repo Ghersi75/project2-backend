@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponseDTO {
 
-    
     private String message;
     private String token;
 
-    
 }

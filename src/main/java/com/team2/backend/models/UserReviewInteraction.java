@@ -42,9 +42,8 @@ public class UserReviewInteraction {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReviewInteraction interaction;
-    
 
-    public UserReviewInteraction(UserReviewInteractionDTO userreview){
+    public UserReviewInteraction(UserReviewInteractionDTO userreview) {
         this.user = userreview.getUser();
         this.review = userreview.getReview();
         this.interaction = userreview.getInteraction();

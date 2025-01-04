@@ -105,19 +105,19 @@ public class GameServiceTest {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
         gameDTO.setSteamid("123");
-    
+
         User user = new User();
         user.setId(userId);
         Game game = new Game();
         game.setSteamid("123");
-        
+
         user.setFavoriteGames(new ArrayList<>());
         user.getFavoriteGames().add(game);
-        
+
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(gameRepository.findBySteamid("123")).thenReturn(Optional.of(game));
         gameService.deleteFavoriteGame(userId, gameDTO);
-    
+
         assertTrue(user.getFavoriteGames().isEmpty(), "The game should be removed from the user's favorites.");
 
         verify(userRepository, times(1)).save(user);

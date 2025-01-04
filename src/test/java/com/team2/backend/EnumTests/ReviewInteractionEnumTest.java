@@ -28,7 +28,7 @@ public class ReviewInteractionEnumTest {
     @Test
     void testInvalidEnumValue() {
         InvalidEnumValueException exception = assertThrows(InvalidEnumValueException.class, () -> {
-            ReviewInteraction.fromString("INVALID");  // Should throw exception for invalid value
+            ReviewInteraction.fromString("INVALID"); // Should throw exception for invalid value
         });
         assertEquals("Invalid review. Value must be LIKE or DISLIKE", exception.getMessage());
     }

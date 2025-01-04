@@ -41,21 +41,21 @@ public class GameService {
     public void deleteFavoriteGame(Long userId, GameDTO gameDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-    
+
         Game game = gameRepository.findBySteamid(gameDTO.getSteamid())
                 .orElseThrow(() -> new GameNotFoundException("Game not found"));
-    
+
         if (!user.getFavoriteGames().contains(game)) {
             throw new InvalidFavoriteGameException("Game is not in the user's favorite list.");
         }
-    
+
         user.getFavoriteGames().remove(game);
         userRepository.save(user);
     }
 
-    public List<Game> getFavoriteGames(Long userId){
+    public List<Game> getFavoriteGames(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return user.getFavoriteGames();
     }

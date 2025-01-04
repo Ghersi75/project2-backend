@@ -25,9 +25,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/user/register", "/user/login").permitAll() // Allow public access to these endpoints
-                        .requestMatchers("/mod/**").hasAuthority(UserRole.MODERATOR.toString()) // Restrict "/MODERATOR/**"
-                        .requestMatchers("/con/**").hasAuthority(UserRole.CONTRIBUTOR.toString()) // Restrict // "CONTROBUTOR/**"
+                        .requestMatchers("/user/register", "/user/login").permitAll() // Allow public access to these
+                                                                                      // endpoints
+                        .requestMatchers("/mod/**").hasAuthority(UserRole.MODERATOR.toString()) // Restrict
+                                                                                                // "/MODERATOR/**"
+                        .requestMatchers("/con/**").hasAuthority(UserRole.CONTRIBUTOR.toString()) // Restrict //
+                                                                                                  // "CONTROBUTOR/**"
                         .anyRequest().authenticated() // Secure all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(

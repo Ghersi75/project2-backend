@@ -41,7 +41,7 @@ public class GameController {
     }
 
     @GetMapping("/favorites")
-    public ResponseEntity<List<Game>> getFavoriteGames(@RequestParam(name = "userId") Long userId){
+    public ResponseEntity<List<Game>> getFavoriteGames(@RequestParam(name = "userId") Long userId) {
         return ResponseEntity.ok(gameService.getFavoriteGames(userId));
     }
 }

@@ -41,10 +41,9 @@ public class Game {
     @JsonManagedReference
     private List<Review> reviews;
 
-    public Game(GameDTO game){
+    public Game(GameDTO game) {
         this.steamid = game.getSteamid();
         this.title = game.getTitle();
         this.description = game.getDescription();
     }
 }
-

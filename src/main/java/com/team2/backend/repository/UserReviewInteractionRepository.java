@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.team2.backend.models.UserReviewInteraction;
 
 @Repository
-public interface UserReviewInteractionRepository extends JpaRepository<UserReviewInteraction,Long> {
+public interface UserReviewInteractionRepository extends JpaRepository<UserReviewInteraction, Long> {
 
-} 
+}

@@ -8,6 +8,6 @@ import com.team2.backend.models.Game;
 import java.util.Optional;
 
 @Repository
-public interface GameRepository extends JpaRepository<Game,Long>{
+public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findBySteamid(String steamid);
 }

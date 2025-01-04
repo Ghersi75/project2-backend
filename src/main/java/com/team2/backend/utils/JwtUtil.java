@@ -28,14 +28,15 @@ public class JwtUtil {
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
-     
-     public String extractRole(String token) {
+
+    public String extractRole(String token) {
         Claims claims = extractAllClaims(token);
-        return claims.get("userRole", String.class); 
+        return claims.get("userRole", String.class);
     }
+
     public String extractDisplayName(String token) {
         Claims claims = extractAllClaims(token);
-        return claims.get("displayName", String.class); 
+        return claims.get("displayName", String.class);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -53,8 +54,8 @@ public class JwtUtil {
 
     public String generateToken(String username, UserRole role, String displayName) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userRole", role.toString()); 
-        claims.put("displayName",displayName);
+        claims.put("userRole", role.toString());
+        claims.put("displayName", displayName);
         return createToken(claims, username);
     }
 

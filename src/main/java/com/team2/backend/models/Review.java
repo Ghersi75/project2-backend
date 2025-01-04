@@ -52,8 +52,8 @@ public class Review {
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<UserReviewInteraction> userInteractions;
-    
-    public Review(User user, Game game,String content, int likes, int dislikes){
+
+    public Review(User user, Game game, String content, int likes, int dislikes) {
         this.user = user;
         this.game = game;
         this.content = content;
