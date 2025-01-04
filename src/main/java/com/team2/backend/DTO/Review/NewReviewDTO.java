@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.team2.backend.Models.*;
 
 @Data
@@ -15,5 +16,5 @@ public class NewReviewDTO {
     @NotEmpty(message = "Description cannot be empty")
     @Size(max = 500, message = "Description must be less than 500 characters")
     private String content;
-    private Game game;
+    private Long gameid;
 }

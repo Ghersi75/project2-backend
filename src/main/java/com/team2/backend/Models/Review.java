@@ -31,15 +31,11 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long userid;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "game_id", nullable = false)
-    private Game game;
+    private Long gameid;
+
+    private Long userinteractionsid;
 
     @Column(nullable = false)
     private String content;
@@ -50,13 +46,10 @@ public class Review {
     @Column(nullable = false)
     private int dislikes = 0;
 
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<UserReviewInteraction> userInteractions;
     
-    public Review(User user, NewReviewDTO newReviewDTO){
-        this.user = user;
-        this.game = newReviewDTO.getGame();
+    public Review(Long userid, NewReviewDTO newReviewDTO){
+        this.userid = userid;
+        this.gameid = newReviewDTO.getGameid();
         this.content = newReviewDTO.getContent();
         this.likes = 0;
         this.dislikes = 0;

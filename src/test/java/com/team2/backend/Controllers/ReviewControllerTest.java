@@ -1,68 +1,69 @@
 package com.team2.backend.Controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.backend.DTO.Review.*;
-import com.team2.backend.DTO.UserReviewInteraction.*;
-import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Models.Review;
-import com.team2.backend.Service.ReviewService;
-import com.team2.backend.Kafka.Producer.*;
+import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.team2.backend.Service.*;
+import com.team2.backend.DTO.Game.*;
+import com.team2.backend.DTO.Review.*;
+import com.team2.backend.Models.*;
+import com.team2.backend.Controllers.*;
 
 @ExtendWith(MockitoExtension.class)
-class ReviewControllerTest {
+public class ReviewControllerTest {
 
-    @MockBean
+    private MockMvc mockMvc;
+
+    @Mock
     private ReviewService reviewService;
 
-    @MockBean
-    private ReviewInteractionProducer reviewInteractionProducer;
+    @InjectMocks
+    private ReviewController reviewController;
 
-    @Autowired
-    private MockMvc mockMvc;
+    @BeforeEach
+    void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(reviewController).build();
+    }
 
     @Test
     void addReview_ShouldReturnCreatedReview() throws Exception {
-        NewReviewDTO newReviewDTO = new NewReviewDTO();
-        newReviewDTO.setContent("Great game!");
-        newReviewDTO.getGame().setId(1L);
+        GameDTO gamedto = new GameDTO("123","Game", "Great");
+        Game game = new Game(gamedto);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great Game",game);
 
-        Review mockReview = new Review();
-        mockReview.setId(1L);
-        mockReview.setContent("Great game!");
+        User user = new User();
+        user.setId(1L);
+        Review mockReview = new Review(user,newReviewDTO);
 
-        when(reviewService.addReview(anyLong(), any(NewReviewDTO.class))).thenReturn(mockReview);
+        when(reviewService.addReview(eq(1L), any(NewReviewDTO.class))).thenReturn(mockReview);
 
         mockMvc.perform(post("/reviews/{userId}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(newReviewDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.content").value("Great game!"))
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.content").value("Great game!"));
 
-        verify(reviewService, times(1)).addReview(anyLong(), any(NewReviewDTO.class));
+        verify(reviewService, times(1)).addReview(eq(1L), any(NewReviewDTO.class));
     }
-
 }

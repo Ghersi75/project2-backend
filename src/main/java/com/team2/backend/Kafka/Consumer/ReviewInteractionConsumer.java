@@ -26,9 +26,9 @@ public class ReviewInteractionConsumer {
 
         // Example logic
         if (interactionDTO.getInteraction() == ReviewInteraction.LIKE) {
-            System.out.println("Review " + interactionDTO.getReview().getId() + " liked by user " + interactionDTO.getReview().getId());
+            System.out.println("Review " + interactionDTO.getReviewid() + " liked by user " + interactionDTO.getReviewid());
         } else if (interactionDTO.getInteraction() == ReviewInteraction.DISLIKE) {
-            System.out.println("Review " + interactionDTO.getReview().getId() + " disliked by user " + interactionDTO.getReview().getId());
+            System.out.println("Review " + interactionDTO.getReviewid() + " disliked by user " + interactionDTO.getReviewid());
         }
 
         // Further processing (e.g., updating analytics or notifying users)

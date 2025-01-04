@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserReviewInteractionDTO {
-    private User user;
-    private Review review;
+    private Long userid;
+    private Long reviewid;
     private ReviewInteraction interaction;
 }
