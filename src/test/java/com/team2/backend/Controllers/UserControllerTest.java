@@ -23,7 +23,7 @@ import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
 import com.team2.backend.Models.User;
 import com.team2.backend.Service.UserService;
-import com.team2.backend.util.JwtUtil;
+import com.team2.backend.Utils.JwtUtil;
 
 @AutoConfigureMockMvc(addFilters = false) // Disable Spring Security
 @ExtendWith(MockitoExtension.class)
@@ -114,7 +114,6 @@ public class UserControllerTest {
         loginRequestDTO.setPassword("testPassword");
 
         // Mock the service call
-        String mockToken = "mock-token";
         when(userService.authenticateUser("testUser", "testPassword"))
                 .thenThrow(new InvalidCredentialsException("Invalid username"));
 

@@ -1,4 +1,4 @@
-package com.team2.backend.util;
+package com.team2.backend.Utils;
 
 import java.io.IOException;
 import java.util.List;

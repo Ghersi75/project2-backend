@@ -1,4 +1,4 @@
-package com.team2.backend.util;
+package com.team2.backend.Utils;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
