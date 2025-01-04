@@ -106,6 +106,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <!-- https://stackoverflow.com/a/35019148 -->
+                <version>3.5</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
