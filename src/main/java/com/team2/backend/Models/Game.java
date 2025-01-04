@@ -29,22 +29,14 @@ public class Game {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String steamid;
-
-    @Column(nullable = false, unique = true)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
+    private String appid;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviews;
 
     public Game(GameDTO game){
-        this.steamid = game.getSteamid();
-        this.title = game.getTitle();
-        this.description = game.getDescription();
+        this.appid = game.getAppid();
     }
 }
 

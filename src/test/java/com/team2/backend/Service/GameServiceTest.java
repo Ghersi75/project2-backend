@@ -40,14 +40,14 @@ public class GameServiceTest {
     void addFavoriteGame_ShouldAddGameToUserFavorites() {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
-        gameDTO.setSteamid("123");
+        gameDTO.setAppid("123");
 
         User user = new User();
         user.setId(userId);
         user.setFavoriteGames(new ArrayList<>());
 
         Game game = new Game();
-        game.setSteamid("123");
+        game.setAppid("123");
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(gameRepository.findBySteamid("123")).thenReturn(Optional.of(game));
@@ -62,7 +62,7 @@ public class GameServiceTest {
     void addFavoriteGame_ShouldCreateNewGameIfNotFound() {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
-        gameDTO.setSteamid("123");
+        gameDTO.setAppid("123");
 
         User user = new User();
         user.setId(userId);
@@ -82,12 +82,12 @@ public class GameServiceTest {
     void addFavoriteGame_ShouldThrowException_WhenGameIsAlreadyFavorite() {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
-        gameDTO.setSteamid("123");
+        gameDTO.setAppid("123");
 
         User user = new User();
         user.setId(userId);
         Game game = new Game();
-        game.setSteamid("123");
+        game.setAppid("123");
         user.setFavoriteGames(Collections.singletonList(game));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -103,12 +103,12 @@ public class GameServiceTest {
     void deleteFavoriteGame_ShouldRemoveGameFromUserFavorites() {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
-        gameDTO.setSteamid("123");
+        gameDTO.setAppid("123");
     
         User user = new User();
         user.setId(userId);
         Game game = new Game();
-        game.setSteamid("123");
+        game.setAppid("123");
         
         user.setFavoriteGames(new ArrayList<>());
         user.getFavoriteGames().add(game);
@@ -126,7 +126,7 @@ public class GameServiceTest {
     void deleteFavoriteGame_ShouldThrowException_WhenGameIsNotFavorite() {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
-        gameDTO.setSteamid("123");
+        gameDTO.setAppid("123");
 
         User user = new User();
         user.setId(userId);
@@ -145,7 +145,7 @@ public class GameServiceTest {
     void deleteFavoriteGame_ShouldThrowException_WhenGameNotFound() {
         Long userId = 1L;
         GameDTO gameDTO = new GameDTO();
-        gameDTO.setSteamid("123");
+        gameDTO.setAppid("123");
 
         User user = new User();
         user.setId(userId);
@@ -165,9 +165,9 @@ public class GameServiceTest {
         User user = new User();
         user.setId(userId);
         Game game1 = new Game();
-        game1.setSteamid("123");
+        game1.setAppid("123");
         Game game2 = new Game();
-        game2.setSteamid("456");
+        game2.setAppid("456");
         user.setFavoriteGames(Arrays.asList(game1, game2));
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));

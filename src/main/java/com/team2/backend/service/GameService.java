@@ -27,7 +27,7 @@ public class GameService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Game game = gameRepository.findBySteamid(gameDTO.getSteamid())
+        Game game = gameRepository.findBySteamid(gameDTO.getAppid())
                 .orElseGet(() -> {
                     Game newGame = new Game(gameDTO);
                     return gameRepository.save(newGame);
@@ -45,7 +45,7 @@ public class GameService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
     
-        Game game = gameRepository.findBySteamid(gameDTO.getSteamid())
+        Game game = gameRepository.findBySteamid(gameDTO.getAppid())
                 .orElseThrow(() -> new GameNotFoundException("Game not found"));
     
         if (!user.getFavoriteGames().contains(game)) {

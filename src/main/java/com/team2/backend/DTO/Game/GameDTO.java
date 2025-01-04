@@ -8,7 +8,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameDTO {
-    private String steamid;
-    private String title;
-    private String description;
+    private String appid;
 }

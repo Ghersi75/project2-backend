@@ -45,7 +45,7 @@ class GameControllerTest {
     @Test
     void testAddFavoriteGame_Success() throws Exception {
         Long userId = 1L;
-        GameDTO gameDTO = new GameDTO("12345", "Game Title", "Game Description");
+        GameDTO gameDTO = new GameDTO("12345");
 
         doNothing().when(gameService).addFavoriteGame(eq(userId), any(GameDTO.class));
 
@@ -60,7 +60,7 @@ class GameControllerTest {
     @Test
     void testDeleteFavoriteGame_Success() throws Exception {
         Long userId = 1L;
-        GameDTO gameDTO = new GameDTO("12345", "Game Title", "Game Description");
+        GameDTO gameDTO = new GameDTO("12345");
 
         doNothing().when(gameService).deleteFavoriteGame(eq(userId), any(GameDTO.class));
 
@@ -75,8 +75,8 @@ class GameControllerTest {
     @Test
     void testGetFavoriteGames_Success() throws Exception {
         Long userId = 1L;
-        GameDTO gameOne = new GameDTO("12345", "Game 1", "Description 1");
-        GameDTO gameTwo = new GameDTO("67890", "Game 2", "Description 2");
+        GameDTO gameOne = new GameDTO("12345");
+        GameDTO gameTwo = new GameDTO("67890");
 
         List<Game> favoriteGames = Arrays.asList(
                 new Game(gameOne),

@@ -24,8 +24,6 @@ public class ReviewModelTest {
         user.setUsername("testUser");
 
         Game game = new Game();
-        game.setTitle("Test Game");
-        game.setDescription("A game for testing.");
 
         String content = "Great review!";
         int likes = 10;
@@ -63,7 +61,6 @@ public class ReviewModelTest {
         user.setUsername("testUser");
 
         Game game = new Game();
-        game.setTitle("Test Game");
 
         NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
         Review review = new Review(user, newReviewDTO);
@@ -90,7 +87,6 @@ public class ReviewModelTest {
         user.setUsername("testUser");
 
         Game game = new Game();
-        game.setTitle("Test Game");
 
         String content = "Amazing game!";
         int likes = 0;
@@ -113,7 +109,6 @@ public class ReviewModelTest {
         user.setUsername("testUser");
 
         Game game = new Game();
-        game.setTitle("Test Game");
 
         Review review = new Review();
         review.setId(1L);
@@ -137,7 +132,6 @@ public class ReviewModelTest {
         user.setUsername("testUser");
 
         Game game = new Game();
-        game.setTitle("Test Game");
 
         NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
         Review review = new Review(user, newReviewDTO);
@@ -172,7 +166,6 @@ public class ReviewModelTest {
         user.setUsername("testUser");
 
         Game game = new Game();
-        game.setTitle("Test Game");
 
         NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
         Review review = new Review(user, newReviewDTO);

@@ -47,7 +47,7 @@ public class ReviewControllerTest {
 
     @Test
     void addReview_ShouldReturnCreatedReview() throws Exception {
-        GameDTO gamedto = new GameDTO("123","Game", "Great");
+        GameDTO gamedto = new GameDTO("123");
         Game game = new Game(gamedto);
         NewReviewDTO newReviewDTO = new NewReviewDTO("Great Game",game);
 

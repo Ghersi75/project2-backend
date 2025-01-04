@@ -89,7 +89,6 @@ public class ReviewServiceTest {
     
         Game game = new Game();
         game.setId(1L);
-        game.setTitle("Test Game");
     
         NewReviewDTO newReviewDTO = new NewReviewDTO();
         newReviewDTO.setGame(game);

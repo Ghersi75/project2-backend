@@ -13,18 +13,14 @@ public class GameModelTest {
     @Test
     void testGameInitialization() {
         String steamid = "123456";
-        String title = "Test Game";
-        String description = "This is a test description.";
 
         Game game = new Game();
-        game.setSteamid(steamid);
-        game.setTitle(title);
-        game.setDescription(description);
+        game.setAppid(steamid);
+
 
         assertNotNull(game);
-        assertEquals(steamid, game.getSteamid());
-        assertEquals(title, game.getTitle());
-        assertEquals(description, game.getDescription());
+        assertEquals(steamid, game.getAppid());
+
     }
 
     @Test
@@ -50,29 +46,21 @@ public class GameModelTest {
     @Test
     void testGameDTOConstructor() {
         String steamid = "123456";
-        String title = "Test Game";
-        String description = "This is a test description.";
-        GameDTO gameDTO = new GameDTO(steamid, title, description);
+        GameDTO gameDTO = new GameDTO(steamid);
 
         Game game = new Game(gameDTO);
 
         assertNotNull(game);
-        assertEquals(gameDTO.getSteamid(), game.getSteamid());
-        assertEquals(gameDTO.getTitle(), game.getTitle());
-        assertEquals(gameDTO.getDescription(), game.getDescription());
+        assertEquals(gameDTO.getAppid(), game.getAppid());
     }
 
     @Test
     void testSetAndGetFields() {
         Game game = new Game();
         game.setId(1L);
-        game.setSteamid("123456");
-        game.setTitle("Test Title");
-        game.setDescription("Test Description");
+        game.setAppid("123456");
 
         assertEquals(1L, game.getId());
-        assertEquals("123456", game.getSteamid());
-        assertEquals("Test Title", game.getTitle());
-        assertEquals("Test Description", game.getDescription());
+        assertEquals("123456", game.getAppid());
     }
 }
