@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.team2.backend.Exceptions.InvalidCredentialsException;
+import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.controllers.GlobalExceptionHandler;
 
 public class GlobalExceptionHandlerTest {
     @Test

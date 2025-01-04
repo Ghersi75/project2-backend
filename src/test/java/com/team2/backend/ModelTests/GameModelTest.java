@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.team2.backend.DTO.Game.*;
-import com.team2.backend.Models.*;
+import com.team2.backend.dto.Game.*;
+import com.team2.backend.models.*;
 
 public class GameModelTest {
 

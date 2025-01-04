@@ -10,14 +10,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.team2.backend.DTO.Game.GameDTO;
-import com.team2.backend.Exceptions.InvalidFavoriteGameException;
-import com.team2.backend.Exceptions.UserNotFoundException;
-import com.team2.backend.Exceptions.GameNotFoundException;
-import com.team2.backend.Models.Game;
-import com.team2.backend.Models.User;
-import com.team2.backend.Repository.UserRepository;
-import com.team2.backend.Repository.GameRepository;
+import com.team2.backend.exceptions.InvalidFavoriteGameException;
+import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.models.Game;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.GameRepository;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.service.GameService;
+import com.team2.backend.exceptions.GameNotFoundException;
+import com.team2.backend.dto.Game.GameDTO;
 
 import java.util.*;
 

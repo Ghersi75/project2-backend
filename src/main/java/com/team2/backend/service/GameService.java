@@ -1,14 +1,14 @@
-package com.team2.backend.Service;
+package com.team2.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.team2.backend.Repository.UserRepository;
-import com.team2.backend.Repository.GameRepository;
-import com.team2.backend.Models.User;
-import com.team2.backend.Models.Game;
-import com.team2.backend.DTO.Game.*;
-import com.team2.backend.Exceptions.*;
+import com.team2.backend.dto.Game.*;
+import com.team2.backend.models.Game;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.GameRepository;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.exceptions.*;
 
 import java.util.*;
 

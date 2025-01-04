@@ -8,10 +8,9 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Enums.UserRole;
-import com.team2.backend.Models.*;
-import com.team2.backend.Models.UserReviewInteraction;
+import com.team2.backend.enums.UserRole;
+import com.team2.backend.dto.User.UserSignUpDTO;
+import com.team2.backend.models.*;
 
 import java.util.List;
 

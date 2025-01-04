@@ -1,0 +1,18 @@
+package com.team2.backend.dto.UserReviewInteraction;
+
+import com.team2.backend.enums.ReviewInteraction;
+import com.team2.backend.models.Review;
+import com.team2.backend.models.User;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserReviewInteractionDTO {
+    private User user;
+    private Review review;
+    private ReviewInteraction interaction;
+}
