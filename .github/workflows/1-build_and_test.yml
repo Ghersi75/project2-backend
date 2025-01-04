@@ -1,4 +1,4 @@
-name: Maven Build
+name: Maven Package
 
 on:
   push:
@@ -13,9 +13,6 @@ jobs:
       # Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v3
-
-      - name: Verify Maven Installation
-        run: mvn -v
       
-      - name: Run Maven Build with Debug Logs
-        run: mvn clean compile -Pprod -X
+      - name: Run tests and build maven with production environment variables
+        run: mvn clean package -Pprod
