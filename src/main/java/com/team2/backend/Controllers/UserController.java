@@ -29,7 +29,7 @@ import jakarta.validation.Valid;
  * the business logic to the UserService layer.
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:5432", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/user")
 public class UserController {
 

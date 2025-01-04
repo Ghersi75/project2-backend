@@ -83,14 +83,33 @@ public class ReviewServiceTest {
 
     @Test
     void addReview_ShouldAddReviewToGame() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testuser");
+    
+        Game game = new Game();
+        game.setId(1L);
+        game.setTitle("Test Game");
+    
+        NewReviewDTO newReviewDTO = new NewReviewDTO();
+        newReviewDTO.setGame(game);
+        newReviewDTO.setContent("Great game!");
+    
+        Review savedReview = new Review(user, newReviewDTO);
+        savedReview.setId(1L);
+    
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
-        when(reviewRepository.save(any(Review.class))).thenReturn(review);
+        when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
+    
+        Review result = reviewService.addReview(1L, newReviewDTO);
 
-        Review addedReview = reviewService.addReview(1L, newReviewDTO);
-
-        assertNotNull(addedReview);
-        assertEquals("Great game!", addedReview.getContent());
+        assertNotNull(result, "Review should not be null");
+        assertEquals("Great game!", result.getContent(), "Review content should match");
+        assertEquals(user, result.getUser(), "Review should be associated with the correct user");
+        assertEquals(game, result.getGame(), "Review should be linked to the correct game");
+        verify(userRepository, times(1)).findById(1L);
+        verify(gameRepository, times(1)).findById(1L);
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
@@ -141,12 +160,25 @@ public class ReviewServiceTest {
 
     @Test
     void updateReview_ShouldUpdateReviewContent() {
+        User user = new User();
+        user.setId(1L);
+    
+        Review review = new Review();
+        review.setId(1L);
+        review.setContent("Old content");
+        review.setUser(user);
+    
+        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO();
+        updateReviewDTO.setContent("Updated content");
+    
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-
+        when(reviewRepository.save(any(Review.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    
         Review updatedReview = reviewService.updateReview(1L, 1L, updateReviewDTO);
-
-        assertEquals("Updated content", updatedReview.getContent());
+    
+        assertNotNull(updatedReview, "Updated review should not be null");
+        assertEquals("Updated content", updatedReview.getContent(), "Content should be updated correctly");
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
@@ -172,14 +204,31 @@ public class ReviewServiceTest {
 
     @Test
     void likeOrDislikeReview_ShouldLikeReview() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        User reviewOwner = new User();
+        reviewOwner.setId(1L);
+    
+        User interactingUser = new User();
+        interactingUser.setId(2L);
+    
+        Review review = new Review();
+        review.setId(1L);
+        review.setUser(reviewOwner);
+        review.setLikes(0);
+    
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
+        interactionDTO.setReview(review);
+        interactionDTO.setInteraction(ReviewInteraction.LIKE);
+    
+        when(userRepository.findById(2L)).thenReturn(Optional.of(interactingUser));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
-
-        reviewService.likeOrDislikeReview(1L, interactionDTO);
-
-        assertEquals(1, review.getLikes());
+        when(userReviewInteractionRepository.findByUserAndReview(interactingUser, review))
+            .thenReturn(Optional.empty());
+    
+        reviewService.likeOrDislikeReview(2L, interactionDTO);
+    
+        assertEquals(1, review.getLikes(), "The review's like count should be incremented");
         verify(userReviewInteractionRepository, times(1)).save(any(UserReviewInteraction.class));
+        verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
     @Test
@@ -187,7 +236,7 @@ public class ReviewServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
 
-        interactionDTO.getReview().setUser(user);  // User tries to like their own review
+        interactionDTO.getReview().setUser(user); 
 
         assertThrows(ForbiddenException.class, () -> reviewService.likeOrDislikeReview(1L, interactionDTO));
     }

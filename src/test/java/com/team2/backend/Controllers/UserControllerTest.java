@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,6 @@ public class UserControllerTest {
 
     @Test
     void testRegisterUser_Success() throws Exception {
-        // Mock input and output
         UserSignUpDTO request = new UserSignUpDTO();
         request.setDisplayName("Test User");
         request.setUsername("testuser");
