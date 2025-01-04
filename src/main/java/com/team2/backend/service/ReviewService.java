@@ -56,10 +56,10 @@ public class ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Game game = gameRepository.findById(reviewDTO.getGameid())
+        Game game = gameRepository.findById(reviewDTO.getGame().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
 
-        Review review = new Review(userId, reviewDTO);
+        Review review = new Review(user, reviewDTO);
 
         return reviewRepository.save(review);
     }
@@ -70,7 +70,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
-        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUserid().equals(userId)) {
+        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUser().equals(user)) {
             throw new ForbiddenException("You can only delete your own reviews");
         }
         reviewRepository.delete(review);
@@ -81,7 +81,7 @@ public class ReviewService {
         .orElseThrow(() -> new UserNotFoundException("User not found"));
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
-        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUserid().equals(userId)) {
+        if (user.getUserRole() == UserRole.CONTRIBUTOR && !review.getUser().equals(user)) {
                 throw new ForbiddenException("You can only edit your own reviews");
         }
         review.setContent(updateReviewDTO.getContent());
@@ -93,10 +93,10 @@ public class ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     
-        Review review = reviewRepository.findById(interactionDTO.getReviewid())
+        Review review = reviewRepository.findById(interactionDTO.getReview().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
     
-        if (review.getUserid().equals(userId)) {
+        if (review.getUser().equals(user)) {
             throw new ForbiddenException("You cannot like or dislike your own review");
         }
     
@@ -111,7 +111,7 @@ public class ReviewService {
                 throw new ForbiddenException("You have already performed this action");
             }
         } else {
-            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(user.getId(), review.getId(), interactionDTO.getInteraction());
+            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(user, review, interactionDTO.getInteraction());
             UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO);
             userReviewInteractionRepository.save(newInteraction);
     
@@ -124,7 +124,7 @@ public class ReviewService {
         }
     }
     private void updateInteraction(UserReviewInteraction interaction, ReviewInteraction newInteraction) {
-        Optional<Review> review = ReviewRepository.findById(interaction.getReviewid());
+        Review review = interaction.getReview();
     
         if (interaction.getInteraction() == ReviewInteraction.LIKE) {
             review.setLikes(review.getLikes() - 1);
