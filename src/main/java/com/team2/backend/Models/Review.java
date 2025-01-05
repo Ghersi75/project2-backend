@@ -36,10 +36,7 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "game_id", nullable = false)
-    private Game game;
+    private int appId;
 
     @Column(nullable = false)
     private String content;
@@ -56,7 +53,7 @@ public class Review {
     
     public Review(User user, NewReviewDTO newReviewDTO){
         this.user = user;
-        this.game = newReviewDTO.getGame();
+        this.appId = newReviewDTO.getAppid();
         this.content = newReviewDTO.getContent();
         this.likes = 0;
         this.dislikes = 0;

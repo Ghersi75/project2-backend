@@ -50,9 +50,7 @@ public class User {
     @JsonManagedReference
     private List<Review> reviews;
 
-    @ManyToMany
-    @JoinTable(name = "user_favorites", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "game_id"))
-    private List<Game> favoriteGames = new ArrayList<>();
+    private List<Integer> favoriteGames = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

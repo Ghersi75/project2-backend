@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.team2.backend.DTO.Game.GameDTO;
 import com.team2.backend.Service.GameService;
-import com.team2.backend.Models.Game;
+
 import java.util.*;
 
 @RestController
@@ -26,21 +25,21 @@ public class GameController {
 
     @PostMapping("/favorites")
     public ResponseEntity<String> addFavoriteGame(@RequestParam(name = "userId") Long userId,
-            @RequestBody GameDTO gamedDto) {
+            @RequestBody Integer appid) {
 
-        gameService.addFavoriteGame(userId, gamedDto);
+        gameService.addFavoriteGame(userId, appid);
         return ResponseEntity.ok("Favorite game added");
     }
 
     @DeleteMapping("/favorites")
     public ResponseEntity<String> deleteFavoriteGame(@RequestParam(name = "userId") Long userId,
-            @RequestBody GameDTO gamedDto) {
-        gameService.deleteFavoriteGame(userId, gamedDto);
+            @RequestBody Integer appid) {
+        gameService.deleteFavoriteGame(userId, appid);
         return ResponseEntity.ok("Favorite game removed");
     }
 
     @GetMapping("/favorites")
-    public ResponseEntity<List<Game>> getFavoriteGames(@RequestParam(name = "userId") Long userId){
+    public ResponseEntity<List<Integer>> getFavoriteGames(@RequestParam(name = "userId") Long userId){
         return ResponseEntity.ok(gameService.getFavoriteGames(userId));
     }
 }

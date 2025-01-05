@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.team2.backend.Service.*;
-import com.team2.backend.DTO.Game.*;
 import com.team2.backend.DTO.Review.*;
 import com.team2.backend.Models.*;
 import com.team2.backend.Controllers.*;
@@ -47,9 +46,7 @@ public class ReviewControllerTest {
 
     @Test
     void addReview_ShouldReturnCreatedReview() throws Exception {
-        GameDTO gamedto = new GameDTO("123");
-        Game game = new Game(gamedto);
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great Game",game);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great Game",12345);
 
         User user = new User();
         user.setId(1L);

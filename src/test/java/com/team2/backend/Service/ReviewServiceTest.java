@@ -16,13 +16,11 @@ import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Exceptions.ResourceNotFoundException;
 import com.team2.backend.Exceptions.UserNotFoundException;
 import com.team2.backend.Exceptions.ForbiddenException;
-import com.team2.backend.Models.Game;
 import com.team2.backend.Models.Review;
 import com.team2.backend.Models.User;
 import com.team2.backend.Models.UserReviewInteraction;
 import com.team2.backend.Repository.ReviewRepository;
 import com.team2.backend.Repository.UserRepository;
-import com.team2.backend.Repository.GameRepository;
 import com.team2.backend.Repository.UserReviewInteractionRepository;
 import com.team2.backend.Enums.*;
 
@@ -37,16 +35,12 @@ public class ReviewServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private GameRepository gameRepository;
-
-    @Mock
     private UserReviewInteractionRepository userReviewInteractionRepository;
 
     @InjectMocks
     private ReviewService reviewService;
 
     private User user;
-    private Game game;
     private Review review;
     private NewReviewDTO newReviewDTO;
     private UpdateReviewDTO updateReviewDTO;
@@ -60,16 +54,13 @@ public class ReviewServiceTest {
         user.setId(1L);
         user.setUserRole(UserRole.CONTRIBUTOR);
 
-        game = new Game();
-        game.setId(1L);
-
         review = new Review();
         review.setId(1L);
         review.setUser(user);
-        review.setGame(game);
+        review.setAppId(12345);
 
         newReviewDTO = new NewReviewDTO();
-        newReviewDTO.setGame(game);
+        newReviewDTO.setAppid(12345);
         newReviewDTO.setContent("Great game!");
 
         updateReviewDTO = new UpdateReviewDTO();
@@ -86,19 +77,13 @@ public class ReviewServiceTest {
         User user = new User();
         user.setId(1L);
         user.setUsername("testuser");
-    
-        Game game = new Game();
-        game.setId(1L);
-    
-        NewReviewDTO newReviewDTO = new NewReviewDTO();
-        newReviewDTO.setGame(game);
-        newReviewDTO.setContent("Great game!");
+
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!",12345);
     
         Review savedReview = new Review(user, newReviewDTO);
         savedReview.setId(1L);
     
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
         when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
     
         Review result = reviewService.addReview(1L, newReviewDTO);
@@ -106,9 +91,8 @@ public class ReviewServiceTest {
         assertNotNull(result, "Review should not be null");
         assertEquals("Great game!", result.getContent(), "Review content should match");
         assertEquals(user, result.getUser(), "Review should be associated with the correct user");
-        assertEquals(game, result.getGame(), "Review should be linked to the correct game");
+        assertEquals(12345, result.getAppId(), "Review should be linked to the correct game");
         verify(userRepository, times(1)).findById(1L);
-        verify(gameRepository, times(1)).findById(1L);
         verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
@@ -117,14 +101,6 @@ public class ReviewServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> reviewService.addReview(1L, newReviewDTO));
-    }
-
-    @Test
-    void addReview_ShouldThrowException_WhenGameNotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(gameRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> reviewService.addReview(1L, newReviewDTO));
     }
 
     @Test

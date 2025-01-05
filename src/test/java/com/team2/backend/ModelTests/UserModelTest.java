@@ -69,10 +69,10 @@ public class UserModelTest {
     @Test
     void testAddFavoriteGames() {
         User user = new User();
-        Game game1 = new Game();
-        Game game2 = new Game();
+        int game1 = 12345;
+        int game2 = 67890;
 
-        List<Game> favoriteGames = new ArrayList<>();
+        List<Integer> favoriteGames = new ArrayList<>();
         favoriteGames.add(game1);
         favoriteGames.add(game2);
 

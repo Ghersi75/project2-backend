@@ -9,11 +9,9 @@ import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
 import com.team2.backend.Enums.ReviewInteraction;
 import com.team2.backend.Enums.UserRole;
 import com.team2.backend.Exceptions.*;
-import com.team2.backend.Models.Game;
 import com.team2.backend.Models.Review;
 import com.team2.backend.Models.User;
 import com.team2.backend.Models.UserReviewInteraction;
-import com.team2.backend.Repository.GameRepository;
 import com.team2.backend.Repository.ReviewRepository;
 import com.team2.backend.Repository.UserRepository;
 import com.team2.backend.Repository.UserReviewInteractionRepository;
@@ -35,9 +33,6 @@ public class ReviewService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private GameRepository gameRepository;
-
     public List<Review> getAllReviewsByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -45,19 +40,13 @@ public class ReviewService {
         return reviewRepository.findByUser(user);
     }
 
-    public List<Review> getAllReviewsByGame(Long gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
-  
-        return reviewRepository.findByGame(game);
+    public List<Review> getAllReviewsByGame(Integer appid) {
+        return reviewRepository.findByAppid(appid);
     }
 
     public Review addReview(Long userId, NewReviewDTO reviewDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        Game game = gameRepository.findById(reviewDTO.getGame().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Game not found"));
 
         Review review = new Review(user, reviewDTO);
 
@@ -67,6 +56,7 @@ public class ReviewService {
     public void deleteReview(Long userId, Long reviewId) {
         User user = userRepository.findById(userId)
         .orElseThrow(() -> new UserNotFoundException("User not found"));
+        
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 

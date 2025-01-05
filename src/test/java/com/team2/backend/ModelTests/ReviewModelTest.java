@@ -2,7 +2,6 @@ package com.team2.backend.ModelTests;
 
 import com.team2.backend.Enums.ReviewInteraction;
 import com.team2.backend.Exceptions.InvalidEnumValueException;
-import com.team2.backend.Models.Game;
 import com.team2.backend.Models.Review;
 import com.team2.backend.Models.User;
 import com.team2.backend.Models.UserReviewInteraction;
@@ -23,22 +22,21 @@ public class ReviewModelTest {
         User user = new User();
         user.setUsername("testUser");
 
-        Game game = new Game();
-
         String content = "Great review!";
         int likes = 10;
         int dislikes = 2;
+        int appid = 12345;
 
         Review review = new Review();
         review.setUser(user);
-        review.setGame(game);
+        review.setAppId(appid);
         review.setContent(content);
         review.setLikes(likes);
         review.setDislikes(dislikes);
 
         assertNotNull(review);
         assertEquals(user, review.getUser());
-        assertEquals(game, review.getGame());
+        assertEquals(appid, review.getAppId());
         assertEquals(content, review.getContent());
         assertEquals(likes, review.getLikes());
         assertEquals(dislikes, review.getDislikes());
@@ -59,10 +57,9 @@ public class ReviewModelTest {
     void testAddUserReviewInteraction() {
         User user = new User();
         user.setUsername("testUser");
+        int appid = 12345;
 
-        Game game = new Game();
-
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
@@ -86,18 +83,18 @@ public class ReviewModelTest {
         User user = new User();
         user.setUsername("testUser");
 
-        Game game = new Game();
+        int appid = 12345;
 
         String content = "Amazing game!";
         int likes = 0;
         int dislikes = 0;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO(content,game);
+        NewReviewDTO newReviewDTO = new NewReviewDTO(content,appid);
         Review review = new Review(user, newReviewDTO);
 
         assertNotNull(review);
         assertEquals(user, review.getUser());
-        assertEquals(game, review.getGame());
+        assertEquals(appid, review.getAppId());
         assertEquals(content, review.getContent());
         assertEquals(likes, review.getLikes());
         assertEquals(dislikes, review.getDislikes());
@@ -108,19 +105,19 @@ public class ReviewModelTest {
         User user = new User();
         user.setUsername("testUser");
 
-        Game game = new Game();
+        int appid = 12345;
 
         Review review = new Review();
         review.setId(1L);
         review.setUser(user);
-        review.setGame(game);
+        review.setAppId(12345);
         review.setContent("Test review content");
         review.setLikes(5);
         review.setDislikes(0);
 
         assertEquals(1L, review.getId());
         assertEquals(user, review.getUser());
-        assertEquals(game, review.getGame());
+        assertEquals(appid, review.getAppId());
         assertEquals("Test review content", review.getContent());
         assertEquals(5, review.getLikes());
         assertEquals(0, review.getDislikes());
@@ -131,9 +128,9 @@ public class ReviewModelTest {
         User user = new User();
         user.setUsername("testUser");
 
-        Game game = new Game();
+        int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interactionLike = new UserReviewInteraction();
@@ -165,9 +162,9 @@ public class ReviewModelTest {
         User user = new User();
         user.setUsername("testUser");
 
-        Game game = new Game();
+        int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",game);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteractionDTO dto = new UserReviewInteractionDTO();

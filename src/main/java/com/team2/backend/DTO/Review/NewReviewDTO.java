@@ -15,5 +15,5 @@ public class NewReviewDTO {
     @NotEmpty(message = "Description cannot be empty")
     @Size(max = 500, message = "Description must be less than 500 characters")
     private String content;
-    private Game game;
+    private Integer appid;
 }
