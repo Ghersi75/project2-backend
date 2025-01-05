@@ -36,7 +36,7 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private int appId;
+    private int appid;
 
     @Column(nullable = false)
     private String content;
@@ -53,7 +53,7 @@ public class Review {
     
     public Review(User user, NewReviewDTO newReviewDTO){
         this.user = user;
-        this.appId = newReviewDTO.getAppid();
+        this.appid = newReviewDTO.getAppid();
         this.content = newReviewDTO.getContent();
         this.likes = 0;
         this.dislikes = 0;

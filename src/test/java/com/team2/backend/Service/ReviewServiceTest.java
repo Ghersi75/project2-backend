@@ -57,7 +57,7 @@ public class ReviewServiceTest {
         review = new Review();
         review.setId(1L);
         review.setUser(user);
-        review.setAppId(12345);
+        review.setAppid(12345);
 
         newReviewDTO = new NewReviewDTO();
         newReviewDTO.setAppid(12345);
@@ -91,7 +91,7 @@ public class ReviewServiceTest {
         assertNotNull(result, "Review should not be null");
         assertEquals("Great game!", result.getContent(), "Review content should match");
         assertEquals(user, result.getUser(), "Review should be associated with the correct user");
-        assertEquals(12345, result.getAppId(), "Review should be linked to the correct game");
+        assertEquals(12345, result.getAppid(), "Review should be linked to the correct game");
         verify(userRepository, times(1)).findById(1L);
         verify(reviewRepository, times(1)).save(any(Review.class));
     }

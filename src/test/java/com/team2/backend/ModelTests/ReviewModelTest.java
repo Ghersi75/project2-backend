@@ -29,14 +29,14 @@ public class ReviewModelTest {
 
         Review review = new Review();
         review.setUser(user);
-        review.setAppId(appid);
+        review.setAppid(appid);
         review.setContent(content);
         review.setLikes(likes);
         review.setDislikes(dislikes);
 
         assertNotNull(review);
         assertEquals(user, review.getUser());
-        assertEquals(appid, review.getAppId());
+        assertEquals(appid, review.getAppid());
         assertEquals(content, review.getContent());
         assertEquals(likes, review.getLikes());
         assertEquals(dislikes, review.getDislikes());
@@ -94,7 +94,7 @@ public class ReviewModelTest {
 
         assertNotNull(review);
         assertEquals(user, review.getUser());
-        assertEquals(appid, review.getAppId());
+        assertEquals(appid, review.getAppid());
         assertEquals(content, review.getContent());
         assertEquals(likes, review.getLikes());
         assertEquals(dislikes, review.getDislikes());
@@ -110,14 +110,14 @@ public class ReviewModelTest {
         Review review = new Review();
         review.setId(1L);
         review.setUser(user);
-        review.setAppId(12345);
+        review.setAppid(12345);
         review.setContent("Test review content");
         review.setLikes(5);
         review.setDislikes(0);
 
         assertEquals(1L, review.getId());
         assertEquals(user, review.getUser());
-        assertEquals(appid, review.getAppId());
+        assertEquals(appid, review.getAppid());
         assertEquals("Test review content", review.getContent());
         assertEquals(5, review.getLikes());
         assertEquals(0, review.getDislikes());
