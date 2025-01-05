@@ -1,14 +1,9 @@
 name: Docker Image CI
 
 on:
-  workflow_run:
-    workflows:
-      - "Maven Package"
+  push:
     branches:
-      - jenkins-testing
-    types:
-      - completed
-
+      - test
 jobs:
   deploy:
     runs-on: ubuntu-latest
