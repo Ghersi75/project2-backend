@@ -7,7 +7,10 @@ on:
     paths-ignore:
       # Don't run if .github folder is the only thing changed
       # No point rebuilding a spring boot app if all thats changed is github workflow files
-      ".github/**"
+      - ".github/**"
+    paths:
+      # Only run when src/ folders are changed
+      - "src/**"
 
 jobs:
   test_package_build:
