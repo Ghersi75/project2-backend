@@ -33,7 +33,7 @@ services:
     volumes:
       - ./:/app
       - ./mvn-cache/:/root/.m2
-    command: [ "sh", "-c", "mvn clean spring-boot:run" ]
+    command: [ "sh", "-c", "mvn clean spring-boot:run -Pdocker-local" ]
 
 
   zookeeper:
