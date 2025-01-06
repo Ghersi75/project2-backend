@@ -1,9 +1,10 @@
-package com.team2.backend.DTO.User;
+package com.team2.backend.dto.user;
+
+import com.team2.backend.enums.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.team2.backend.Enums.UserRole;
 
 @Data
 @AllArgsConstructor

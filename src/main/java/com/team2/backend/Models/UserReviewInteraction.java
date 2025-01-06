@@ -1,8 +1,8 @@
-package com.team2.backend.Models;
+package com.team2.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
-import com.team2.backend.Enums.ReviewInteraction;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
+import com.team2.backend.enums.ReviewInteraction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,10 +29,7 @@ public class UserReviewInteraction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private Long userid;
 
     @ManyToOne
     @JsonBackReference
@@ -45,7 +42,7 @@ public class UserReviewInteraction {
     
 
     public UserReviewInteraction(UserReviewInteractionDTO userreview){
-        this.user = userreview.getUser();
+        this.userid = userreview.getUserid();
         this.review = userreview.getReview();
         this.interaction = userreview.getInteraction();
     }

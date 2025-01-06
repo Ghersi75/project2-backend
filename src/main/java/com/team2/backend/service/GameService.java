@@ -1,14 +1,14 @@
-package com.team2.backend.Service;
+package com.team2.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.team2.backend.Repository.UserRepository;
-import com.team2.backend.Models.User;
-import com.team2.backend.Exceptions.GameNotFoundException;
-import com.team2.backend.Exceptions.InvalidFavoriteGameException;
-import com.team2.backend.Exceptions.UserNotFoundException;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.exceptions.GameNotFoundException;
+import com.team2.backend.exceptions.InvalidFavoriteGameException;
+import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.models.User;
 
 import java.util.*;
 

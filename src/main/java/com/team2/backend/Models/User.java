@@ -1,4 +1,4 @@
-package com.team2.backend.Models;
+package com.team2.backend.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.enums.UserRole;
 
 @Table(name = "users")
 @Data
@@ -50,9 +53,6 @@ public class User {
     @Column(name = "favorite_games")
     private List<Integer> favoriteGames = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<UserReviewInteraction> reviewInteractions;
 
     public User(UserSignUpDTO userInfo) {
         this.username = userInfo.getUsername();

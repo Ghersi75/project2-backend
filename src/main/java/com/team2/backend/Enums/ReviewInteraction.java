@@ -1,6 +1,6 @@
-package com.team2.backend.Enums;
+package com.team2.backend.enums;
 
-import com.team2.backend.Exceptions.*;
+import com.team2.backend.exceptions.*;
 
 public enum ReviewInteraction {
     LIKE("LIKE"),

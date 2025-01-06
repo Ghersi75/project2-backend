@@ -1,4 +1,4 @@
-package com.team2.backend.Service;
+package com.team2.backend.service;
 
 import java.util.Optional;
 
@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
-import com.team2.backend.DTO.User.ChangePasswordDTO;
-import com.team2.backend.DTO.User.ChangeUsernameDTO;
-import com.team2.backend.Exceptions.InvalidCredentialsException;
-import com.team2.backend.Exceptions.UserAlreadyExistsException;
-import com.team2.backend.Models.User;
-import com.team2.backend.Repository.UserRepository;
+import com.team2.backend.dto.user.ChangeDisplayNameDTO;
+import com.team2.backend.dto.user.ChangePasswordDTO;
+import com.team2.backend.dto.user.ChangeUsernameDTO;
+import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.exceptions.UserAlreadyExistsException;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.UserRepository;
 import com.team2.backend.util.JwtUtil;
 
 @Service

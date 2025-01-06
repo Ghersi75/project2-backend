@@ -1,4 +1,4 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.team2.backend.Service.GameService;
+import com.team2.backend.service.GameService;
 
 import java.util.*;
 

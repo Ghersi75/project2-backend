@@ -1,7 +1,6 @@
-package com.team2.backend.Service;
+package com.team2.backend.servicetests;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,11 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.team2.backend.Exceptions.GameNotFoundException;
-import com.team2.backend.Exceptions.InvalidFavoriteGameException;
-import com.team2.backend.Exceptions.UserNotFoundException;
-import com.team2.backend.Models.User;
-import com.team2.backend.Repository.UserRepository;
+import com.team2.backend.exceptions.InvalidFavoriteGameException;
+import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.service.GameService;
 
 import java.util.*;
 
@@ -41,9 +40,9 @@ public class GameServiceTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        gameService.addFavoriteGame(userId, 12345);
+        gameService.addFavoriteGame(userId, favoriteGame);
 
-        assertTrue(user.getFavoriteGames().contains(12345));
+        assertTrue(user.getFavoriteGames().contains(favoriteGame));
         verify(userRepository, times(1)).save(user);
     }
 
@@ -58,7 +57,7 @@ public class GameServiceTest {
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        gameService.addFavoriteGame(userId, 12345);
+        gameService.addFavoriteGame(userId, favoriteGame);
 
         assertEquals(1, user.getFavoriteGames().size());
     }

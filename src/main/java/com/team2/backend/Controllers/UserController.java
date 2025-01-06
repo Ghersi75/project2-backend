@@ -1,4 +1,4 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -6,20 +6,21 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
-import com.team2.backend.DTO.User.ChangePasswordDTO;
-import com.team2.backend.DTO.User.ChangeUsernameDTO;
-import com.team2.backend.DTO.User.UserLoginDTO;
-import com.team2.backend.DTO.User.UserResponseDTO;
-import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Enums.UserRole;
-import com.team2.backend.Models.User;
-import com.team2.backend.Service.UserService;
+import com.team2.backend.dto.user.ChangeDisplayNameDTO;
+import com.team2.backend.dto.user.ChangePasswordDTO;
+import com.team2.backend.dto.user.ChangeUsernameDTO;
+import com.team2.backend.dto.user.UserLoginDTO;
+import com.team2.backend.dto.user.UserResponseDTO;
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.enums.UserRole;
+import com.team2.backend.models.User;
+import com.team2.backend.service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -101,7 +102,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/username")
+        @PutMapping("/username")
         public ResponseEntity<String> changeUsername(@RequestParam Long userId,
                         @Valid @RequestBody ChangeUsernameDTO changeUsernameDTO) {
                 userService.changeUsername(userId, changeUsernameDTO);
@@ -109,7 +110,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/password")
+        @PutMapping("/password")
         public ResponseEntity<String> changePassword(@RequestParam Long userId,
                         @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
                 userService.changePassword(userId, changePasswordDTO);
@@ -117,7 +118,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/displayname")
+        @PutMapping("/displayname")
         public ResponseEntity<String> changeDisplayName(@RequestParam Long userId,
                         @RequestBody ChangeDisplayNameDTO nameDTO) {
                 userService.changeDisplayName(userId, nameDTO);

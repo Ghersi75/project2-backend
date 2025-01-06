@@ -1,4 +1,4 @@
-package com.team2.backend.Config;
+package com.team2.backend.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

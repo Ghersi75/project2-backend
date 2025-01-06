@@ -1,4 +1,4 @@
-package com.team2.backend.EnumTests;
+package com.team2.backend.enumtests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.team2.backend.Enums.UserRole;
-import com.team2.backend.Exceptions.InvalidEnumValueException;
+import com.team2.backend.enums.UserRole;
+import com.team2.backend.exceptions.InvalidEnumValueException;
 
 public class UserRoleEnumTest {
     @Test
