@@ -57,6 +57,8 @@ public class ReviewModelTest {
     void testAddUserReviewInteraction() {
         User user = new User();
         user.setUsername("testUser");
+        user.setId(1L);
+
         int appid = 12345;
 
         NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
@@ -64,7 +66,7 @@ public class ReviewModelTest {
 
         UserReviewInteraction interaction = new UserReviewInteraction();
         interaction.setReview(review);
-        interaction.setUser(user);
+        interaction.setUserid(1L);
         interaction.setInteraction(ReviewInteraction.LIKE); // Set interaction to LIKE
 
         List<UserReviewInteraction> interactions = new ArrayList<>();
@@ -75,7 +77,7 @@ public class ReviewModelTest {
         assertNotNull(review.getUserInteractions());
         assertEquals(1, review.getUserInteractions().size());
         assertEquals(ReviewInteraction.LIKE, review.getUserInteractions().get(0).getInteraction());
-        assertEquals(user, review.getUserInteractions().get(0).getUser());
+        assertEquals(user.getId(), review.getUserInteractions().get(0).getUserid());
     }
 
     @Test
@@ -127,6 +129,7 @@ public class ReviewModelTest {
     void testReviewInteractionEnum() {
         User user = new User();
         user.setUsername("testUser");
+        user.setId(1L);
 
         int appid = 12345;
 
@@ -135,12 +138,12 @@ public class ReviewModelTest {
 
         UserReviewInteraction interactionLike = new UserReviewInteraction();
         interactionLike.setReview(review);
-        interactionLike.setUser(user);
+        interactionLike.setUserid(1L);
         interactionLike.setInteraction(ReviewInteraction.LIKE);
 
         UserReviewInteraction interactionDislike = new UserReviewInteraction();
         interactionDislike.setReview(review);
-        interactionDislike.setUser(user);
+        interactionDislike.setUserid(1L);
         interactionDislike.setInteraction(ReviewInteraction.DISLIKE);
 
         assertEquals(ReviewInteraction.LIKE, interactionLike.getInteraction());
@@ -161,6 +164,7 @@ public class ReviewModelTest {
     void testUserReviewInteractionWithDTO() {
         User user = new User();
         user.setUsername("testUser");
+        user.setId(1L);
 
         int appid = 12345;
 
@@ -168,14 +172,14 @@ public class ReviewModelTest {
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteractionDTO dto = new UserReviewInteractionDTO();
-        dto.setUser(user);
+        dto.setUserid(1L);
         dto.setReview(review);
         dto.setInteraction(ReviewInteraction.LIKE);
 
         UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto);
 
         assertNotNull(userReviewInteraction);
-        assertEquals(user, userReviewInteraction.getUser());
+        assertEquals(user.getId(), userReviewInteraction.getUserid());
         assertEquals(review, userReviewInteraction.getReview());
         assertEquals(ReviewInteraction.LIKE, userReviewInteraction.getInteraction());
     }

@@ -52,9 +52,6 @@ public class User {
 
     private List<Integer> favoriteGames = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<UserReviewInteraction> reviewInteractions;
 
     public User(UserSignUpDTO userInfo) {
         this.username = userInfo.getUsername();

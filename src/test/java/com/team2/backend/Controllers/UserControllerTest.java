@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
+import com.team2.backend.DTO.User.ChangePasswordDTO;
+import com.team2.backend.DTO.User.ChangeUsernameDTO;
 import com.team2.backend.DTO.User.UserLoginDTO;
 import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Exceptions.InvalidCredentialsException;
@@ -26,7 +32,7 @@ import com.team2.backend.Models.User;
 import com.team2.backend.Service.UserService;
 import com.team2.backend.util.JwtUtil;
 
-@AutoConfigureMockMvc(addFilters = false) // Disable Spring Security
+@AutoConfigureMockMvc(addFilters = false) 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -42,7 +48,7 @@ public class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    private ObjectMapper objectMapper = new ObjectMapper(); // Initialize ObjectMapper here
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void testRegisterUser_Success() throws Exception {
@@ -51,11 +57,9 @@ public class UserControllerTest {
         request.setUsername("testuser");
         request.setPassword("password123");
 
-        // Mock behavior of UserService
         String mockToken = "mock-token";
         when(userService.createUser(ArgumentMatchers.any(User.class))).thenReturn(mockToken);
 
-        // Perform POST request and verify response
         this.mockMvc.perform(post("/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(request)))
@@ -69,13 +73,11 @@ public class UserControllerTest {
 
     @Test
     void testRegisterUser_BadRequest() throws Exception {
-        // Mock input with invalid data
         UserSignUpDTO request = new UserSignUpDTO();
         request.setDisplayName("Test User");
-        request.setUsername(""); // Empty username
+        request.setUsername(""); 
         request.setPassword("password123");
 
-        // Perform POST request and verify response
         this.mockMvc.perform(post("/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -85,16 +87,13 @@ public class UserControllerTest {
 
     @Test
     void testLoginUser_Success() throws Exception {
-        // Mock the request DTO
         UserLoginDTO loginRequestDTO = new UserLoginDTO();
         loginRequestDTO.setUsername("testUser");
         loginRequestDTO.setPassword("testPassword");
 
-        // Mock the service call
         String mockToken = "mock-token";
         when(userService.authenticateUser("testUser", "testPassword")).thenReturn(mockToken);
 
-        // Perform the request and verify the response
         this.mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
@@ -108,17 +107,14 @@ public class UserControllerTest {
 
     @Test
     void testLoginUser_BadRequest() throws Exception {
-        // Mock the request DTO
         UserLoginDTO loginRequestDTO = new UserLoginDTO();
         loginRequestDTO.setUsername("testUser");
         loginRequestDTO.setPassword("testPassword");
 
-        // Mock the service call
         String mockToken = "mock-token";
         when(userService.authenticateUser("testUser", "testPassword"))
                 .thenThrow(new InvalidCredentialsException("Invalid username"));
 
-        // Perform the request and verify the response
         this.mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(loginRequestDTO)))
@@ -126,4 +122,87 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("Invalid username"));
     }
 
+      @Test
+      void changeUsername_ShouldReturnOkStatus() throws Exception {
+          Long userId = 1L;
+          ChangeUsernameDTO changeUsernameDTO = new ChangeUsernameDTO("newUsername", "password");
+  
+          when(userService.changeUsername(userId, changeUsernameDTO)).thenReturn(null);  
+
+          this.mockMvc.perform(put("/user/username")
+                  .param("userId", String.valueOf(userId))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(new ObjectMapper().writeValueAsString(changeUsernameDTO)))
+                  .andExpect(status().isOk())
+                  .andExpect(jsonPath("$.message").value("Username changed successfully."));
+      }
+  
+      @Test
+      void changeUsername_ShouldReturnBadRequest_WhenInvalidData() throws Exception {
+          Long userId = 1L;
+          ChangeUsernameDTO changeUsernameDTO = new ChangeUsernameDTO("", "password");  // Invalid username
+  
+          this.mockMvc.perform(put("/user/username")
+                  .param("userId", String.valueOf(userId))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(new ObjectMapper().writeValueAsString(changeUsernameDTO)))
+                  .andExpect(status().isBadRequest())
+                  .andExpect(jsonPath("$.message").value("Username cannot be blank"));
+      }
+
+      @Test
+      void changePassword_ShouldReturnOkStatus() throws Exception {
+          Long userId = 1L;
+          ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO("oldPassword", "newPassword", "newPassword");
+  
+          when(userService.changePassword(userId, changePasswordDTO)).thenReturn(null);  
+
+          this.mockMvc.perform(put("/user/password")
+                  .param("userId", String.valueOf(userId))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(new ObjectMapper().writeValueAsString(changePasswordDTO)))
+                  .andExpect(status().isOk())
+                  .andExpect(jsonPath("$.message").value("Password changed successfully."));
+      }
+  
+      @Test
+      void changePassword_ShouldReturnBadRequest_WhenPasswordsDoNotMatch() throws Exception {
+          Long userId = 1L;
+          ChangePasswordDTO changePasswordDTO = new ChangePasswordDTO("oldPassword", "newPassword", "differentPassword");  // Passwords do not match
+  
+          this.mockMvc.perform(put("/user/password")
+                  .param("userId", String.valueOf(userId))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(new ObjectMapper().writeValueAsString(changePasswordDTO)))
+                  .andExpect(status().isBadRequest())
+                  .andExpect(jsonPath("$.message").value("Passwords do not match"));
+      }
+  
+      @Test
+      void changeDisplayName_ShouldReturnOkStatus() throws Exception {
+          Long userId = 1L;
+          ChangeDisplayNameDTO changeDisplayNameDTO = new ChangeDisplayNameDTO("newDisplayName", "password");
+  
+          when(userService.changeDisplayName(userId, changeDisplayNameDTO)).thenReturn(null);  // Assuming void method
+          
+          this.mockMvc.perform(put("/user/displayname")
+                  .param("userId", String.valueOf(userId))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(new ObjectMapper().writeValueAsString(changeDisplayNameDTO)))
+                  .andExpect(status().isOk())
+                  .andExpect(jsonPath("$.message").value("Display name changed successfully to: newDisplayName"));
+      }
+  
+      @Test
+      void changeDisplayName_ShouldReturnBadRequest_WhenInvalidData() throws Exception {
+          Long userId = 1L;
+          ChangeDisplayNameDTO changeDisplayNameDTO = new ChangeDisplayNameDTO("", "password");  // Invalid display name
+
+          this.mockMvc.perform(put("/user/displayname")
+                  .param("userId", String.valueOf(userId))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(new ObjectMapper().writeValueAsString(changeDisplayNameDTO)))
+                  .andExpect(status().isBadRequest())
+                  .andExpect(jsonPath("$.message").value("Display name cannot be blank"));
+      }
 }

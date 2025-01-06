@@ -6,6 +6,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -101,7 +102,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/username")
+        @PutMapping("/username")
         public ResponseEntity<String> changeUsername(@RequestParam Long userId,
                         @Valid @RequestBody ChangeUsernameDTO changeUsernameDTO) {
                 userService.changeUsername(userId, changeUsernameDTO);
@@ -109,7 +110,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/password")
+        @PutMapping("/password")
         public ResponseEntity<String> changePassword(@RequestParam Long userId,
                         @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
                 userService.changePassword(userId, changePasswordDTO);
@@ -117,7 +118,7 @@ public class UserController {
 
         }
 
-        @PostMapping("/displayname")
+        @PutMapping("/displayname")
         public ResponseEntity<String> changeDisplayName(@RequestParam Long userId,
                         @RequestBody ChangeDisplayNameDTO nameDTO) {
                 userService.changeDisplayName(userId, nameDTO);

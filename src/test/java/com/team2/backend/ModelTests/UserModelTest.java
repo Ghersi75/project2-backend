@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import com.team2.backend.DTO.User.UserSignUpDTO;
 import com.team2.backend.Enums.UserRole;
 import com.team2.backend.Models.*;
-import com.team2.backend.Models.UserReviewInteraction;
 
 import java.util.List;
 
@@ -102,21 +101,4 @@ public class UserModelTest {
         assertTrue(user.getReviews().contains(review2));
     }
 
-    @Test
-    void testAddReviewInteractions() {
-        User user = new User();
-        UserReviewInteraction interaction1 = new UserReviewInteraction();
-        UserReviewInteraction interaction2 = new UserReviewInteraction();
-
-        List<UserReviewInteraction> interactions = new ArrayList<>();
-        interactions.add(interaction1);
-        interactions.add(interaction2);
-
-        user.setReviewInteractions(interactions);
-
-        assertNotNull(user.getReviewInteractions());
-        assertEquals(2, user.getReviewInteractions().size());
-        assertTrue(user.getReviewInteractions().contains(interaction1));
-        assertTrue(user.getReviewInteractions().contains(interaction2));
-    }
 }

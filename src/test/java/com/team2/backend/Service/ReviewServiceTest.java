@@ -41,10 +41,13 @@ public class ReviewServiceTest {
     private ReviewService reviewService;
 
     private User user;
+    private User user2;
     private Review review;
     private NewReviewDTO newReviewDTO;
     private UpdateReviewDTO updateReviewDTO;
     private UserReviewInteractionDTO interactionDTO;
+    private UserReviewInteractionDTO interactionDTO2;
+    private UserReviewInteraction interaction;
 
     @BeforeEach
     void setUp() {
@@ -53,6 +56,10 @@ public class ReviewServiceTest {
         user = new User();
         user.setId(1L);
         user.setUserRole(UserRole.CONTRIBUTOR);
+
+        user2 = new User();
+        user2.setId(2L);
+        user2.setUserRole(UserRole.CONTRIBUTOR);
 
         review = new Review();
         review.setId(1L);
@@ -70,6 +77,83 @@ public class ReviewServiceTest {
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
         interactionDTO.setReview(new Review());
         interactionDTO.getReview().setId(1L);
+
+        interactionDTO2 = new UserReviewInteractionDTO();
+        interactionDTO2.setInteraction(ReviewInteraction.LIKE);
+        interactionDTO2.setReview(review);
+        interactionDTO2.setUserid(2L);
+
+        interaction = new UserReviewInteraction(interactionDTO2);
+    }
+
+    @Test
+    void getAllReviewsByUser_ShouldReturnListOfReviews_WhenUserExists() {
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("testuser");
+
+        Review review1 = new Review();
+        review1.setContent("Review 1");
+        Review review2 = new Review();
+        review2.setContent("Review 2");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
+        when(reviewRepository.findByUser(mockUser)).thenReturn(Arrays.asList(review1, review2));
+
+        List<Review> reviews = reviewService.getAllReviewsByUser(1L);
+
+        assertNotNull(reviews);
+        assertEquals(2, reviews.size());
+        assertEquals("Review 1", reviews.get(0).getContent());
+        assertEquals("Review 2", reviews.get(1).getContent());
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(reviewRepository, times(1)).findByUser(mockUser);
+    }
+
+    @Test
+    void getAllReviewsByUser_ShouldThrowException_WhenUserNotFound() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> reviewService.getAllReviewsByUser(1L));
+
+        verify(userRepository, times(1)).findById(1L);
+        verifyNoInteractions(reviewRepository);
+    }
+
+    @Test
+    void getAllReviewsByGame_ShouldReturnListOfReviews_WhenGameHasReviews() {
+        Integer appid = 12345;
+
+        Review review1 = new Review();
+        review1.setContent("Great game!");
+        Review review2 = new Review();
+        review2.setContent("Not bad.");
+
+        when(reviewRepository.findByAppid(appid)).thenReturn(Arrays.asList(review1, review2));
+
+        List<Review> reviews = reviewService.getAllReviewsByGame(appid);
+
+        assertNotNull(reviews);
+        assertEquals(2, reviews.size());
+        assertEquals("Great game!", reviews.get(0).getContent());
+        assertEquals("Not bad.", reviews.get(1).getContent());
+
+        verify(reviewRepository, times(1)).findByAppid(appid);
+    }
+
+    @Test
+    void getAllReviewsByGame_ShouldReturnEmptyList_WhenNoReviewsForGame() {
+        Integer appid = 12345;
+
+        when(reviewRepository.findByAppid(appid)).thenReturn(Arrays.asList());
+
+        List<Review> reviews = reviewService.getAllReviewsByGame(appid);
+
+        assertNotNull(reviews);
+        assertTrue(reviews.isEmpty());
+
+        verify(reviewRepository, times(1)).findByAppid(appid);
     }
 
     @Test
@@ -125,7 +209,7 @@ public class ReviewServiceTest {
     void deleteReview_ShouldThrowException_WhenUserIsNotOwner() {
         User otherUser = new User();
         otherUser.setId(2L);
-        review.setUser(otherUser);  // The review is not owned by the current user
+        review.setUser(otherUser); 
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
@@ -169,7 +253,7 @@ public class ReviewServiceTest {
     void updateReview_ShouldThrowException_WhenUserIsNotOwner() {
         User otherUser = new User();
         otherUser.setId(2L);
-        review.setUser(otherUser);  // The review is not owned by the current user
+        review.setUser(otherUser); 
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
@@ -196,7 +280,7 @@ public class ReviewServiceTest {
     
         when(userRepository.findById(2L)).thenReturn(Optional.of(interactingUser));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-        when(userReviewInteractionRepository.findByUserAndReview(interactingUser, review))
+        when(userReviewInteractionRepository.findByUseridAndReview(interactingUser.getId(), review))
             .thenReturn(Optional.empty());
     
         reviewService.likeOrDislikeReview(2L, interactionDTO);
@@ -222,5 +306,77 @@ public class ReviewServiceTest {
         when(reviewRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> reviewService.likeOrDislikeReview(1L, interactionDTO));
+    }
+
+    @Test
+    void updateInteraction_ShouldUpdateLikeToDislike() {
+        Review review = new Review();
+        review.setLikes(1);
+        review.setDislikes(0);
+
+        UserReviewInteraction interaction = new UserReviewInteraction();
+        interaction.setReview(review);
+        interaction.setInteraction(ReviewInteraction.LIKE);
+
+        reviewService.updateInteraction(interaction, ReviewInteraction.DISLIKE);
+
+        assertEquals(0, review.getLikes(), "Likes should decrease by 1");
+        assertEquals(1, review.getDislikes(), "Dislikes should increase by 1");
+        assertEquals(ReviewInteraction.DISLIKE, interaction.getInteraction(), "Interaction should be updated to DISLIKE");
+
+        verify(userReviewInteractionRepository, times(1)).save(interaction);
+        verify(reviewRepository, times(1)).save(review);
+    }
+
+    @Test
+    void updateInteraction_ShouldUpdateDislikeToLike() {
+        Review review = new Review();
+        review.setLikes(0);
+        review.setDislikes(1);
+
+        UserReviewInteraction interaction = new UserReviewInteraction();
+        interaction.setReview(review);
+        interaction.setInteraction(ReviewInteraction.DISLIKE);
+
+        reviewService.updateInteraction(interaction, ReviewInteraction.LIKE);
+
+        assertEquals(1, review.getLikes(), "Likes should increase by 1");
+        assertEquals(0, review.getDislikes(), "Dislikes should decrease by 1");
+        assertEquals(ReviewInteraction.LIKE, interaction.getInteraction(), "Interaction should be updated to LIKE");
+
+        verify(userReviewInteractionRepository, times(1)).save(interaction);
+        verify(reviewRepository, times(1)).save(review);
+    }
+
+    @Test
+    void likeOrDislikeReview_ShouldRemoveInteraction_WhenSameInteractionExists() {
+        User interactingUser = new User();
+        interactingUser.setId(2L);
+    
+        Review review = new Review();
+        review.setId(1L);
+        review.setUser(user);
+        review.setLikes(1);
+        review.setDislikes(0);
+    
+        UserReviewInteraction existingInteraction = new UserReviewInteraction();
+        existingInteraction.setUserid(interactingUser.getId());
+        existingInteraction.setReview(review);
+        existingInteraction.setInteraction(ReviewInteraction.LIKE);
+    
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
+        interactionDTO.setInteraction(ReviewInteraction.LIKE);
+        interactionDTO.setReview(review);
+    
+        when(userRepository.findById(2L)).thenReturn(Optional.of(interactingUser));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        when(userReviewInteractionRepository.findByUseridAndReview(interactingUser.getId(), review))
+            .thenReturn(Optional.of(existingInteraction));
+    
+        reviewService.likeOrDislikeReview(2L, interactionDTO);
+    
+        assertEquals(0, review.getLikes(), "The review's like count should be decremented");
+        verify(userReviewInteractionRepository, times(1)).delete(existingInteraction);
+        verify(reviewRepository, times(1)).save(review);  
     }
 }

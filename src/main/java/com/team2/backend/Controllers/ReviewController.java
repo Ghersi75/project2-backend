@@ -73,7 +73,7 @@ public class ReviewController {
         return ResponseEntity.ok("Review disliked successfully");
     }
 
-    @GetMapping("/games/{gameId}")
+    @GetMapping("/games/{appid}")
     public ResponseEntity<List<Review>> getAllReviewsByGame(@PathVariable Integer appid) {
         List<Review> reviews = reviewService.getAllReviewsByGame(appid);
         return ResponseEntity.ok(reviews);
