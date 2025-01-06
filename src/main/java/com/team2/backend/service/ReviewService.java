@@ -24,8 +24,6 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    @Autowired
-    private KafkaProducerService kafkaProducerService;
 
     @Autowired
     private UserReviewInteractionRepository userReviewInteractionRepository;
