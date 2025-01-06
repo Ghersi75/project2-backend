@@ -1,0 +1,19 @@
+name: Backend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - jenkins-testing
+    paths:
+      # Only run when kafka compose file is changed
+      # No need to restart kafka each time something else is changed
+      - compose.kafka-testing.yml
+
+jobs:
+  kafka_build:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo
+        run: echo Nice
