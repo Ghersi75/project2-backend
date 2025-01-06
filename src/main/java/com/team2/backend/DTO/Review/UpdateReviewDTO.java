@@ -1,4 +1,4 @@
-package com.team2.backend.DTO.Review;
+package com.team2.backend.dto.Review;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;

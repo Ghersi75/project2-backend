@@ -1,4 +1,4 @@
-package com.team2.backend.Models;
+package com.team2.backend.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Enums.UserRole;
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.enums.UserRole;
 
 @Table(name = "users")
 @Data

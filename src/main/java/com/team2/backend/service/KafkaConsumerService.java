@@ -1,4 +1,4 @@
-package com.team2.backend.Service;
+package com.team2.backend.service;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

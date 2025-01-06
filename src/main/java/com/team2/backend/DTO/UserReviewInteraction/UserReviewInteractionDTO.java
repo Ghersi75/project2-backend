@@ -1,8 +1,8 @@
-package com.team2.backend.DTO.UserReviewInteraction;
+package com.team2.backend.dto.UserReviewInteraction;
 
-import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Models.Review;
-import com.team2.backend.Models.User;
+import com.team2.backend.enums.ReviewInteraction;
+import com.team2.backend.models.Review;
+import com.team2.backend.models.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

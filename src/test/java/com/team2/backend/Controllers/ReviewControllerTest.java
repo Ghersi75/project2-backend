@@ -1,4 +1,4 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,13 +22,14 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-import com.team2.backend.Service.*;
-import com.team2.backend.DTO.Review.*;
-import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
-import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Kafka.Producer.ReviewInteractionProducer;
-import com.team2.backend.Models.*;
-import com.team2.backend.Controllers.*;
+import com.team2.backend.controllers.*;
+import com.team2.backend.dto.Review.*;
+import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.enums.ReviewInteraction;
+import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
+import com.team2.backend.models.*;
+import com.team2.backend.service.ReviewService;
+import com.team2.backend.servicetests.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReviewControllerTest {

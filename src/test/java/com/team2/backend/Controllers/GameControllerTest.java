@@ -1,7 +1,9 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.backend.Service.GameService;
+import com.team2.backend.controllers.GameController;
+import com.team2.backend.service.GameService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

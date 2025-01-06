@@ -1,4 +1,4 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.team2.backend.Exceptions.InvalidCredentialsException;
-import com.team2.backend.Exceptions.UserAlreadyExistsException;
-import com.team2.backend.Exceptions.UserNotFoundException;
+import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.exceptions.UserAlreadyExistsException;
+import com.team2.backend.exceptions.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

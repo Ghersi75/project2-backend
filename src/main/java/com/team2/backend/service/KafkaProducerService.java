@@ -1,4 +1,4 @@
-package com.team2.backend.Service;
+package com.team2.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;

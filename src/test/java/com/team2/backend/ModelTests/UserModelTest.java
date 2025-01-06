@@ -1,4 +1,4 @@
-package com.team2.backend.ModelTests;
+package com.team2.backend.modeltests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Enums.UserRole;
-import com.team2.backend.Models.*;
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.enums.UserRole;
+import com.team2.backend.models.*;
 
 import java.util.List;
 

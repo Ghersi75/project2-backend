@@ -1,17 +1,18 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.team2.backend.Service.ReviewService;
-import com.team2.backend.DTO.Review.NewReviewDTO;
-import com.team2.backend.DTO.Review.UpdateReviewDTO;
-import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
-import com.team2.backend.Enums.ReviewInteraction;
-import com.team2.backend.Models.Review;
-import com.team2.backend.Kafka.Producer.ReviewInteractionProducer;
+import com.team2.backend.service.ReviewService;
+import com.team2.backend.dto.Review.NewReviewDTO;
+import com.team2.backend.dto.Review.UpdateReviewDTO;
+import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.enums.ReviewInteraction;
+import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
+import com.team2.backend.models.Review;
+
 import java.util.List;
 
 import jakarta.validation.Valid;

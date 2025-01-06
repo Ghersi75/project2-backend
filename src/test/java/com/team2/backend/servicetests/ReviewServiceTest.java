@@ -1,4 +1,4 @@
-package com.team2.backend.Service;
+package com.team2.backend.servicetests;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -10,19 +10,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.team2.backend.DTO.Review.NewReviewDTO;
-import com.team2.backend.DTO.Review.UpdateReviewDTO;
-import com.team2.backend.DTO.UserReviewInteraction.UserReviewInteractionDTO;
-import com.team2.backend.Exceptions.ResourceNotFoundException;
-import com.team2.backend.Exceptions.UserNotFoundException;
-import com.team2.backend.Exceptions.ForbiddenException;
-import com.team2.backend.Models.Review;
-import com.team2.backend.Models.User;
-import com.team2.backend.Models.UserReviewInteraction;
-import com.team2.backend.Repository.ReviewRepository;
-import com.team2.backend.Repository.UserRepository;
-import com.team2.backend.Repository.UserReviewInteractionRepository;
-import com.team2.backend.Enums.*;
+import com.team2.backend.dto.Review.NewReviewDTO;
+import com.team2.backend.dto.Review.UpdateReviewDTO;
+import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.enums.*;
+import com.team2.backend.exceptions.ForbiddenException;
+import com.team2.backend.exceptions.ResourceNotFoundException;
+import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.models.Review;
+import com.team2.backend.models.User;
+import com.team2.backend.models.UserReviewInteraction;
+import com.team2.backend.repository.ReviewRepository;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.repository.UserReviewInteractionRepository;
+import com.team2.backend.service.ReviewService;
 
 import java.util.*;
 

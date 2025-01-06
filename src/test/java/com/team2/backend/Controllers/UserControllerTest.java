@@ -1,4 +1,4 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -22,14 +22,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
-import com.team2.backend.DTO.User.ChangePasswordDTO;
-import com.team2.backend.DTO.User.ChangeUsernameDTO;
-import com.team2.backend.DTO.User.UserLoginDTO;
-import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Exceptions.InvalidCredentialsException;
-import com.team2.backend.Models.User;
-import com.team2.backend.Service.UserService;
+import com.team2.backend.controllers.UserController;
+import com.team2.backend.dto.user.ChangeDisplayNameDTO;
+import com.team2.backend.dto.user.ChangePasswordDTO;
+import com.team2.backend.dto.user.ChangeUsernameDTO;
+import com.team2.backend.dto.user.UserLoginDTO;
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.models.User;
+import com.team2.backend.service.UserService;
 import com.team2.backend.util.JwtUtil;
 
 @AutoConfigureMockMvc(addFilters = false) 

@@ -1,4 +1,4 @@
-package com.team2.backend.DTO.User;
+package com.team2.backend.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

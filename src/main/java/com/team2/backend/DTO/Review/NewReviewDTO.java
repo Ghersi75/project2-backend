@@ -1,12 +1,12 @@
-package com.team2.backend.DTO.Review;
+package com.team2.backend.dto.Review;
+
+import com.team2.backend.models.*;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import com.team2.backend.Models.*;
 
 @Data
 @AllArgsConstructor

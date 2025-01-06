@@ -1,4 +1,4 @@
-package com.team2.backend.Service;
+package com.team2.backend.servicetests;
 
 import java.util.Optional;
 
@@ -19,14 +19,15 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.team2.backend.DTO.User.ChangeDisplayNameDTO;
-import com.team2.backend.DTO.User.ChangePasswordDTO;
-import com.team2.backend.DTO.User.ChangeUsernameDTO;
-import com.team2.backend.Enums.UserRole;
-import com.team2.backend.Exceptions.InvalidCredentialsException;
-import com.team2.backend.Exceptions.UserAlreadyExistsException;
-import com.team2.backend.Models.User;
-import com.team2.backend.Repository.UserRepository;
+import com.team2.backend.dto.user.ChangeDisplayNameDTO;
+import com.team2.backend.dto.user.ChangePasswordDTO;
+import com.team2.backend.dto.user.ChangeUsernameDTO;
+import com.team2.backend.enums.UserRole;
+import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.exceptions.UserAlreadyExistsException;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.service.UserService;
 import com.team2.backend.util.JwtUtil;
 
 public class UserServiceTest {

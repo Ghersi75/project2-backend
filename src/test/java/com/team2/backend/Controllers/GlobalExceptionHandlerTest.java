@@ -1,4 +1,4 @@
-package com.team2.backend.Controllers;
+package com.team2.backend.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,10 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.team2.backend.Exceptions.InvalidCredentialsException;
-import com.team2.backend.Exceptions.Status401Exception;
-
-import com.team2.backend.Controllers.*;
+import com.team2.backend.controllers.*;
+import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.exceptions.Status401Exception;
 
 public class GlobalExceptionHandlerTest {
     // @Test
