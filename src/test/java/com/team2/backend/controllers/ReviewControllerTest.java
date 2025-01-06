@@ -122,7 +122,7 @@ public class ReviewControllerTest {
     @Test
     void likeReview_ShouldReturnSuccessMessage() throws Exception {
         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
-        interactionDTO.setReview(new Review());
+        interactionDTO.setReviewid(1L);
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
 
         doNothing().when(reviewService).likeOrDislikeReview(anyLong(), any(UserReviewInteractionDTO.class));
@@ -138,27 +138,23 @@ public class ReviewControllerTest {
 
     @Test
     void dislikeReview_ShouldReturnSuccessMessage() throws Exception {
-        // Arrange: Create UserReviewInteractionDTO
         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
-        interactionDTO.setReview(new Review());
+        interactionDTO.setReviewid(1L);
         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
 
         doNothing().when(reviewService).likeOrDislikeReview(anyLong(), any(UserReviewInteractionDTO.class));
 
-        // Act & Assert: Perform the POST request to dislike the review and assert the response
         mockMvc.perform(post("/reviews/dislike?userId=1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(interactionDTO)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Review disliked successfully"));
 
-        // Verify the interaction producer was called
         verify(reviewInteractionProducer, times(1)).sendReviewInteraction(any(UserReviewInteractionDTO.class));
     }
 
     @Test
     void getAllReviewsByGame_ShouldReturnReviewsList() throws Exception {
-        // Arrange: Create mock reviews
         Review review1 = new Review();
         review1.setId(1L);
         review1.setContent("First review for game");
@@ -171,7 +167,6 @@ public class ReviewControllerTest {
 
         when(reviewService.getAllReviewsByGame(anyInt())).thenReturn(mockReviews);
 
-        // Act & Assert: Perform the GET request and validate the response
         mockMvc.perform(get("/reviews/games/{gameId}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].content").value("First review for game"))

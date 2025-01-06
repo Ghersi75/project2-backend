@@ -11,5 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface UserReviewInteractionRepository extends JpaRepository<UserReviewInteraction,Long> {
-    Optional<UserReviewInteraction> findByUseridAndReview(Long userid, Review review);
+    Optional<UserReviewInteraction> findByUseridAndReviewid(Long userid, Long reviewid);
 } 

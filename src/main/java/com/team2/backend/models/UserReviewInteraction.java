@@ -31,10 +31,7 @@ public class UserReviewInteraction {
 
     private Long userid;
 
-    @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "review_id", nullable = false)
-    private Review review;
+    private Long reviewid;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,7 +40,7 @@ public class UserReviewInteraction {
 
     public UserReviewInteraction(UserReviewInteractionDTO userreview){
         this.userid = userreview.getUserid();
-        this.review = userreview.getReview();
+        this.reviewid = userreview.getReviewid();
         this.interaction = userreview.getInteraction();
     }
 }

@@ -16,7 +16,7 @@ import com.team2.backend.repository.ReviewRepository;
 import com.team2.backend.repository.UserRepository;
 import com.team2.backend.repository.UserReviewInteractionRepository;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ReviewService {
@@ -81,7 +81,7 @@ public class ReviewService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        Review review = reviewRepository.findById(interactionDTO.getReview().getId())
+        Review review = reviewRepository.findById(interactionDTO.getReviewid())
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
         if (review.getUser().equals(user)) {
@@ -89,7 +89,7 @@ public class ReviewService {
         }
 
         UserReviewInteraction existingInteraction = userReviewInteractionRepository
-                .findByUseridAndReview(userId, review)
+                .findByUseridAndReviewid(userId, review.getId())
                 .orElse(null);
 
         if (existingInteraction != null) {
@@ -105,7 +105,7 @@ public class ReviewService {
                 updateInteraction(existingInteraction, interactionDTO.getInteraction());
             }
         } else {
-            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(userId, review,
+            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(userId, review.getId(),
                     interactionDTO.getInteraction());
             UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO);
             userReviewInteractionRepository.save(newInteraction);
@@ -120,22 +120,26 @@ public class ReviewService {
     }
 
     public void updateInteraction(UserReviewInteraction interaction, ReviewInteraction newInteraction) {
-        Review review = interaction.getReview();
-
-        if (interaction.getInteraction() == ReviewInteraction.LIKE) {
-            review.setLikes(review.getLikes() - 1);
-        } else if (interaction.getInteraction() == ReviewInteraction.DISLIKE) {
-            review.setDislikes(review.getDislikes() - 1);
+        Optional<Review> newreview = reviewRepository.findById(interaction.getReviewid());
+        if(newreview.isPresent()){
+            Review review = newreview.get();
+            if (interaction.getInteraction() == ReviewInteraction.LIKE) {
+                review.setLikes(review.getLikes() - 1);
+            } else if (interaction.getInteraction() == ReviewInteraction.DISLIKE) {
+                review.setDislikes(review.getDislikes() - 1);
+            }
+    
+            if (newInteraction == ReviewInteraction.LIKE) {
+                review.setLikes(review.getLikes() + 1);
+            } else if (newInteraction == ReviewInteraction.DISLIKE) {
+                review.setDislikes(review.getDislikes() + 1);
+            }
+    
+            interaction.setInteraction(newInteraction);
+            userReviewInteractionRepository.save(interaction);
+            reviewRepository.save(review);
+        }else{
+            throw new ResourceNotFoundException("Invalid review");
         }
-
-        if (newInteraction == ReviewInteraction.LIKE) {
-            review.setLikes(review.getLikes() + 1);
-        } else if (newInteraction == ReviewInteraction.DISLIKE) {
-            review.setDislikes(review.getDislikes() + 1);
-        }
-
-        interaction.setInteraction(newInteraction);
-        userReviewInteractionRepository.save(interaction);
-        reviewRepository.save(review);
     }
 }

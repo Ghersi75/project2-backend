@@ -76,12 +76,11 @@ public class ReviewServiceTest {
 
         interactionDTO = new UserReviewInteractionDTO();
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
-        interactionDTO.setReview(new Review());
-        interactionDTO.getReview().setId(1L);
+        interactionDTO.setReviewid(1L);
 
         interactionDTO2 = new UserReviewInteractionDTO();
         interactionDTO2.setInteraction(ReviewInteraction.LIKE);
-        interactionDTO2.setReview(review);
+        interactionDTO2.setReviewid(review.getId());
         interactionDTO2.setUserid(2L);
 
         interaction = new UserReviewInteraction(interactionDTO2);
@@ -276,12 +275,12 @@ public class ReviewServiceTest {
         review.setLikes(0);
     
         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
-        interactionDTO.setReview(review);
+        interactionDTO.setReviewid(review.getId());
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
     
         when(userRepository.findById(2L)).thenReturn(Optional.of(interactingUser));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-        when(userReviewInteractionRepository.findByUseridAndReview(interactingUser.getId(), review))
+        when(userReviewInteractionRepository.findByUseridAndReviewid(interactingUser.getId(), review.getId()))
             .thenReturn(Optional.empty());
     
         reviewService.likeOrDislikeReview(2L, interactionDTO);
@@ -296,7 +295,8 @@ public class ReviewServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
 
-        interactionDTO.getReview().setUser(user); 
+        interactionDTO.setUserid(user.getId());; 
+        interactionDTO.setReviewid(review.getId());
 
         assertThrows(ForbiddenException.class, () -> reviewService.likeOrDislikeReview(1L, interactionDTO));
     }
@@ -316,7 +316,7 @@ public class ReviewServiceTest {
         review.setDislikes(0);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
-        interaction.setReview(review);
+        interaction.setReviewid(review.getId());
         interaction.setInteraction(ReviewInteraction.LIKE);
 
         reviewService.updateInteraction(interaction, ReviewInteraction.DISLIKE);
@@ -336,7 +336,7 @@ public class ReviewServiceTest {
         review.setDislikes(1);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
-        interaction.setReview(review);
+        interaction.setReviewid(review.getId());
         interaction.setInteraction(ReviewInteraction.DISLIKE);
 
         reviewService.updateInteraction(interaction, ReviewInteraction.LIKE);
@@ -362,16 +362,16 @@ public class ReviewServiceTest {
     
         UserReviewInteraction existingInteraction = new UserReviewInteraction();
         existingInteraction.setUserid(interactingUser.getId());
-        existingInteraction.setReview(review);
+        existingInteraction.setReviewid(review.getId());
         existingInteraction.setInteraction(ReviewInteraction.LIKE);
     
         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
-        interactionDTO.setReview(review);
+        interactionDTO.setReviewid(review.getId());
     
         when(userRepository.findById(2L)).thenReturn(Optional.of(interactingUser));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-        when(userReviewInteractionRepository.findByUseridAndReview(interactingUser.getId(), review))
+        when(userReviewInteractionRepository.findByUseridAndReviewid(interactingUser.getId(), review.getId()))
             .thenReturn(Optional.of(existingInteraction));
     
         reviewService.likeOrDislikeReview(2L, interactionDTO);
