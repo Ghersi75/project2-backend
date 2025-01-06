@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - jenkins-testing
+    paths-ignore:
+      # Don't run if .github folder is the only thing changed
+      # No point rebuilding a spring boot app if all thats changed is github workflow files
+      ".github/**"
 
 jobs:
   test_package_build:
