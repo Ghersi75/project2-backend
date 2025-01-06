@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
  * the business logic to the UserService layer.
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 @RequestMapping("/user")
 public class UserController {
 
@@ -63,7 +63,8 @@ public class UserController {
                 UserResponseDTO responseDTO = new UserResponseDTO("Register successful.", token);
 
                 ResponseCookie cookie = ResponseCookie.from("token", token)
-                                .httpOnly(true)
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by javascript
+                                .httpOnly(false)
                                 .secure(true) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
@@ -91,7 +92,8 @@ public class UserController {
                 UserResponseDTO responseDTO = new UserResponseDTO("Login successful.", token);
 
                 ResponseCookie cookie = ResponseCookie.from("token", token)
-                                .httpOnly(true)
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by javascript
+                                .httpOnly(false)
                                 .secure(true) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
