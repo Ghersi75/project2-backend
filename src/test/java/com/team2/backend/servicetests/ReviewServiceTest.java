@@ -10,9 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.team2.backend.dto.Review.NewReviewDTO;
-import com.team2.backend.dto.Review.UpdateReviewDTO;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.*;
 import com.team2.backend.exceptions.ForbiddenException;
 import com.team2.backend.exceptions.ResourceNotFoundException;

@@ -1,7 +1,7 @@
 package com.team2.backend.kafka.Producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

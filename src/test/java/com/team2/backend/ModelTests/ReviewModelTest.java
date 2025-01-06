@@ -1,7 +1,7 @@
 package com.team2.backend.modeltests;
 
-import com.team2.backend.dto.Review.NewReviewDTO;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.exceptions.InvalidEnumValueException;
 import com.team2.backend.models.Review;

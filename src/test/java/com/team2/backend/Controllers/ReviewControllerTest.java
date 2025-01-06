@@ -23,8 +23,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.team2.backend.controllers.*;
-import com.team2.backend.dto.Review.*;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.review.*;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
 import com.team2.backend.models.*;

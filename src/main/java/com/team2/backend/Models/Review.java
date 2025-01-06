@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.team2.backend.dto.Review.NewReviewDTO;
+import com.team2.backend.dto.review.NewReviewDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

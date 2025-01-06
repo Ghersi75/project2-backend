@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.team2.backend.service.ReviewService;
-import com.team2.backend.dto.Review.NewReviewDTO;
-import com.team2.backend.dto.Review.UpdateReviewDTO;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
 import com.team2.backend.models.Review;

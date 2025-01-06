@@ -1,4 +1,4 @@
-package com.team2.backend.dto.Review;
+package com.team2.backend.dto.review;
 
 import com.team2.backend.models.*;
 

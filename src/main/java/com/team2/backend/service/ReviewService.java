@@ -3,9 +3,9 @@ package com.team2.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.team2.backend.dto.Review.NewReviewDTO;
-import com.team2.backend.dto.Review.UpdateReviewDTO;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.enums.UserRole;
 import com.team2.backend.exceptions.*;

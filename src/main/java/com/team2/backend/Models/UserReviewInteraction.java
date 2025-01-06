@@ -1,7 +1,7 @@
 package com.team2.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 
 import jakarta.persistence.Column;

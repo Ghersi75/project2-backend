@@ -1,4 +1,4 @@
-package com.team2.backend.dto.UserReviewInteraction;
+package com.team2.backend.dto.userreviewinteraction;
 
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.models.Review;

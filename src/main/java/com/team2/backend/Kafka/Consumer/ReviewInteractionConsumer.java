@@ -1,7 +1,7 @@
 package com.team2.backend.kafka.Consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.backend.dto.UserReviewInteraction.UserReviewInteractionDTO;
+import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 
 import org.springframework.kafka.annotation.KafkaListener;
