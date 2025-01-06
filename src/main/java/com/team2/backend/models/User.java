@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.team2.backend.DTO.User.UserSignUpDTO;
-import com.team2.backend.Enums.UserRole;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
