@@ -26,7 +26,7 @@ services:
       KAFKA_LOG_CLEANER_ENABLE: true
       # Make logs roll quickly
       KAFKA_LOG_SEGMENT_MS: 100
-      # Tombstones older than 1s can be removed
+      # Tombstones older than 100ms can be removed
       KAFKA_LOG_CLEANER_DELETE_RETENTION_MS: 100
       # If 10% of the segment is dirty, attempt compaction
       KAFKA_LOG_CLEANER_MIN_CLEANABLE_RATIO: 0.1
