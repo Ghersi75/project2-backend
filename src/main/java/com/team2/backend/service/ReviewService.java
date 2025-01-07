@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
@@ -31,28 +32,28 @@ public class ReviewService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Review> getAllReviewsByUser(Long userId) {
-        User user = userRepository.findById(userId)
+    public List<Review> getAllReviewsByUser(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         return reviewRepository.findByUser(user);
     }
 
-    public List<Review> getAllReviewsByGame(Integer appid) {
-        return reviewRepository.findByAppid(appid);
+    public List<ReviewDTO> getAllReviewsByGame(Integer appid) {
+        return reviewRepository.findByAppid(appid).stream().map(old -> new ReviewDTO(old)).toList();
     }
 
-    public Review addReview(String username, NewReviewDTO reviewDTO) {
+    public ReviewDTO addReview(String username, NewReviewDTO reviewDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Review review = new Review(user, reviewDTO);
 
-        return reviewRepository.save(review);
+        return new ReviewDTO(reviewRepository.save(review));
     }
 
-    public void deleteReview(Long userId, Long reviewId) {
-        User user = userRepository.findById(userId)
+    public void deleteReview(String username, Long reviewId) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Review review = reviewRepository.findById(reviewId)
@@ -64,8 +65,8 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public Review updateReview(Long userId, Long reviewId, UpdateReviewDTO updateReviewDTO) {
-        User user = userRepository.findById(userId)
+    public Review updateReview(String username, Long reviewId, UpdateReviewDTO updateReviewDTO) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
@@ -77,8 +78,8 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
-    public void likeOrDislikeReview(Long userId, UserReviewInteractionDTO interactionDTO) {
-        User user = userRepository.findById(userId)
+    public void likeOrDislikeReview(String username, UserReviewInteractionDTO interactionDTO) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Review review = reviewRepository.findById(interactionDTO.getReviewid())
@@ -89,7 +90,7 @@ public class ReviewService {
         }
 
         UserReviewInteraction existingInteraction = userReviewInteractionRepository
-                .findByUseridAndReviewid(userId, review.getId())
+                .findByUserAndReviewid(user, review.getId())
                 .orElse(null);
 
         if (existingInteraction != null) {
@@ -105,9 +106,9 @@ public class ReviewService {
                 updateInteraction(existingInteraction, interactionDTO.getInteraction());
             }
         } else {
-            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(userId, review.getId(),
+            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(review.getId(),
                     interactionDTO.getInteraction());
-            UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO);
+            UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO, user);
             userReviewInteractionRepository.save(newInteraction);
 
             if (interactionDTO.getInteraction() == ReviewInteraction.LIKE) {

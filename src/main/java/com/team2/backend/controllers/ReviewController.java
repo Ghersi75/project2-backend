@@ -1,7 +1,6 @@
 package com.team2.backend.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.team2.backend.service.ReviewService;
 import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
@@ -30,43 +30,45 @@ public class ReviewController {
     @Autowired
     private ReviewInteractionProducer reviewInteractionProducer;
 
+    
     @PostMapping("/{username}")
-    public ResponseEntity<Review> addReview(@PathVariable String username, @RequestBody @Valid NewReviewDTO reviewDTO) {
+    public ReviewDTO addReview(@PathVariable String username, @RequestBody @Valid NewReviewDTO reviewDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // If jwt username and given username don't match, throw exception
         // Can't create leave a review for someone else regardless of permissions
-        if (auth.getName() != username) {
+        System.out.println(auth.getName());
+        System.out.println(username);
+        if (!auth.getName().equalsIgnoreCase(username)) {
             // TODO: Create custom exception if there's time
             throw new Status401Exception("Can't create a review for another user");
         }
 
-        Review newReview = reviewService.addReview(username, reviewDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newReview);
+        return reviewService.addReview(username, reviewDTO);
     }
 
-    @DeleteMapping("/{reviewId}/{userId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long userId, @PathVariable Long reviewId) {
-        reviewService.deleteReview(userId, reviewId);
+    @DeleteMapping("/{username}/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable String username, @PathVariable Long reviewId) {
+        reviewService.deleteReview(username, reviewId);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{userId}/{reviewId}")
-    public ResponseEntity<Review> updateReview(@PathVariable Long userId, @PathVariable Long reviewId,
+    @PutMapping("/{username}/{reviewId}")
+    public ResponseEntity<Review> updateReview(@PathVariable String username, @PathVariable Long reviewId,
             @RequestBody @Valid UpdateReviewDTO updateReviewDTO) {
-        Review updatedReview = reviewService.updateReview(userId, reviewId, updateReviewDTO);
+        Review updatedReview = reviewService.updateReview(username, reviewId, updateReviewDTO);
         return ResponseEntity.ok(updatedReview);
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<Review>> getAllReviewsByUser(@PathVariable Long userId) {
-        List<Review> reviews = reviewService.getAllReviewsByUser(userId);
+    @GetMapping("/{username}")
+    public ResponseEntity<List<Review>> getAllReviewsByUser(@PathVariable String username) {
+        List<Review> reviews = reviewService.getAllReviewsByUser(username);
         return ResponseEntity.ok(reviews);
     }
 
     @PostMapping("/like")
-    public ResponseEntity<String> likeReview(@RequestParam(name = "userId") Long userId,
+    public ResponseEntity<String> likeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
-        reviewService.likeOrDislikeReview(userId, interactionDTO);
+        reviewService.likeOrDislikeReview(username, interactionDTO);
 
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
         reviewInteractionProducer.sendReviewInteraction(interactionDTO);
@@ -74,10 +76,10 @@ public class ReviewController {
     }
 
     @PostMapping("/dislike")
-    public ResponseEntity<String> dislikeReview(@RequestParam(name = "userId") Long userId,
+    public ResponseEntity<String> dislikeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
 
-        reviewService.likeOrDislikeReview(userId, interactionDTO);
+        reviewService.likeOrDislikeReview(username, interactionDTO);
 
         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
         reviewInteractionProducer.sendReviewInteraction(interactionDTO);
@@ -85,9 +87,8 @@ public class ReviewController {
     }
 
     @GetMapping("/games/{appid}")
-    public ResponseEntity<List<Review>> getAllReviewsByGame(@PathVariable Integer appid) {
-        List<Review> reviews = reviewService.getAllReviewsByGame(appid);
-        return ResponseEntity.ok(reviews);
+    public List<ReviewDTO> getAllReviewsByGame(@PathVariable Integer appid) {
+        return reviewService.getAllReviewsByGame(appid);
     }
 
 }
