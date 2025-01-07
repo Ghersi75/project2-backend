@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.team2.backend.service.ReviewService;
+import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
@@ -30,7 +31,7 @@ public class ReviewController {
     @Autowired
     private ReviewInteractionProducer reviewInteractionProducer;
 
-    
+    // Done
     @PostMapping("/{username}")
     public ReviewDTO addReview(@PathVariable String username, @RequestBody @Valid NewReviewDTO reviewDTO) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -86,9 +87,11 @@ public class ReviewController {
         return ResponseEntity.ok("Review disliked successfully");
     }
 
+    // Done
     @GetMapping("/games/{appid}")
-    public List<ReviewDTO> getAllReviewsByGame(@PathVariable Integer appid) {
-        return reviewService.getAllReviewsByGame(appid);
+    public List<ReviewWithLikedDTO> getAllReviewsByGame(@PathVariable Integer appid) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return reviewService.getAllReviewsByGame(appid, auth.getName());
     }
 
 }

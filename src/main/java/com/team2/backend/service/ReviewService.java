@@ -3,6 +3,7 @@ package com.team2.backend.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
@@ -25,7 +26,6 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-
     @Autowired
     private UserReviewInteractionRepository userReviewInteractionRepository;
 
@@ -39,10 +39,25 @@ public class ReviewService {
         return reviewRepository.findByUser(user);
     }
 
-    public List<ReviewDTO> getAllReviewsByGame(Integer appid) {
-        return reviewRepository.findByAppid(appid).stream().map(old -> new ReviewDTO(old)).toList();
+    // Done
+    public List<ReviewWithLikedDTO> getAllReviewsByGame(Integer appid, String username) {
+        return reviewRepository
+                .findByAppidOrderByPostedAtDesc(appid)
+                .stream()
+                .map(old -> {
+                    User foundUser = this.userRepository.findByUsername(username).orElse(null);
+                    Review foundReview = this.reviewRepository.findById(old.getId()).orElse(null);
+                    UserReviewInteraction foundInteraction = this.userReviewInteractionRepository
+                            .findByUserAndReview(foundUser, foundReview).orElse(null);
+                    if (foundInteraction == null) {
+                        return new ReviewWithLikedDTO(old, null);
+                    }
+                    return new ReviewWithLikedDTO(old, foundInteraction.getInteraction());
+                })
+                .toList();
     }
 
+    // Done
     public ReviewDTO addReview(String username, NewReviewDTO reviewDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -90,7 +105,7 @@ public class ReviewService {
         }
 
         UserReviewInteraction existingInteraction = userReviewInteractionRepository
-                .findByUserAndReviewid(user, review.getId())
+                .findByUserAndReview(user, review)
                 .orElse(null);
 
         if (existingInteraction != null) {
@@ -108,7 +123,7 @@ public class ReviewService {
         } else {
             UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(review.getId(),
                     interactionDTO.getInteraction());
-            UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO, user);
+            UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO, user, review);
             userReviewInteractionRepository.save(newInteraction);
 
             if (interactionDTO.getInteraction() == ReviewInteraction.LIKE) {
@@ -121,25 +136,25 @@ public class ReviewService {
     }
 
     public void updateInteraction(UserReviewInteraction interaction, ReviewInteraction newInteraction) {
-        Optional<Review> newreview = reviewRepository.findById(interaction.getReviewid());
-        if(newreview.isPresent()){
+        Optional<Review> newreview = reviewRepository.findById(interaction.getReview().getId());
+        if (newreview.isPresent()) {
             Review review = newreview.get();
             if (interaction.getInteraction() == ReviewInteraction.LIKE) {
                 review.setLikes(review.getLikes() - 1);
             } else if (interaction.getInteraction() == ReviewInteraction.DISLIKE) {
                 review.setDislikes(review.getDislikes() - 1);
             }
-    
+
             if (newInteraction == ReviewInteraction.LIKE) {
                 review.setLikes(review.getLikes() + 1);
             } else if (newInteraction == ReviewInteraction.DISLIKE) {
                 review.setDislikes(review.getDislikes() + 1);
             }
-    
+
             interaction.setInteraction(newInteraction);
             userReviewInteractionRepository.save(interaction);
             reviewRepository.save(review);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Invalid review");
         }
     }

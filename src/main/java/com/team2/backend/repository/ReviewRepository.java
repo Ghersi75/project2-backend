@@ -12,5 +12,5 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review,Long>{
     List<Review> findByUser(User user);
 
-    List<Review> findByAppid(Integer appid);
+    List<Review> findByAppidOrderByPostedAtDesc(Integer appid);
 }
