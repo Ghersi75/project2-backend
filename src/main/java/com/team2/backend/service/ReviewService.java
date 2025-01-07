@@ -42,8 +42,8 @@ public class ReviewService {
         return reviewRepository.findByAppid(appid);
     }
 
-    public Review addReview(Long userId, NewReviewDTO reviewDTO) {
-        User user = userRepository.findById(userId)
+    public Review addReview(String username, NewReviewDTO reviewDTO) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Review review = new Review(user, reviewDTO);

@@ -3,6 +3,8 @@ package com.team2.backend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.team2.backend.service.ReviewService;
@@ -10,6 +12,7 @@ import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
+import com.team2.backend.exceptions.Status401Exception;
 import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
 import com.team2.backend.models.Review;
 
@@ -19,7 +22,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/reviews")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class ReviewController {
 
     @Autowired
@@ -28,9 +30,17 @@ public class ReviewController {
     @Autowired
     private ReviewInteractionProducer reviewInteractionProducer;
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<Review> addReview(@PathVariable Long userId, @RequestBody @Valid NewReviewDTO reviewDTO) {
-        Review newReview = reviewService.addReview(userId, reviewDTO);
+    @PostMapping("/{username}")
+    public ResponseEntity<Review> addReview(@PathVariable String username, @RequestBody @Valid NewReviewDTO reviewDTO) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // If jwt username and given username don't match, throw exception
+        // Can't create leave a review for someone else regardless of permissions
+        if (auth.getName() != username) {
+            // TODO: Create custom exception if there's time
+            throw new Status401Exception("Can't create a review for another user");
+        }
+
+        Review newReview = reviewService.addReview(username, reviewDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(newReview);
     }
 
@@ -66,7 +76,7 @@ public class ReviewController {
     @PostMapping("/dislike")
     public ResponseEntity<String> dislikeReview(@RequestParam(name = "userId") Long userId,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
-                
+
         reviewService.likeOrDislikeReview(userId, interactionDTO);
 
         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
