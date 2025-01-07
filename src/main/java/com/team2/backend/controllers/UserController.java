@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +29,6 @@ import jakarta.validation.Valid;
  * the business logic to the UserService layer.
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 @RequestMapping("/user")
 public class UserController {
 
