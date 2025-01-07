@@ -1,5 +1,6 @@
 package com.team2.backend.util;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +14,15 @@ import com.team2.backend.enums.UserRole;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+// import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
 
-    private SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Changing key on each restart is annoying for testing
+    private SecretKey SECRET_KEY = Keys.hmacShaKeyFor("9132bb4fa9f4f9b38bd6f6382eaa112fbea84bbf042c1b185368f585da98ec48".getBytes(StandardCharsets.UTF_8));
+    // private SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
