@@ -5,13 +5,12 @@ version: '3.8'
 services:
   database:
     image: postgres:16
-    container_name: projec2-db
     environment:
       POSTGRES_DB: db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-    volumes:
-      - ./src/main/resources/initdb:/docker-entrypoint-initdb.d
+    # volumes:
+    #   - ./src/main/resources/initdb:/docker-entrypoint-initdb.d
     ports:
       - "5433:5432" # Expose database for debugging
 
@@ -33,7 +32,7 @@ services:
     volumes:
       - ./:/app
       - ./mvn-cache/:/root/.m2
-    command: [ "sh", "-c", "mvn clean spring-boot:run -Pdocker-local" ]
+    command: [ "sh", "-c", "mvn clean spring-boot:run -Dspring-boot.run.profiles=docker-local" ]
 
 
   zookeeper:
@@ -52,7 +51,7 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
-   
+
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -62,8 +61,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-   
- 
+      
     ports:
       - "9092:9092"
 
