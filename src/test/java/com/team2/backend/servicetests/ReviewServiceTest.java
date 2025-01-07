@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.*;
@@ -18,6 +19,7 @@ import com.team2.backend.exceptions.ResourceNotFoundException;
 import com.team2.backend.exceptions.UserNotFoundException;
 import com.team2.backend.models.Review;
 import com.team2.backend.models.User;
+import com.team2.backend.models.UserReviewInteraction;
 import com.team2.backend.repository.ReviewRepository;
 import com.team2.backend.repository.UserRepository;
 import com.team2.backend.repository.UserReviewInteractionRepository;
@@ -26,6 +28,7 @@ import com.team2.backend.service.ReviewService;
 import java.util.List;
 import java.util.Optional;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class ReviewServiceTest {
 
@@ -42,6 +45,7 @@ public class ReviewServiceTest {
     private UserReviewInteractionRepository userReviewInteractionRepository;
 
     private User user;
+    private User user2;
     private Review review;
 
     @BeforeEach
@@ -50,6 +54,9 @@ public class ReviewServiceTest {
 
         user = new User();
         user.setUsername("testUser");
+
+        user2 = new User();
+        user2.setUsername("testUser2");
 
         review = new Review();
         review.setId(1L);
@@ -80,20 +87,128 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testGetAllReviewsByGame() {
+    public void testGetAllReviewsByGame_UserExistsAndHasInteractions() {
+        // Arrange
         Integer appid = 123;
-        Review review1 = new Review();
-        Review review2 = new Review();
-        List<Review> reviews = Arrays.asList(review1, review2);
+        String username = "testUser";
 
-        
-        when(reviewRepository.findByAppid(appid)).thenReturn(reviews);
+        User user = new User();
+        user.setUsername(username);
 
-        List<ReviewDTO> result = reviewService.getAllReviewsByGame(appid);
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(appid);
+        review.setUser(user2);
 
+        UserReviewInteraction interaction = new UserReviewInteraction();
+        interaction.setInteraction(ReviewInteraction.LIKE);
+        interaction.setUser(user);
+        interaction.setReview(review);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(reviewRepository.findByAppidOrderByPostedAtDesc(appid)).thenReturn(List.of(review));
+        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.of(interaction));
+
+        // Act
+        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(appid, username);
+
+        // Assert
         assertNotNull(result);
-        assertEquals(2, result.size()); 
-        verify(reviewRepository, times(1)).findByAppid(appid);
+        assertEquals(1, result.size());
+        assertEquals(ReviewInteraction.LIKE, result.get(0));
+    }
+
+    @Test
+    public void testGetAllReviewsByGame_UserExistsWithoutInteractions() {
+        // Arrange
+        Integer appid = 123;
+        String username = "testUser";
+
+        User user = new User();
+        user.setUsername(username);
+
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(appid);
+        review.setUser(user2);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(reviewRepository.findByAppidOrderByPostedAtDesc(appid)).thenReturn(List.of(review));
+        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
+
+        // Act
+        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(appid, username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getLikedByUser());
+    }
+
+    @Test
+    public void testGetAllReviewsByGame_UserDoesNotExist() {
+        // Arrange
+        Integer appid = 123;
+        String username = "nonExistentUser";
+
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(appid);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(reviewRepository.findByAppidOrderByPostedAtDesc(appid)).thenReturn(List.of(review));
+        when(userReviewInteractionRepository.findByUserAndReview(null, review)).thenReturn(Optional.empty());
+
+        // Act
+        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(appid, username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getLikedByUser());
+    }
+
+    @Test
+    public void testGetAllReviewsByGame_GameHasNoReviews() {
+        // Arrange
+        Integer appid = 123;
+        String username = "testUser";
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(new User()));
+        when(reviewRepository.findByAppidOrderByPostedAtDesc(appid)).thenReturn(Collections.emptyList());
+
+        // Act
+        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(appid, username);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testGetAllReviewsByGame_UserExistsGameHasReviewsNoInteraction() {
+        // Arrange
+        Integer appid = 123;
+        String username = "testUser";
+
+        User user = new User();
+        user.setUsername(username);
+
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(appid);
+
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
+        when(reviewRepository.findByAppidOrderByPostedAtDesc(appid)).thenReturn(List.of(review));
+        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
+
+        // Act
+        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(appid, username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getLikedByUser());
     }
 
     @Test
@@ -157,7 +272,7 @@ public class ReviewServiceTest {
 
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-        when(userReviewInteractionRepository.findByUserAndReviewid(user, 1L)).thenReturn(Optional.empty());
+        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
 
         review.setUser(anotherUser);
 

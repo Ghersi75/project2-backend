@@ -175,7 +175,7 @@ public class ReviewModelTest {
         dto.setReviewid(review.getId());
         dto.setInteraction(ReviewInteraction.LIKE);
 
-        UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto,user);
+        UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto,user,review);
 
         assertNotNull(userReviewInteraction);
         assertEquals(user, userReviewInteraction.getUser());
