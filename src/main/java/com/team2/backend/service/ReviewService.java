@@ -81,7 +81,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
-    public Review updateReview(String username, Long reviewId, UpdateReviewDTO updateReviewDTO) {
+    public void updateReview(String username, Long reviewId, UpdateReviewDTO updateReviewDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         Review review = reviewRepository.findById(reviewId)
@@ -91,7 +91,7 @@ public class ReviewService {
         }
         review.setContent(updateReviewDTO.getContent());
 
-        return reviewRepository.save(review);
+        reviewRepository.save(review);
     }
 
     // Done

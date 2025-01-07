@@ -48,17 +48,18 @@ public class ReviewController {
         return reviewService.addReview(username, reviewDTO);
     }
 
+    // Done
     @DeleteMapping("/{username}/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable String username, @PathVariable Long reviewId) {
+    public void deleteReview(@PathVariable String username, @PathVariable Long reviewId) {
         reviewService.deleteReview(username, reviewId);
-        return ResponseEntity.noContent().build();
     }
 
+    // Done
     @PutMapping("/{username}/{reviewId}")
-    public ResponseEntity<Review> updateReview(@PathVariable String username, @PathVariable Long reviewId,
+    public void updateReview(@PathVariable String username, @PathVariable Long reviewId,
             @RequestBody @Valid UpdateReviewDTO updateReviewDTO) {
-        Review updatedReview = reviewService.updateReview(username, reviewId, updateReviewDTO);
-        return ResponseEntity.ok(updatedReview);
+
+        reviewService.updateReview(username, reviewId, updateReviewDTO);
     }
 
     @GetMapping("/{username}")
