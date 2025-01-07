@@ -11,6 +11,7 @@ import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.UserInteractionResultDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.exceptions.Status401Exception;
@@ -66,25 +67,29 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
+    // Done
     @PostMapping("/like")
-    public ResponseEntity<String> likeReview(@RequestParam(name = "username") String username,
+    public UserInteractionResultDTO likeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
-        reviewService.likeOrDislikeReview(username, interactionDTO);
+        UserInteractionResultDTO updatedLikes = reviewService.likeOrDislikeReview(username, interactionDTO);
 
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
         reviewInteractionProducer.sendReviewInteraction(interactionDTO);
-        return ResponseEntity.ok("Review liked successfully");
+
+        return updatedLikes;
+
     }
 
+    // Done
     @PostMapping("/dislike")
-    public ResponseEntity<String> dislikeReview(@RequestParam(name = "username") String username,
+    public UserInteractionResultDTO dislikeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
 
-        reviewService.likeOrDislikeReview(username, interactionDTO);
+        UserInteractionResultDTO updatedDislikes = reviewService.likeOrDislikeReview(username, interactionDTO);
 
         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
         reviewInteractionProducer.sendReviewInteraction(interactionDTO);
-        return ResponseEntity.ok("Review disliked successfully");
+        return updatedDislikes;
     }
 
     // Done
