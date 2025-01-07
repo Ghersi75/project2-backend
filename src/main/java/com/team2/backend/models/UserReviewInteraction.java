@@ -36,9 +36,13 @@ public class UserReviewInteraction {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReviewInteraction interaction;
-    
 
-    public UserReviewInteraction(UserReviewInteractionDTO userreview){
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "review_id", nullable = false)
+    private Review review;
+
+    public UserReviewInteraction(UserReviewInteractionDTO userreview) {
         this.userid = userreview.getUserid();
         this.reviewid = userreview.getReviewid();
         this.interaction = userreview.getInteraction();
