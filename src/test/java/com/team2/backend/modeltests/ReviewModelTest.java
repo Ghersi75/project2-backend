@@ -65,7 +65,7 @@ public class ReviewModelTest {
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
-        interaction.setReviewid(review.getId());
+        interaction.setReview(review);
         interaction.setUser(user);
         interaction.setInteraction(ReviewInteraction.LIKE); // Set interaction to LIKE
 
@@ -137,12 +137,12 @@ public class ReviewModelTest {
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interactionLike = new UserReviewInteraction();
-        interactionLike.setReviewid(review.getId());
+        interactionLike.setReview(review);
         interactionLike.setUser(user);
         interactionLike.setInteraction(ReviewInteraction.LIKE);
 
         UserReviewInteraction interactionDislike = new UserReviewInteraction();
-        interactionDislike.setReviewid(review.getId());
+        interactionDislike.setReview(review);
         interactionDislike.setUser(user);
         interactionDislike.setInteraction(ReviewInteraction.DISLIKE);
 
@@ -179,7 +179,7 @@ public class ReviewModelTest {
 
         assertNotNull(userReviewInteraction);
         assertEquals(user, userReviewInteraction.getUser());
-        assertEquals(review.getId(), userReviewInteraction.getReviewid());
+        assertEquals(review, userReviewInteraction.getReview());
         assertEquals(ReviewInteraction.LIKE, userReviewInteraction.getInteraction());
     }
 }

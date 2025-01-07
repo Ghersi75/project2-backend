@@ -29,8 +29,6 @@ public class UserReviewInteraction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long reviewid;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ReviewInteraction interaction;

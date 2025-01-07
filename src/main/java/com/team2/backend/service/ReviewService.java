@@ -25,7 +25,6 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-
     @Autowired
     private UserReviewInteractionRepository userReviewInteractionRepository;
 
@@ -122,24 +121,24 @@ public class ReviewService {
 
     public void updateInteraction(UserReviewInteraction interaction, ReviewInteraction newInteraction) {
         Optional<Review> newreview = reviewRepository.findById(interaction.getReviewid());
-        if(newreview.isPresent()){
+        if (newreview.isPresent()) {
             Review review = newreview.get();
             if (interaction.getInteraction() == ReviewInteraction.LIKE) {
                 review.setLikes(review.getLikes() - 1);
             } else if (interaction.getInteraction() == ReviewInteraction.DISLIKE) {
                 review.setDislikes(review.getDislikes() - 1);
             }
-    
+
             if (newInteraction == ReviewInteraction.LIKE) {
                 review.setLikes(review.getLikes() + 1);
             } else if (newInteraction == ReviewInteraction.DISLIKE) {
                 review.setDislikes(review.getDislikes() + 1);
             }
-    
+
             interaction.setInteraction(newInteraction);
             userReviewInteractionRepository.save(interaction);
             reviewRepository.save(review);
-        }else{
+        } else {
             throw new ResourceNotFoundException("Invalid review");
         }
     }

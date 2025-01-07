@@ -23,9 +23,9 @@ import com.team2.backend.repository.UserRepository;
 import com.team2.backend.repository.UserReviewInteractionRepository;
 import com.team2.backend.service.ReviewService;
 
-
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
 
 public class ReviewServiceTest {
 
@@ -80,19 +80,36 @@ public class ReviewServiceTest {
     }
 
     @Test
+    public void testGetAllReviewsByGame() {
+        Integer appid = 123;
+        Review review1 = new Review();
+        Review review2 = new Review();
+        List<Review> reviews = Arrays.asList(review1, review2);
+
+        
+        when(reviewRepository.findByAppid(appid)).thenReturn(reviews);
+
+        List<ReviewDTO> result = reviewService.getAllReviewsByGame(appid);
+
+        assertNotNull(result);
+        assertEquals(2, result.size()); 
+        verify(reviewRepository, times(1)).findByAppid(appid);
+    }
+
+    @Test
     public void testAddReview_UserExists() {
         User user = new User();
         user.setUsername("testUser");
-    
+
         NewReviewDTO newReviewDTO = new NewReviewDTO();
         newReviewDTO.setAppid(123);
         newReviewDTO.setContent("This is a test review");
-    
+
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        
+
         Review review = new Review(user, newReviewDTO);
         when(reviewRepository.save(any(Review.class))).thenReturn(review);
-    
+
         ReviewDTO reviewDTO = reviewService.addReview("testUser", newReviewDTO);
         assertNotNull(reviewDTO);
         assertEquals(newReviewDTO.getContent(), reviewDTO.getContent());
@@ -135,15 +152,15 @@ public class ReviewServiceTest {
     public void testLikeOrDislikeReview_UserExists() {
         User anotherUser = new User();
         anotherUser.setUsername("anotherUser");
-    
+
         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, ReviewInteraction.LIKE);
-    
+
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
         when(userReviewInteractionRepository.findByUserAndReviewid(user, 1L)).thenReturn(Optional.empty());
-    
+
         review.setUser(anotherUser);
-    
+
         assertDoesNotThrow(() -> reviewService.likeOrDislikeReview("testUser", interactionDTO));
     }
 
