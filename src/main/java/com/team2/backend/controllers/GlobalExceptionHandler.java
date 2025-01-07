@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.team2.backend.exceptions.InvalidCredentialsException;
+import com.team2.backend.exceptions.Status401Exception;
 import com.team2.backend.exceptions.UserAlreadyExistsException;
 import com.team2.backend.exceptions.UserNotFoundException;
 
@@ -22,11 +24,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
-    @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException ex) {
-        Map<String, String> response = new HashMap<>();
-        response.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    // 401 Unauthorized
+    @ExceptionHandler(Status401Exception.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, String> handleInvalidCredentialsException(Status401Exception ex) {
+        return Map.of("error", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
