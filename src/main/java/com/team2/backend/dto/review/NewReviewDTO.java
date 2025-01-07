@@ -1,7 +1,5 @@
 package com.team2.backend.dto.review;
 
-import com.team2.backend.models.*;
-
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
