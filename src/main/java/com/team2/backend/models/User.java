@@ -47,10 +47,13 @@ public class User {
     @JsonManagedReference
     private List<Review> reviews;
 
-        @ElementCollection
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<UserReviewInteraction> reviewInteractions;
+
+    @ElementCollection
     @Column(name = "favorite_games")
     private List<Integer> favoriteGames = new ArrayList<>();
-
 
     public User(UserSignUpDTO userInfo) {
         this.username = userInfo.getUsername();

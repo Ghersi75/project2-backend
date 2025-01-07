@@ -1,6 +1,10 @@
 package com.team2.backend.models;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -47,11 +51,15 @@ public class Review {
     @Column(nullable = false)
     private int dislikes = 0;
 
+    @CreationTimestamp
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime postedAt;
+
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<UserReviewInteraction> userInteractions;
-    
-    public Review(User user, NewReviewDTO newReviewDTO){
+
+    public Review(User user, NewReviewDTO newReviewDTO) {
         this.user = user;
         this.appid = newReviewDTO.getAppid();
         this.content = newReviewDTO.getContent();

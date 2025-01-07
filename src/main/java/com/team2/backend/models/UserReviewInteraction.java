@@ -29,8 +29,6 @@ public class UserReviewInteraction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userid;
-
     private Long reviewid;
 
     @Enumerated(EnumType.STRING)
@@ -42,8 +40,13 @@ public class UserReviewInteraction {
     @JoinColumn(name = "review_id", nullable = false)
     private Review review;
 
-    public UserReviewInteraction(UserReviewInteractionDTO userreview) {
-        this.userid = userreview.getUserid();
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public UserReviewInteraction(UserReviewInteractionDTO userreview, User user) {
+        this.user = user;
         this.reviewid = userreview.getReviewid();
         this.interaction = userreview.getInteraction();
     }
