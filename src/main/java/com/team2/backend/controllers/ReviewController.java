@@ -1,24 +1,33 @@
 package com.team2.backend.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.team2.backend.service.ReviewService;
-import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
+import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
 import com.team2.backend.dto.userreviewinteraction.UserInteractionResultDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.exceptions.Status401Exception;
 import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
 import com.team2.backend.models.Review;
-
-import java.util.List;
+import com.team2.backend.service.ReviewService;
 
 import jakarta.validation.Valid;
 
@@ -72,10 +81,14 @@ public class ReviewController {
     @PostMapping("/like")
     public UserInteractionResultDTO likeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
-        UserInteractionResultDTO updatedLikes = reviewService.likeOrDislikeReview(username, interactionDTO);
+
+        ProducerInteractionDTO producerDTO = new ProducerInteractionDTO(username,interactionDTO.getReviewid(),interactionDTO.getInteraction());
 
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
-        reviewInteractionProducer.sendReviewInteraction(interactionDTO);
+         UserInteractionResultDTO updatedLikes = reviewInteractionProducer.sendReviewInteraction(producerDTO);
+
+      
+        
 
         return updatedLikes;
 
@@ -86,10 +99,10 @@ public class ReviewController {
     public UserInteractionResultDTO dislikeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
 
-        UserInteractionResultDTO updatedDislikes = reviewService.likeOrDislikeReview(username, interactionDTO);
-
+        ProducerInteractionDTO producerDTO = new ProducerInteractionDTO(username,interactionDTO.getReviewid(),interactionDTO.getInteraction()); 
         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
-        reviewInteractionProducer.sendReviewInteraction(interactionDTO);
+       UserInteractionResultDTO updatedDislikes = reviewInteractionProducer.sendReviewInteraction(producerDTO);
+
         return updatedDislikes;
     }
 

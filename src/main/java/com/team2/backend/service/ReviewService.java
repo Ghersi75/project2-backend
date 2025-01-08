@@ -1,25 +1,29 @@
 package com.team2.backend.service;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
+import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
 import com.team2.backend.dto.userreviewinteraction.UserInteractionResultDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.enums.UserRole;
-import com.team2.backend.exceptions.*;
+import com.team2.backend.exceptions.ForbiddenException;
+import com.team2.backend.exceptions.ResourceNotFoundException;
+import com.team2.backend.exceptions.UserNotFoundException;
 import com.team2.backend.models.Review;
 import com.team2.backend.models.User;
 import com.team2.backend.models.UserReviewInteraction;
 import com.team2.backend.repository.ReviewRepository;
 import com.team2.backend.repository.UserRepository;
 import com.team2.backend.repository.UserReviewInteractionRepository;
-
-import java.util.*;
 
 @Service
 public class ReviewService {
@@ -95,7 +99,7 @@ public class ReviewService {
     }
 
     // Done
-    public UserInteractionResultDTO likeOrDislikeReview(String username, UserReviewInteractionDTO interactionDTO) {
+    public UserInteractionResultDTO likeOrDislikeReview(String username, ProducerInteractionDTO interactionDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -162,5 +166,8 @@ public class ReviewService {
         } else {
             throw new ResourceNotFoundException("Invalid review");
         }
+    }
+    public Review getbyId(Long id) {
+        return reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review not found"));
     }
 }
