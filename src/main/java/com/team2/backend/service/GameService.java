@@ -1,13 +1,16 @@
 package com.team2.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.team2.backend.repository.GameRepository;
 import com.team2.backend.repository.UserRepository;
-import com.team2.backend.exceptions.GameNotFoundException;
+
+import com.team2.backend.dto.game.NewFavoriteGameDTO;
 import com.team2.backend.exceptions.InvalidFavoriteGameException;
 import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.models.Game;
 import com.team2.backend.models.User;
 
 import java.util.*;
@@ -17,35 +20,47 @@ public class GameService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private GameRepository gameRepository;
 
-    public void addFavoriteGame(Long userId, Integer appid) {
-        User user = userRepository.findById(userId)
+    public List<Game> getFavoriteGames(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (user.getFavoriteGames().contains(appid)) {
+        return gameRepository.findByUser(user);
+    }
+
+    public Boolean isFavoritedGame(String username, Integer appid) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return gameRepository.findByUserAndAppid(user, appid).size() > 0;
+    }
+
+    @Transactional
+    public void addFavoriteGame(String username, NewFavoriteGameDTO newFavoriteGame) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (gameRepository.findByAppid(newFavoriteGame.getAppId()).size() > 0) {
             throw new InvalidFavoriteGameException("Game is already in the user's favorite list.");
         }
 
-        user.getFavoriteGames().add(appid);
-        userRepository.save(user);
+        Game newGame = new Game(newFavoriteGame, user);
+
+        gameRepository.save(newGame);
     }
 
-    public void deleteFavoriteGame(Long userId, Integer appid) {
-        User user = userRepository.findById(userId)
+    @Transactional
+    public void deleteFavoriteGame(String username, Integer appid) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (!user.getFavoriteGames().contains(appid)) {
+        if (gameRepository.findByAppid(appid).size() == 0) {
             throw new InvalidFavoriteGameException("Game is not in the user's favorite list.");
         }
-    
-        user.getFavoriteGames().remove(appid);
-        userRepository.save(user);
+
+        gameRepository.deleteByUserAndAppid(user, appid);
     }
 
-    public List<Integer> getFavoriteGames(Long userId){
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        return user.getFavoriteGames();
-    }
 }

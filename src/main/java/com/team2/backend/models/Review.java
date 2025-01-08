@@ -1,6 +1,5 @@
 package com.team2.backend.models;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -24,6 +23,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Table(name = "reviews")
 @Data
@@ -38,6 +38,7 @@ public class Review {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     private int appid;
@@ -57,6 +58,7 @@ public class Review {
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
+    @ToString.Exclude
     private List<UserReviewInteraction> userInteractions;
 
     public Review(User user, NewReviewDTO newReviewDTO) {

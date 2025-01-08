@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
@@ -63,6 +64,7 @@ public class ReviewService {
     }
 
     // Done
+    @Transactional
     public ReviewDTO addReview(String username, NewReviewDTO reviewDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -72,6 +74,7 @@ public class ReviewService {
         return new ReviewDTO(reviewRepository.save(review));
     }
 
+    @Transactional
     public void deleteReview(String username, Long reviewId) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -85,6 +88,7 @@ public class ReviewService {
         reviewRepository.delete(review);
     }
 
+    @Transactional
     public void updateReview(String username, Long reviewId, UpdateReviewDTO updateReviewDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));

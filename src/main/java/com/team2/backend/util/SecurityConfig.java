@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/register", "/user/login").permitAll() // Allow public access to these
                                                                                       // endpoints
                         .requestMatchers("/reviews/games/{appid}").permitAll()
+                        // TODO: Fix
+                        .requestMatchers("/game/**").permitAll()
                         .requestMatchers("/mod/**").hasAuthority(UserRole.MODERATOR.toString()) // Restrict
                                                                                                 // "/MODERATOR/**"
                         .requestMatchers("/con/**").hasAuthority(UserRole.CONTRIBUTOR.toString()) // Restrict //
