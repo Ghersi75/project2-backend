@@ -2,11 +2,10 @@ package com.team2.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.team2.backend.repository.GameRepository;
 import com.team2.backend.repository.UserRepository;
-
-import jakarta.transaction.Transactional;
 
 import com.team2.backend.dto.game.NewFavoriteGameDTO;
 import com.team2.backend.exceptions.InvalidFavoriteGameException;
@@ -38,6 +37,7 @@ public class GameService {
         return gameRepository.findByUserAndAppid(user, appid).size() > 0;
     }
 
+    @Transactional
     public void addFavoriteGame(String username, NewFavoriteGameDTO newFavoriteGame) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -50,7 +50,7 @@ public class GameService {
 
         gameRepository.save(newGame);
     }
-    
+
     @Transactional
     public void deleteFavoriteGame(String username, Integer appid) {
         User user = userRepository.findByUsername(username)
