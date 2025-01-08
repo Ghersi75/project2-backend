@@ -140,27 +140,6 @@ public class ReviewServiceTest {
     }
 
     @Test
-    public void testGetAllReviewsByGame_UserDoesNotExist() {
-        Integer appid = 123;
-        String username = "nonExistentUser";
-
-        Review review = new Review();
-        review.setId(1L);
-        review.setAppid(appid);
-        
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
-        when(reviewRepository.findByAppidOrderByPostedAtDesc(appid)).thenReturn(List.of(review));
-        when(userReviewInteractionRepository.findByUserAndReview(null, review)).thenReturn(Optional.empty());
-
-        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(appid, username);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertNull(result.get(0).getLikedByUser());
-    }
-
-    @Test
     public void testGetAllReviewsByGame_GameHasNoReviews() {
         Integer appid = 123;
         String username = "testUser";

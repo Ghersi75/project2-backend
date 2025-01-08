@@ -1,104 +1,81 @@
-// package com.team2.backend.modeltests;
+package com.team2.backend.modeltests;
 
-// import static org.junit.jupiter.api.Assertions.assertEquals;
-// import static org.junit.jupiter.api.Assertions.assertNotNull;
-// import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.enums.UserRole;
+import com.team2.backend.models.Review;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.ReviewRepository;
+import com.team2.backend.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-// import java.util.ArrayList;
+import java.util.*;
 
-// import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-// import com.team2.backend.dto.user.UserSignUpDTO;
-// import com.team2.backend.enums.UserRole;
-// import com.team2.backend.models.*;
+@DataJpaTest
+public class UserModelTest {
 
-// import java.util.List;
+    @Autowired
+    private UserRepository userRepository;
 
-// public class UserModelTest {
-//     @Test
-//     void testUserInitialization() {
-//         String displayName = "John Doe";
-//         String username = "johndoe";
-//         String password = "password123";
-//         UserRole userRole = UserRole.CONTRIBUTOR;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
-//         User user = new User();
-//         user.setDisplayName(displayName);
-//         user.setUsername(username);
-//         user.setPassword(password);
-//         user.setUserRole(userRole);
+    private User user;
 
-//         assertNotNull(user);
-//         assertEquals(displayName, user.getDisplayName());
-//         assertEquals(username, user.getUsername());
-//         assertEquals(password, user.getPassword());
-//         assertEquals(userRole, user.getUserRole());
-//     }
+    @BeforeEach
+    public void setup() {
+        UserSignUpDTO userSignUpDTO = new UserSignUpDTO();
+        userSignUpDTO.setUsername("testuser");
+        userSignUpDTO.setDisplayName("Test User");
+        userSignUpDTO.setPassword("password");
+        userSignUpDTO.setRole("CONTRIBUTOR");
+        user = new User(userSignUpDTO);
+    }
 
-//     @Test
-//     void testUserSignUpDTOConstructor() {
-//         UserSignUpDTO dto = new UserSignUpDTO();
-//         dto.setUsername("johndoe");
-//         dto.setDisplayName("John Doe");
-//         dto.setPassword("password123");
-//         dto.setRole("MODERATOR");
+    @Test
+    public void testSaveUser() {
+        User savedUser = userRepository.save(user);
+        assertNotNull(savedUser.getId());
+        assertEquals("testuser", savedUser.getUsername());
+    }
 
-//         User user = new User(dto);
+    @Test
+    public void testFindUserById() {
+        User savedUser = userRepository.save(user);
+        Optional<User> foundUser = userRepository.findById(savedUser.getId());
+        assertTrue(foundUser.isPresent());
+        assertEquals("Test User", foundUser.get().getDisplayName());
+    }
 
-//         assertNotNull(user);
-//         assertEquals(dto.getUsername(), user.getUsername());
-//         assertEquals(dto.getDisplayName(), user.getDisplayName());
-//         assertEquals(dto.getPassword(), user.getPassword());
-//         assertEquals(UserRole.MODERATOR, user.getUserRole());
-//     }
+@Test
+public void testCascadeDeleteReviews() {
+    Review review1 = new Review();
+    review1.setContent("First review content");
+    review1.setUser(user); 
 
-//     @Test
-//     void testUserRoleDefaultsToContributor() {
-//         UserSignUpDTO dto = new UserSignUpDTO();
-//         dto.setUsername("johndoe");
-//         dto.setDisplayName("John Doe");
-//         dto.setPassword("password123");
-//         dto.setRole(null);
+    Review review2 = new Review();
+    review2.setContent("Second review content");
+    review2.setUser(user); 
 
-//         User user = new User(dto);
+    user.setReviews(List.of(review1, review2));
+    userRepository.save(user);
 
-//         assertEquals(UserRole.CONTRIBUTOR, user.getUserRole());
-//     }
+    assertEquals(1, userRepository.count());
+    assertEquals(2, reviewRepository.count());
 
-//     @Test
-//     void testAddFavoriteGames() {
-//         User user = new User();
-//         int game1 = 12345;
-//         int game2 = 67890;
+    userRepository.delete(user);
 
-//         List<Integer> favoriteGames = new ArrayList<>();
-//         favoriteGames.add(game1);
-//         favoriteGames.add(game2);
+    assertEquals(0, userRepository.count());
+    assertEquals(0, reviewRepository.count());
+}
 
-//         user.setFavoriteGames(favoriteGames);
-
-//         assertNotNull(user.getFavoriteGames());
-//         assertEquals(2, user.getFavoriteGames().size());
-//         assertTrue(user.getFavoriteGames().contains(game1));
-//         assertTrue(user.getFavoriteGames().contains(game2));
-//     }
-
-//     @Test
-//     void testAddReviews() {
-//         User user = new User();
-//         Review review1 = new Review();
-//         Review review2 = new Review();
-
-//         List<Review> reviews = new ArrayList<>();
-//         reviews.add(review1);
-//         reviews.add(review2);
-
-//         user.setReviews(reviews);
-
-//         assertNotNull(user.getReviews());
-//         assertEquals(2, user.getReviews().size());
-//         assertTrue(user.getReviews().contains(review1));
-//         assertTrue(user.getReviews().contains(review2));
-//     }
-
-// }
+    @Test
+    public void testUserConstructorWithDTO() {
+        assertEquals("testuser", user.getUsername());
+        assertEquals(UserRole.CONTRIBUTOR, user.getUserRole());
+    }
+}
