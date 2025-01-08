@@ -1,13 +1,11 @@
 package com.team2.backend.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -51,9 +49,9 @@ public class User {
     @JsonManagedReference
     private List<UserReviewInteraction> reviewInteractions;
 
-    @ElementCollection
-    @Column(name = "favorite_games")
-    private List<Integer> favoriteGames = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Game> favoriteGames;
 
     public User(UserSignUpDTO userInfo) {
         this.username = userInfo.getUsername();
@@ -61,6 +59,5 @@ public class User {
         this.username = userInfo.getUsername();
         this.password = userInfo.getPassword();
         this.userRole = userInfo.getRole() == null ? UserRole.CONTRIBUTOR : UserRole.fromString(userInfo.getRole());
-        this.favoriteGames = new ArrayList<>();
     }
 }
