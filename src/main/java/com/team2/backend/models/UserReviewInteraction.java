@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Table(name = "user_review_interaction")
 @Data
@@ -36,11 +37,13 @@ public class UserReviewInteraction {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "review_id", nullable = false)
+    @ToString.Exclude
     private Review review;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
 
     public UserReviewInteraction(UserReviewInteractionDTO userreview, User user, Review review) {
