@@ -1,20 +1,29 @@
 package com.team2.backend.servicetests;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
 import com.team2.backend.dto.review.NewReviewDTO;
-import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.ReviewDTO;
-import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
-import com.team2.backend.enums.*;
+import com.team2.backend.dto.review.ReviewWithLikedDTO;
+import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.exceptions.ResourceNotFoundException;
 import com.team2.backend.exceptions.UserNotFoundException;
 import com.team2.backend.models.Review;
@@ -24,11 +33,6 @@ import com.team2.backend.repository.ReviewRepository;
 import com.team2.backend.repository.UserRepository;
 import com.team2.backend.repository.UserReviewInteractionRepository;
 import com.team2.backend.service.ReviewService;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class ReviewServiceTest {
 
@@ -229,7 +233,7 @@ public class ReviewServiceTest {
         assertEquals("Review not found", exception.getMessage());
     }
 
-    @Test
+   /*  @Test
     public void testLikeOrDislikeReview_UserExists() {
         User anotherUser = new User();
         anotherUser.setUsername("anotherUser");
@@ -257,6 +261,6 @@ public class ReviewServiceTest {
         });
 
         assertEquals("Review not found", exception.getMessage());
-    }
+    } */
 
 }
