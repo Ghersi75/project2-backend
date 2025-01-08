@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Table(name = "games")
 @Data
@@ -37,6 +38,7 @@ public class Game {
   @ManyToOne
   @JsonBackReference
   @JoinColumn(name = "user_id", nullable = false)
+  @ToString.Exclude
   private User user;
 
   public Game(NewFavoriteGameDTO newFavoriteGame, User user) {
