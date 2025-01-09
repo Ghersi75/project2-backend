@@ -73,18 +73,21 @@ public class UserService {
         return token;
     }
 
-    public String changeUsername(Long userId, ChangeUsernameDTO changeUsernameDTO) {
+    public String changeUsername(String username, ChangeUsernameDTO changeUsernameDTO) {
         String newUsername = changeUsernameDTO.getNewUsername();
-        String password = changeUsernameDTO.getPassword();
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new InvalidCredentialsException("User not found"));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidCredentialsException("Password is incorrect.");
-        }
         if (newUsername == null || newUsername.trim().isEmpty()) {
             throw new InvalidCredentialsException("Username name is required");
         }
+
+        User existingUser = userRepository.findByUsername(changeUsernameDTO.getNewUsername()).orElse(null);
+
+        if (existingUser != null) {
+            throw new InvalidCredentialsException("Username is already taken");
+        }
+
         user.setUsername(newUsername);
         userRepository.save(user);
 
@@ -92,17 +95,14 @@ public class UserService {
         return token;
     }
 
-    public String changePassword(Long userId, ChangePasswordDTO changePasswordDTO) {
-        User user = userRepository.findById(userId)
+    public String changePassword(String username, ChangePasswordDTO changePasswordDTO) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new InvalidCredentialsException("User not found"));
         if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Old password is incorrect.");
         }
         if (changePasswordDTO.getOldPassword().equals(changePasswordDTO.getNewPassword())) {
             throw new InvalidCredentialsException("New password cannot be the same as the old password.");
-        }
-        if (!changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword())) {
-            throw new InvalidCredentialsException("New password and confirmation do not match.");
         }
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
         userRepository.save(user);
@@ -111,15 +111,12 @@ public class UserService {
         return token;
     }
 
-    public String changeDisplayName(Long userId, ChangeDisplayNameDTO changeDisplayNameDTO) {
+    public String changeDisplayName(String username, ChangeDisplayNameDTO changeDisplayNameDTO) {
         String newDisplayName = changeDisplayNameDTO.getNewDisplayName();
-        String password = changeDisplayNameDTO.getPassword();
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new InvalidCredentialsException("User not found"));
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidCredentialsException("Password is incorrect.");
-        }
+
         if (newDisplayName == null || newDisplayName.trim().isEmpty()) {
             throw new InvalidCredentialsException("Display name is required");
         }
