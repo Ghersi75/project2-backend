@@ -1,175 +1,152 @@
-// package com.team2.backend.controllers;
+package com.team2.backend.controllers;
 
-// import static org.mockito.Mockito.*;
-// import org.junit.jupiter.api.BeforeEach;
-// import static org.junit.jupiter.api.Assertions.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-// import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team2.backend.dto.review.NewReviewDTO;
+import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.review.ReviewDTO;
+import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.service.ReviewService;
+import com.team2.backend.models.Review;
+import com.team2.backend.models.User;
 
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.junit.jupiter.MockitoExtension;
-// import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.security.core.Authentication;
 
-// import java.util.List;
+import java.time.OffsetDateTime;
 
-// import static org.mockito.ArgumentMatchers.any;
-// import static org.mockito.ArgumentMatchers.anyLong;
-// import static org.mockito.ArgumentMatchers.eq;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// import com.team2.backend.controllers.*;
-// import com.team2.backend.dto.review.*;
-// import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
-// import com.team2.backend.enums.ReviewInteraction;
-// import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
-// import com.team2.backend.models.*;
-// import com.team2.backend.service.ReviewService;
-// import com.team2.backend.servicetests.*;
+import java.util.*;
 
-// @ExtendWith(MockitoExtension.class)
-// public class ReviewControllerTest {
+@ExtendWith(MockitoExtension.class)
+class ReviewControllerTest {
 
-//     private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-//     @Mock
-//     private ReviewService reviewService;
+    @InjectMocks
+    private ReviewController reviewController;
 
-//     @InjectMocks
-//     private ReviewController reviewController;
+    @Mock
+    private ReviewService reviewService;
 
-//     @Mock
-//     private ReviewInteractionProducer reviewInteractionProducer;
-    
-//     @BeforeEach
-//     void setup() {
-//         mockMvc = MockMvcBuilders.standaloneSetup(reviewController).build();
-//     }
+    private ObjectMapper objectMapper;
 
-//     @Test
-//     void addReview_ShouldReturnCreatedReview() throws Exception {
-//         NewReviewDTO newReviewDTO = new NewReviewDTO("Great Game!",12345);
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(reviewController).build();
+    }
 
-//         User user = new User();
-//         user.setId(1L);
-//         Review mockReview = new Review(user,newReviewDTO);
+    private void setAuthentication(String username) {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+    }
 
-//         when(reviewService.addReview(eq(1L), any(NewReviewDTO.class))).thenReturn(mockReview);
+    @Test
+    void testAddReview_Success() throws Exception {
+        String username = "testUser";
+        setAuthentication(username); // Set authentication here
 
-//         mockMvc.perform(post("/reviews/{userId}", 1L)
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content(new ObjectMapper().writeValueAsString(newReviewDTO)))
-//                 .andExpect(status().isCreated())
-//                 .andExpect(jsonPath("$.id").value(mockReview.getId()))
-//                 .andExpect(jsonPath("$.content").value("Great Game!"));
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!", 123);
+        Review review = new Review();
+        review.setId(1L);
+        review.setUser(new User(new UserSignUpDTO("Test User","testUser","123","CONTRIBUTOR")));
+        review.setContent("Great game!");
+        review.setLikes(0);
+        review.setDislikes(0);
+        review.setPostedAt(OffsetDateTime.now());
 
-//         verify(reviewService, times(1)).addReview(eq(1L), any(NewReviewDTO.class));
-//     }
+        ReviewDTO reviewDTO = new ReviewDTO(review);
 
-//       @Test
-//     void deleteReview_ShouldReturnNoContent() throws Exception {
-//         doNothing().when(reviewService).deleteReview(anyLong(), anyLong());
+        when(reviewService.addReview(eq(username), eq(newReviewDTO))).thenReturn(reviewDTO);
 
-//         mockMvc.perform(delete("/reviews/{reviewId}/{userId}", 1L, 1L))
-//                 .andExpect(status().isNoContent());
+        mockMvc.perform(post("/reviews/{username}", username)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newReviewDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reviewId").value(1))
+                .andExpect(jsonPath("$.username").value("testUser"))
+                .andExpect(jsonPath("$.displayName").value("Test User"))
+                .andExpect(jsonPath("$.content").value("Great game!"))
+                .andExpect(jsonPath("$.likes").value(0))
+                .andExpect(jsonPath("$.dislikes").value(0))
+                .andExpect(jsonPath("$.postedAt").exists());
 
-//         verify(reviewService, times(1)).deleteReview(1L, 1L);
-//     }
+        verify(reviewService, times(1)).addReview(eq(username), eq(newReviewDTO));
+    }
 
-//     @Test
-//     void updateReview_ShouldReturnUpdatedReview() throws Exception {
-//         UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO("Updated review content",1,2);
+    @Test
+    void testDeleteReview_Success() throws Exception {
+        String username = "testUser";
+        Long reviewId = 1L;
 
-//         Review updatedReview = new Review();
-//         updatedReview.setId(1L);
-//         updatedReview.setContent("Updated review content");
+        doNothing().when(reviewService).deleteReview(username, reviewId);
 
-//         when(reviewService.updateReview(anyLong(), anyLong(), any(UpdateReviewDTO.class)))
-//                 .thenReturn(updatedReview);
+        mockMvc.perform(delete("/reviews/{username}/{reviewId}", username, reviewId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-//         mockMvc.perform(put("/reviews/{userId}/{reviewId}", 1L, 1L)
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content(new ObjectMapper().writeValueAsString(updateReviewDTO)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.content").value("Updated review content"))
-//                 .andExpect(jsonPath("$.id").value(1));
-//     }
+        verify(reviewService, times(1)).deleteReview(username, reviewId);
+    }
 
-//     @Test
-//     void getAllReviewsByUser_ShouldReturnReviewsList() throws Exception {
-//         Review review1 = new Review();
-//         review1.setId(1L);
-//         review1.setContent("First review");
+    @Test
+    void testUpdateReview_Success() throws Exception {
+        String username = "testUser";
+        Long reviewId = 1L;
+        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO("Updated content");
 
-//         Review review2 = new Review();
-//         review2.setId(2L);
-//         review2.setContent("Second review");
+        doNothing().when(reviewService).updateReview(eq(username), eq(reviewId), eq(updateReviewDTO));
 
-//         List<Review> mockReviews = List.of(review1, review2);
+        mockMvc.perform(put("/reviews/{username}/{reviewId}", username, reviewId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateReviewDTO)))
+                .andExpect(status().isOk());
 
-//         when(reviewService.getAllReviewsByUser(anyLong())).thenReturn(mockReviews);
+        verify(reviewService, times(1)).updateReview(eq(username), eq(reviewId), eq(updateReviewDTO));
+    }
 
-//         mockMvc.perform(get("/reviews/{userId}", 1L))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$[0].content").value("First review"))
-//                 .andExpect(jsonPath("$[1].content").value("Second review"));
-//     }
+    @Test
+    void testGetAllReviewsByUser_Success() throws Exception {
+        String username = "testUser";
+        Review review = new Review();
+        review.setId(1L);
+        review.setUser(new User(new UserSignUpDTO("Test User", username, "123", "CONTRIBUTOR")));
+        review.setContent("Great game!");
+        review.setLikes(0);
+        review.setDislikes(0);
+        review.setPostedAt(OffsetDateTime.now());
 
-//     @Test
-//     void likeReview_ShouldReturnSuccessMessage() throws Exception {
-//         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
-//         interactionDTO.setReviewid(1L);
-//         interactionDTO.setInteraction(ReviewInteraction.LIKE);
+        List<Review> reviews = List.of(review);
+        when(reviewService.getAllReviewsByUser(eq(username))).thenReturn(reviews);
 
-//         doNothing().when(reviewService).likeOrDislikeReview(anyLong(), any(UserReviewInteractionDTO.class));
+        mockMvc.perform(get("/reviews/{username}", username))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].reviewId").value(1))
+                .andExpect(jsonPath("$[0].username").value("testUser"))
+                .andExpect(jsonPath("$[0].displayName").value("Test User"))
+                .andExpect(jsonPath("$[0].content").value("Great game!"))
+                .andExpect(jsonPath("$[0].likes").value(0))
+                .andExpect(jsonPath("$[0].dislikes").value(0));
 
-//         mockMvc.perform(post("/reviews/like?userId=1")
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content(new ObjectMapper().writeValueAsString(interactionDTO)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("Review liked successfully"));
-
-//         verify(reviewInteractionProducer, times(1)).sendReviewInteraction(any(UserReviewInteractionDTO.class));
-//     }
-
-//     @Test
-//     void dislikeReview_ShouldReturnSuccessMessage() throws Exception {
-//         UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO();
-//         interactionDTO.setReviewid(1L);
-//         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
-
-//         doNothing().when(reviewService).likeOrDislikeReview(anyLong(), any(UserReviewInteractionDTO.class));
-
-//         mockMvc.perform(post("/reviews/dislike?userId=1")
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content(new ObjectMapper().writeValueAsString(interactionDTO)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("Review disliked successfully"));
-
-//         verify(reviewInteractionProducer, times(1)).sendReviewInteraction(any(UserReviewInteractionDTO.class));
-//     }
-
-//     @Test
-//     void getAllReviewsByGame_ShouldReturnReviewsList() throws Exception {
-//         Review review1 = new Review();
-//         review1.setId(1L);
-//         review1.setContent("First review for game");
-
-//         Review review2 = new Review();
-//         review2.setId(2L);
-//         review2.setContent("Second review for game");
-
-//         List<Review> mockReviews = List.of(review1, review2);
-
-//         when(reviewService.getAllReviewsByGame(anyInt())).thenReturn(mockReviews);
-
-//         mockMvc.perform(get("/reviews/games/{gameId}", 1L))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$[0].content").value("First review for game"))
-//                 .andExpect(jsonPath("$[1].content").value("Second review for game"));
-//     }
-// }
+        verify(reviewService, times(1)).getAllReviewsByUser(eq(username));
+    }
+}

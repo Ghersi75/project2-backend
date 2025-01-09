@@ -87,11 +87,7 @@ public class ReviewController {
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
          UserInteractionResultDTO updatedLikes = reviewInteractionProducer.sendReviewInteraction(producerDTO);
 
-      
-        
-
         return updatedLikes;
-
     }
 
     // Done
