@@ -42,7 +42,7 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (gameRepository.findByAppid(newFavoriteGame.getAppId()).size() > 0) {
+        if (gameRepository.findByUserAndAppid(user, newFavoriteGame.getAppId()).size() > 0) {
             throw new InvalidFavoriteGameException("Game is already in the user's favorite list.");
         }
 
@@ -56,7 +56,7 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (gameRepository.findByAppid(appid).size() == 0) {
+        if (gameRepository.findByUserAndAppid(user, appid).size() == 0) {
             throw new InvalidFavoriteGameException("Game is not in the user's favorite list.");
         }
 

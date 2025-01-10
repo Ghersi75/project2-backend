@@ -11,8 +11,6 @@ import java.util.List;
 public interface GameRepository extends JpaRepository<Game,Long> {
   List<Game> findByUser(User user);
 
-  List<Game> findByAppid(Integer appid);
-
   List<Game> findByUserAndAppid(User user, Integer appid);
 
   void deleteByUserAndAppid(User user, Integer appid);
