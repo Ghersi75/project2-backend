@@ -9,21 +9,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
 
 @Service
-public class ReviewInteractionProducer {
+public class ReviewCreationProducer {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Value("${kafka.topic.review-interaction}")
-    private String reviewInteractionTopic;
+    @Value("${kafka.topic.review-creation}")
+    private String reviewCreationTopic;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void sendReviewInteraction(ProducerInteractionDTO interactionDTO) {
+    public void sendReviewCreation(ProducerInteractionDTO interactionDTO) {
         try {
             String message = objectMapper.writeValueAsString(interactionDTO);
-            kafkaTemplate.send(reviewInteractionTopic, message);
-            System.out.println("Sent review interaction to Kafka: " + message);
+            kafkaTemplate.send(reviewCreationTopic, message);
+            System.out.println("Sent review creation to Kafka: " + message);
         } catch (Exception e) {
             e.printStackTrace();
         }

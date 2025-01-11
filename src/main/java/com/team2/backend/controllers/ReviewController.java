@@ -23,8 +23,10 @@ import com.team2.backend.dto.review.UpdateReviewDTO;
 import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
 import com.team2.backend.dto.userreviewinteraction.UserInteractionResultDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
+import com.team2.backend.enums.NotificationType;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.exceptions.Status401Exception;
+import com.team2.backend.kafka.Producer.ReviewCreationProducer;
 import com.team2.backend.kafka.Producer.ReviewInteractionProducer;
 import com.team2.backend.models.Review;
 import com.team2.backend.service.ReviewService;
@@ -41,6 +43,9 @@ public class ReviewController {
     @Autowired
     private ReviewInteractionProducer reviewInteractionProducer;
 
+    @Autowired
+    private ReviewCreationProducer reviewCreationProducer;
+
     // Done
     @PostMapping("/{username}")
     public ReviewDTO addReview(@PathVariable String username, @RequestBody @Valid NewReviewDTO reviewDTO) {
@@ -54,7 +59,13 @@ public class ReviewController {
             throw new Status401Exception("Can't create a review for another user");
         }
 
-        return reviewService.addReview(username, reviewDTO);
+        ReviewDTO newReview = reviewService.addReview(username, reviewDTO);
+        ProducerInteractionDTO producerInteractionDTO = new ProducerInteractionDTO(username,
+                newReview.getReviewId(), reviewDTO.getAppid(), NotificationType.REVIEW);
+
+        reviewCreationProducer.sendReviewCreation(producerInteractionDTO);
+        return newReview;
+
     }
 
     // Done
@@ -81,14 +92,14 @@ public class ReviewController {
     @PostMapping("/like")
     public UserInteractionResultDTO likeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
-
-        ProducerInteractionDTO producerDTO = new ProducerInteractionDTO(username,interactionDTO.getReviewid(),interactionDTO.getInteraction());
+        UserInteractionResultDTO updatedLikes = reviewService.likeOrDislikeReview(username, interactionDTO);
 
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
-         UserInteractionResultDTO updatedLikes = reviewInteractionProducer.sendReviewInteraction(producerDTO);
 
-      
-        
+        ProducerInteractionDTO producerInteractionDTO = new ProducerInteractionDTO(username,
+                interactionDTO.getReviewid(), interactionDTO.getAppid(), NotificationType.LIKE);
+
+        reviewInteractionProducer.sendReviewInteraction(producerInteractionDTO);
 
         return updatedLikes;
 
@@ -99,10 +110,14 @@ public class ReviewController {
     public UserInteractionResultDTO dislikeReview(@RequestParam(name = "username") String username,
             @RequestBody UserReviewInteractionDTO interactionDTO) {
 
-        ProducerInteractionDTO producerDTO = new ProducerInteractionDTO(username,interactionDTO.getReviewid(),interactionDTO.getInteraction()); 
-        interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
-       UserInteractionResultDTO updatedDislikes = reviewInteractionProducer.sendReviewInteraction(producerDTO);
+        UserInteractionResultDTO updatedDislikes = reviewService.likeOrDislikeReview(username, interactionDTO);
 
+        interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
+
+        ProducerInteractionDTO producerInteractionDTO = new ProducerInteractionDTO(username,
+                interactionDTO.getReviewid(), interactionDTO.getAppid(), NotificationType.DISLIKE);
+
+        reviewInteractionProducer.sendReviewInteraction(producerInteractionDTO);
         return updatedDislikes;
     }
 

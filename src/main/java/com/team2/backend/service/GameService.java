@@ -1,19 +1,18 @@
 package com.team2.backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.team2.backend.repository.GameRepository;
-import com.team2.backend.repository.UserRepository;
 
 import com.team2.backend.dto.game.NewFavoriteGameDTO;
 import com.team2.backend.exceptions.InvalidFavoriteGameException;
 import com.team2.backend.exceptions.UserNotFoundException;
 import com.team2.backend.models.Game;
 import com.team2.backend.models.User;
-
-import java.util.*;
+import com.team2.backend.repository.GameRepository;
+import com.team2.backend.repository.UserRepository;
 
 @Service
 public class GameService {
@@ -34,7 +33,7 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        return gameRepository.findByUserAndAppid(user, appid).size() > 0;
+        return gameRepository.findByUserAndAppId(user, appid).size() > 0;
     }
 
     @Transactional
@@ -42,7 +41,7 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (gameRepository.findByAppid(newFavoriteGame.getAppId()).size() > 0) {
+        if (gameRepository.findByAppId(newFavoriteGame.getAppId()).size() > 0) {
             throw new InvalidFavoriteGameException("Game is already in the user's favorite list.");
         }
 
@@ -56,11 +55,12 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (gameRepository.findByAppid(appid).size() == 0) {
+        if (gameRepository.findByAppId(appid).size() == 0) {
             throw new InvalidFavoriteGameException("Game is not in the user's favorite list.");
         }
 
-        gameRepository.deleteByUserAndAppid(user, appid);
+        gameRepository.deleteByUserAndAppId(user, appid);
     }
+
 
 }

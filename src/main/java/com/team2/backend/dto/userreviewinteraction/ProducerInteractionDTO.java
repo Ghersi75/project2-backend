@@ -1,5 +1,6 @@
 package com.team2.backend.dto.userreviewinteraction;
 
+import com.team2.backend.enums.NotificationType;
 import com.team2.backend.enums.ReviewInteraction;
 
 import lombok.AllArgsConstructor;
@@ -12,5 +13,6 @@ import lombok.NoArgsConstructor;
 public class ProducerInteractionDTO {
     private String username;
     private Long reviewid;
-    private ReviewInteraction interaction;
+    private Integer appid;
+    private NotificationType type;
 }

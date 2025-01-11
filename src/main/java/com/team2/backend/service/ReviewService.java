@@ -11,7 +11,6 @@ import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.ReviewWithLikedDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
-import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
 import com.team2.backend.dto.userreviewinteraction.UserInteractionResultDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
@@ -103,7 +102,7 @@ public class ReviewService {
     }
 
     // Done
-    public UserInteractionResultDTO likeOrDislikeReview(String username, ProducerInteractionDTO interactionDTO) {
+    public UserInteractionResultDTO likeOrDislikeReview(String username, UserReviewInteractionDTO interactionDTO) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -131,7 +130,7 @@ public class ReviewService {
                 updateInteraction(existingInteraction, interactionDTO.getInteraction());
             }
         } else {
-            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(review.getId(),
+            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(review.getId(),review.getAppid(),
                     interactionDTO.getInteraction());
             UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO, user, review);
             userReviewInteractionRepository.save(newInteraction);

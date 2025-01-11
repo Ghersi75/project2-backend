@@ -1,7 +1,5 @@
 package com.team2.backend.dto.userreviewinteraction;
 
-import com.team2.backend.enums.ReviewInteraction;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserReviewInteractionDTO {
-    private Long reviewid;
-    private Integer appid;
-    private ReviewInteraction interaction;
+public class NotificationDTO {
+    private Long reviewId;  
+    private Long appId;
+    private String gameName;
+    private String username;
 }

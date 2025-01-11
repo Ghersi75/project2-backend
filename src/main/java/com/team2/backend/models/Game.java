@@ -27,7 +27,7 @@ public class Game {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Integer appid;
+  private Integer appId;
 
   private String name;
 
@@ -42,7 +42,7 @@ public class Game {
   private User user;
 
   public Game(NewFavoriteGameDTO newFavoriteGame, User user) {
-    this.appid = newFavoriteGame.getAppId();
+    this.appId = newFavoriteGame.getAppId();
     this.name = newFavoriteGame.getName();
     this.thumbnailLink = newFavoriteGame.getThumbnailLink();
     this.availableOn = newFavoriteGame.getAvailableOn();

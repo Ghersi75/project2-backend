@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.team2.backend.service.GameService;
 
 @Service
-public class ReviewInteractionConsumer {
+public class ReviewCreationConsumer {
 
        @Autowired
     private NotificationRepository notificationRepository;
@@ -44,52 +44,41 @@ public class ReviewInteractionConsumer {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @KafkaListener(topics = "${kafka.topic.review-interaction}", groupId = "game-forum-group")
+    @KafkaListener(topics = "${kafka.topic.review-creation}", groupId = "game-forum-group")
     public void consumeReviewInteraction(String message) {
         try {
             ProducerInteractionDTO interactionDTO = objectMapper.readValue(message, ProducerInteractionDTO.class);
-            handleReviewInteraction(interactionDTO);
+            handleNewReview(interactionDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void handleReviewInteraction(ProducerInteractionDTO interactionDTO) {
-        System.out.println("Processing review interaction: " + interactionDTO);
-
-        // Example logic
-        if (interactionDTO.getType() == NotificationType.LIKE) {
-            System.out.println(
-                    "Review " + interactionDTO.getReviewid() + " liked by user " + interactionDTO.getReviewid());
-                    sendNotification(interactionDTO, "Your review was liked!");
-        } else if (interactionDTO.getType() == NotificationType.DISLIKE) {
-            System.out.println(
-                    "Review " + interactionDTO.getReviewid() + " disliked by user " + interactionDTO.getReviewid());
-                    sendNotification(interactionDTO, "Your review was disliked!");
-
+    private void handleNewReview(ProducerInteractionDTO reviewDTO) {
+        Review review = reviewRepository.findById(reviewDTO.getReviewid()).get();
+        List<Game> games = gameRepository.findByAppId(review.getAppid());
+        Game game = games.get(0);
+        List<User> usersWithFavoriteGame = userRepository.findByFavoriteGamesContaining(game);
+        List<User> allusers = userRepository.findAll();
+        for (User user : allusers) {
+            sendNotification(user, review);
         }
-        // Further processing (e.g., updating analytics or notifying users)
     }
 
-    private void sendNotification(ProducerInteractionDTO interactionDTO, String message) {
+
+
+    private void sendNotification(User user, Review review) {
+        System.out.println("Sending review creation notification to user: " + user.getUsername());
         Notification notification = new Notification();
-        Review review = reviewRepository.findById(interactionDTO.getReviewid()).get();
-       Optional< User> user = userRepository.findById(review.getUser().getId());
+        notification.setUser(user);
 
-        List<Game> games = gameRepository.findByUserAndAppId(user.get(), interactionDTO.getAppid());
+        List<Game> games = gameRepository.findByUserAndAppId(user, review.getAppid());
         Game game = games.get(0);
-        notification.setUser(review.getUser());
         notification.setGameName(game.getName());
-        notification.setReviewId(interactionDTO.getReviewid());
-        notification.setAppId(interactionDTO.getAppid());
-        notification.setUsername(interactionDTO.getUsername()); 
-
-        if(interactionDTO.getType() == NotificationType.LIKE) {
-           notification.setType(NotificationType.LIKE);  
-        }
-        else {
-            notification.setType(NotificationType.DISLIKE);
-        }     
+        notification.setReviewId(review.getId());
+        notification.setAppId(review.getAppid());
+        notification.setUsername(review.getUser().getUsername());
+        notification.setType(NotificationType.REVIEW);
         
         notificationRepository.save(notification);
         
