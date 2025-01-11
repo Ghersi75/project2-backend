@@ -61,7 +61,8 @@ public class UserController {
                 UserResponseDTO responseDTO = new UserResponseDTO("Register successful.", token);
 
                 ResponseCookie cookie = ResponseCookie.from("token", token)
-                                // Frontend uses jwt token for userInfo so it needs to be accessible by javascript
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by
+                                // javascript
                                 .httpOnly(false)
                                 .secure(true) // Only send over HTTPS
                                 .path("/")
@@ -90,7 +91,8 @@ public class UserController {
                 UserResponseDTO responseDTO = new UserResponseDTO("Login successful.", token);
 
                 ResponseCookie cookie = ResponseCookie.from("token", token)
-                                // Frontend uses jwt token for userInfo so it needs to be accessible by javascript
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by
+                                // javascript
                                 .httpOnly(false)
                                 .secure(true) // Only send over HTTPS
                                 .path("/")
@@ -103,26 +105,57 @@ public class UserController {
         }
 
         @PutMapping("/username")
-        public ResponseEntity<String> changeUsername(@RequestParam Long userId,
+        public ResponseEntity<String> changeUsername(@RequestParam String username,
                         @Valid @RequestBody ChangeUsernameDTO changeUsernameDTO) {
-                userService.changeUsername(userId, changeUsernameDTO);
-                return ResponseEntity.status(HttpStatus.OK).body("Username changed successfully.");
+                String token = userService.changeUsername(username, changeUsernameDTO);
+
+                ResponseCookie cookie = ResponseCookie.from("token", token)
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by
+                                // javascript
+                                .httpOnly(false)
+                                .secure(true) // Only send over HTTPS
+                                .path("/")
+                                .maxAge(24 * 60 * 60) // 1 day
+                                .sameSite("Strict") // Protect against CSRF
+                                .build();
+
+                return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString())
+                                .body("Username changed successfully.");
 
         }
 
         @PutMapping("/password")
-        public ResponseEntity<String> changePassword(@RequestParam Long userId,
+        public ResponseEntity<String> changePassword(@RequestParam String username,
                         @Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
-                userService.changePassword(userId, changePasswordDTO);
-                return ResponseEntity.status(HttpStatus.OK).body("Password changed successfully.");
+                String token = userService.changePassword(username, changePasswordDTO);
+
+                ResponseCookie cookie = ResponseCookie.from("token", token)
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by
+                                // javascript
+                                .httpOnly(false)
+                                .secure(true) // Only send over HTTPS
+                                .path("/")
+                                .maxAge(24 * 60 * 60) // 1 day
+                                .sameSite("Strict") // Protect against CSRF
+                                .build();
+                return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body("Password changed successfully.");
 
         }
 
         @PutMapping("/displayname")
-        public ResponseEntity<String> changeDisplayName(@RequestParam Long userId,
+        public ResponseEntity<String> changeDisplayName(@RequestParam String username,
                         @RequestBody ChangeDisplayNameDTO nameDTO) {
-                userService.changeDisplayName(userId, nameDTO);
-                return ResponseEntity.ok("Display name changed successfully to: " + nameDTO.getNewDisplayName());
+                String token = userService.changeDisplayName(username, nameDTO);
+                ResponseCookie cookie = ResponseCookie.from("token", token)
+                                // Frontend uses jwt token for userInfo so it needs to be accessible by
+                                // javascript
+                                .httpOnly(false)
+                                .secure(true) // Only send over HTTPS
+                                .path("/")
+                                .maxAge(24 * 60 * 60) // 1 day
+                                .sameSite("Strict") // Protect against CSRF
+                                .build();
+                return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body("Display name changed successfully.");
 
         }
 

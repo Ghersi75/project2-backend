@@ -9,6 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangeDisplayNameDTO {
      private String newDisplayName;
-     private String password;
-    
 }

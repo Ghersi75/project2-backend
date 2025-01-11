@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChangeUsernameDTO {
     private String newUsername;
-    private String password;
 }

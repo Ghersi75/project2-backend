@@ -102,7 +102,6 @@ public class ReviewController {
         reviewInteractionProducer.sendReviewInteraction(producerInteractionDTO);
 
         return updatedLikes;
-
     }
 
     // Done

@@ -170,6 +170,7 @@ public class ReviewService {
             throw new ResourceNotFoundException("Invalid review");
         }
     }
+    
     public Review getbyId(Long id) {
         return reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Review not found"));
     }

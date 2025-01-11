@@ -1,94 +1,106 @@
-// package com.team2.backend.controllers;
+package com.team2.backend.controllers;
 
-// import com.fasterxml.jackson.databind.ObjectMapper;
-// import com.team2.backend.controllers.GameController;
-// import com.team2.backend.service.GameService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team2.backend.dto.game.NewFavoriteGameDTO;
+import com.team2.backend.models.Game;
+import com.team2.backend.service.GameService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
-// import org.mockito.junit.jupiter.MockitoExtension;
-// import org.springframework.http.MediaType;
-// import org.springframework.test.web.servlet.MockMvc;
-// import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import java.util.List;
+import java.util.Map;
 
-// import java.util.Arrays;
-// import java.util.List;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// import static org.mockito.ArgumentMatchers.eq;
-// import static org.mockito.Mockito.*;
-// import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-// import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+@ExtendWith(MockitoExtension.class)
+class GameControllerTest {
 
-// @ExtendWith(MockitoExtension.class)
-// class GameControllerTest {
+    private MockMvc mockMvc;
 
-//     private MockMvc mockMvc;
+    @InjectMocks
+    private GameController gameController;
 
-//     @InjectMocks
-//     private GameController gameController;
+    @Mock
+    private GameService gameService;
 
-//     @Mock
-//     private GameService gameService;
+    private ObjectMapper objectMapper;
 
-//     private ObjectMapper objectMapper;
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
+        objectMapper = new ObjectMapper();
+    }
 
-//     @BeforeEach
-//     void setUp() {
-//         objectMapper = new ObjectMapper();
-//         MockitoAnnotations.openMocks(this);
-//         mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
-//     }
+    @Test
+    void testGetFavoriteGames_Success() throws Exception {
+        String username = "testUser";
+        List<Game> favoriteGames = List.of(new Game(1, "Test Game"));
 
-//     @Test
-//     void addFavoriteGame_ShouldReturnOk() throws Exception {
-//         Long userId = 1L;
-//         Integer appid = 123;
+        when(gameService.getFavoriteGames(username)).thenReturn(favoriteGames);
 
-//         doNothing().when(gameService).addFavoriteGame(userId, appid);
+        mockMvc.perform(get("/game/favorites").param("username", username))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(favoriteGames.size()))
+                .andExpect(jsonPath("$[0].id").value(favoriteGames.get(0).getId()))
+                .andExpect(jsonPath("$[0].name").value(favoriteGames.get(0).getName()));
 
-//         mockMvc.perform(post("/game/favorites")
-//                 .param("userId", String.valueOf(userId))
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content(String.valueOf(appid)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("Favorite game added"));
+        verify(gameService, times(1)).getFavoriteGames(username);
+    }
 
-//         verify(gameService, times(1)).addFavoriteGame(userId, appid);
-//     }
+    @Test
+    void testIsFavoritedGame_Success() throws Exception {
+        String username = "testUser";
+        int appid = 123;
+        boolean isFavorited = true;
 
-//     @Test
-//     void testDeleteFavoriteGame_Success() throws Exception {
-//         Long userId = 1L;
-//         int appid = 12345;
+        when(gameService.isFavoritedGame(username, appid)).thenReturn(isFavorited);
 
-//         doNothing().when(gameService).deleteFavoriteGame(userId, appid);
+        mockMvc.perform(get("/game/favorites/{appid}", appid).param("username", username))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.favorited").value(isFavorited));
 
-//         mockMvc.perform(delete("/game/favorites")
-//                 .param("userId", String.valueOf(userId))
-//                 .contentType(MediaType.APPLICATION_JSON)
-//                 .content(objectMapper.writeValueAsString(appid)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(content().string("Favorite game removed"));
-//     }
+        verify(gameService, times(1)).isFavoritedGame(username, appid);
+    }
 
-//     @Test
-//     void testGetFavoriteGames_Success() throws Exception {
-//         Long userId = 1L;
-//         Integer[] favoriteGames = {123, 456};
+    @Test
+    void testAddFavoriteGame_Success() throws Exception {
+        String username = "testUser";
+        NewFavoriteGameDTO newFavoriteGame = new NewFavoriteGameDTO(123, "Test Game");
 
-//         when(gameService.getFavoriteGames(userId)).thenReturn(Arrays.asList(favoriteGames));
+        doNothing().when(gameService).addFavoriteGame(username, newFavoriteGame);
 
-//         mockMvc.perform(get("/game/favorites")
-//                 .param("userId", String.valueOf(userId)))
-//                 .andExpect(status().isOk())
-//                 .andExpect(jsonPath("$.length()").value(favoriteGames.length))
-//                 .andExpect(jsonPath("$[0]").value(favoriteGames[0]))
-//                 .andExpect(jsonPath("$[1]").value(favoriteGames[1]));
+        mockMvc.perform(post("/game/favorites")
+                .param("username", username)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newFavoriteGame)))
+                .andExpect(status().isOk());
 
-//         verify(gameService, times(1)).getFavoriteGames(userId);
-//     }
-// }
+        verify(gameService, times(1)).addFavoriteGame(username, newFavoriteGame);
+    }
+
+    @Test
+    void testDeleteFavoriteGame_Success() throws Exception {
+        String username = "testUser";
+        int appid = 123;
+
+        doNothing().when(gameService).deleteFavoriteGame(username, appid);
+
+        mockMvc.perform(delete("/game/favorites")
+                .param("username", username)
+                .param("appid", String.valueOf(appid)))
+                .andExpect(status().isOk());
+
+        verify(gameService, times(1)).deleteFavoriteGame(username, appid);
+    }
+}

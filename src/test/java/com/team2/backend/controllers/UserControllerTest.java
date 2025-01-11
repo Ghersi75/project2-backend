@@ -5,8 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
+import static org.hamcrest.Matchers.containsString;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +38,7 @@ import com.team2.backend.models.User;
 import com.team2.backend.service.UserService;
 import com.team2.backend.util.JwtUtil;
 
-@AutoConfigureMockMvc(addFilters = false) 
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
@@ -76,7 +81,7 @@ public class UserControllerTest {
     void testRegisterUser_BadRequest() throws Exception {
         UserSignUpDTO request = new UserSignUpDTO();
         request.setDisplayName("Test User");
-        request.setUsername(""); 
+        request.setUsername("");
         request.setPassword("password123");
 
         this.mockMvc.perform(post("/user/register")
@@ -112,12 +117,71 @@ public class UserControllerTest {
 
         when(userService.authenticateUser("wrongUser", "wrongPassword"))
                 .thenThrow(new InvalidCredentialsException("Invalid username or password"));
-    
+
         this.mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequestDTO)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error").value("Invalid username or password"));
     }
-  
+
+    @Test
+    void testChangeUsername_Success() throws Exception {
+        String username = "testUser";
+        String newUsername = "newUser";
+        ChangeUsernameDTO dto = new ChangeUsernameDTO(newUsername);
+        String token = "newToken";
+
+        when(userService.changeUsername(eq(username), any(ChangeUsernameDTO.class))).thenReturn(token);
+
+        mockMvc.perform(put("/user/username")
+                .param("username", username)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
+                .andExpect(content().string("Username changed successfully."));
+
+        verify(userService, times(1)).changeUsername(eq(username), any(ChangeUsernameDTO.class));
+    }
+
+    @Test
+void testChangePassword_Success() throws Exception {
+    String username = "testUser";
+    ChangePasswordDTO dto = new ChangePasswordDTO("oldPass", "newPass");
+    String token = "newToken";
+
+    when(userService.changePassword(eq(username), any(ChangePasswordDTO.class))).thenReturn(token);
+
+    mockMvc.perform(put("/user/password")
+            .param("username", username)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
+            .andExpect(content().string("Password changed successfully."));
+
+    verify(userService, times(1)).changePassword(eq(username), any(ChangePasswordDTO.class));
+}
+
+@Test
+void testChangeDisplayName_Success() throws Exception {
+    String username = "testUser";
+    ChangeDisplayNameDTO dto = new ChangeDisplayNameDTO("New Display Name");
+    String token = "newToken";
+
+    when(userService.changeDisplayName(eq(username), any(ChangeDisplayNameDTO.class))).thenReturn(token);
+
+    mockMvc.perform(put("/user/displayname")
+            .param("username", username)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(dto)))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
+            .andExpect(content().string("Display name changed successfully."));
+
+    verify(userService, times(1)).changeDisplayName(eq(username), any(ChangeDisplayNameDTO.class));
+}
+
+
 }

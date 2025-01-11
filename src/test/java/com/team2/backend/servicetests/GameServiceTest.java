@@ -1,147 +1,132 @@
-// package com.team2.backend.servicetests;
+package com.team2.backend.servicetests;
 
-// import static org.junit.jupiter.api.Assertions.*;
-// import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.MockitoAnnotations;
+import com.team2.backend.dto.game.NewFavoriteGameDTO;
+import com.team2.backend.exceptions.InvalidFavoriteGameException;
+import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.models.Game;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.GameRepository;
+import com.team2.backend.repository.UserRepository;
+import com.team2.backend.service.GameService;
 
-// import com.team2.backend.exceptions.InvalidFavoriteGameException;
-// import com.team2.backend.exceptions.UserNotFoundException;
-// import com.team2.backend.models.User;
-// import com.team2.backend.repository.UserRepository;
-// import com.team2.backend.service.GameService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-// import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-// public class GameServiceTest {
-//     @Mock
-//     private UserRepository userRepository;
+public class GameServiceTest {
 
-//     @InjectMocks
-//     private GameService gameService;
+    @InjectMocks
+    private GameService gameService;
 
-//     @BeforeEach
-//     void setUp() {
-//         MockitoAnnotations.openMocks(this);
-//     }
+    @Mock
+    private UserRepository userRepository;
 
-//     @Test
-//     void addFavoriteGame_ShouldAddGameToUserFavorites() {
-//         Long userId = 1L;
-//         int favoriteGame = 12345;
+    @Mock
+    private GameRepository gameRepository;
 
-//         User user = new User();
-//         user.setId(userId);
-//         user.setFavoriteGames(new ArrayList<>());
+    private User user;
+    private Game game;
 
-//         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        user = new User();
+        user.setUsername("testuser");
+        game = new Game(1L, 123, "Test Game", "http://example.com/thumbnail.jpg", List.of("PC"), user);
+    }
 
-//         gameService.addFavoriteGame(userId, favoriteGame);
+    @Test
+    public void testGetFavoriteGames_UserExists() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByUser(user)).thenReturn(List.of(game));
 
-//         assertTrue(user.getFavoriteGames().contains(favoriteGame));
-//         verify(userRepository, times(1)).save(user);
-//     }
+        List<Game> favoriteGames = gameService.getFavoriteGames("testuser");
 
-//     @Test
-//     void addFavoriteGame_ShouldCreateNewGameIfNotFound() {
-//         Long userId = 1L;
-//         int favoriteGame = 12345;
+        assertNotNull(favoriteGames);
+        assertEquals(1, favoriteGames.size());
+        assertEquals(game, favoriteGames.get(0));
+    }
 
-//         User user = new User();
-//         user.setId(userId);
-//         user.setFavoriteGames(new ArrayList<>());
+    @Test
+    public void testGetFavoriteGames_UserNotFound() {
+        when(userRepository.findByUsername("nonexistentuser")).thenReturn(Optional.empty());
 
-//         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        assertThrows(UserNotFoundException.class, () -> {
+            gameService.getFavoriteGames("nonexistentuser");
+        });
+    }
 
-//         gameService.addFavoriteGame(userId, favoriteGame);
+    @Test
+    public void testIsFavoritedGame_Exists() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByUserAndAppid(user, 123)).thenReturn(List.of(game));
 
-//         assertEquals(1, user.getFavoriteGames().size());
-//     }
+        assertTrue(gameService.isFavoritedGame("testuser", 123));
+    }
 
-//     @Test
-//     void addFavoriteGame_ShouldThrowException_WhenGameIsAlreadyFavorite() {
-//         Long userId = 1L;
-//         int favoriteGame = 12345;
+    @Test
+    public void testIsFavoritedGame_NotExists() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByUserAndAppid(user, 123)).thenReturn(new ArrayList<>());
 
-//         User user = new User();
-//         user.setId(userId);
-//         user.setFavoriteGames(Collections.singletonList(favoriteGame));
+        assertFalse(gameService.isFavoritedGame("testuser", 123));
+    }
 
-//         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    @Test
+    public void testAddFavoriteGame_Success() {
+        NewFavoriteGameDTO newGameDTO = new NewFavoriteGameDTO();
+        newGameDTO.setAppId(123);
+        newGameDTO.setName("New Test Game");
+        newGameDTO.setThumbnailLink("http://example.com/new_thumbnail.jpg");
+        newGameDTO.setAvailableOn(List.of("PC"));
 
-//         InvalidFavoriteGameException exception = assertThrows(
-//                 InvalidFavoriteGameException.class,
-//                 () -> gameService.addFavoriteGame(userId, favoriteGame));
-//         assertEquals("Game is already in the user's favorite list.", exception.getMessage());
-//     }
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByAppid(123)).thenReturn(new ArrayList<>());
 
-//     @Test
-//     void deleteFavoriteGame_ShouldRemoveGameFromUserFavorites() {
-//         Long userId = 1L;
-//         int favoriteGame = 12345;
-    
-//         User user = new User();
-//         user.setId(userId);
-        
-//         user.setFavoriteGames(new ArrayList<>());
-//         user.getFavoriteGames().add(favoriteGame);
-        
-//         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-//         gameService.deleteFavoriteGame(userId, favoriteGame);
-    
-//         assertTrue(user.getFavoriteGames().isEmpty(), "The game should be removed from the user's favorites.");
+        assertDoesNotThrow(() -> gameService.addFavoriteGame("testuser", newGameDTO));
 
-//         verify(userRepository, times(1)).save(user);
-//     }
+        verify(gameRepository, times(1)).save(any(Game.class));
+    }
 
-//     @Test
-//     void deleteFavoriteGame_ShouldThrowException_WhenGameIsNotFavorite() {
-//         Long userId = 1L;
-//         int favoriteGame = 12345;
+    @Test
+    public void testAddFavoriteGame_AlreadyExists() {
+        NewFavoriteGameDTO newGameDTO = new NewFavoriteGameDTO();
+        newGameDTO.setAppId(123);
 
-//         User user = new User();
-//         user.setId(userId);
-//         user.setFavoriteGames(new ArrayList<>());
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByAppid(123)).thenReturn(List.of(game));
 
-//         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        assertThrows(InvalidFavoriteGameException.class, () -> {
+            gameService.addFavoriteGame("testuser", newGameDTO);
+        });
+    }
 
-//         InvalidFavoriteGameException exception = assertThrows(
-//                 InvalidFavoriteGameException.class,
-//                 () -> gameService.deleteFavoriteGame(userId, favoriteGame));
-//         assertEquals("Game is not in the user's favorite list.", exception.getMessage());
-//     }
+    @Test
+    public void testDeleteFavoriteGame_Success() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByAppid(123)).thenReturn(List.of(game));
 
-//     @Test
-//     void getFavoriteGames_ShouldReturnUserFavorites() {
-//         Long userId = 1L;
-//         User user = new User();
-//         user.setId(userId);
-//         int game1 = 12345;
-//         int game2 = 12345;
-//         user.setFavoriteGames(Arrays.asList(game1, game2));
+        assertDoesNotThrow(() -> gameService.deleteFavoriteGame("testuser", 123));
 
-//         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        verify(gameRepository, times(1)).deleteByUserAndAppid(user, 123);
+    }
 
-//         List<Integer> favoriteGames = gameService.getFavoriteGames(userId);
+    @Test
+    public void testDeleteFavoriteGame_NotExists() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(gameRepository.findByAppid(123)).thenReturn(new ArrayList<>());
 
-//         assertEquals(2, favoriteGames.size());
-//         assertTrue(favoriteGames.contains(game1));
-//         assertTrue(favoriteGames.contains(game2));
-//     }
-
-//     @Test
-//     void getFavoriteGames_ShouldThrowException_WhenUserNotFound() {
-//         Long userId = 1L;
-
-//         when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-//         UserNotFoundException exception = assertThrows(
-//                 UserNotFoundException.class,
-//                 () -> gameService.getFavoriteGames(userId));
-//         assertEquals("User not found", exception.getMessage());
-//     }
-// }
+        assertThrows(InvalidFavoriteGameException.class, () -> {
+            gameService.deleteFavoriteGame("testuser", 123);
+        });
+    }
+}
