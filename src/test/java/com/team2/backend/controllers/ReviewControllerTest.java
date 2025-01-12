@@ -5,6 +5,7 @@ import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.UpdateReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.user.UserSignUpDTO;
+import com.team2.backend.kafka.Producer.ReviewCreationProducer;
 import com.team2.backend.service.ReviewService;
 import com.team2.backend.models.Review;
 import com.team2.backend.models.User;
@@ -42,6 +43,9 @@ class ReviewControllerTest {
     @Mock
     private ReviewService reviewService;
 
+    @Mock
+    private ReviewCreationProducer reviewCreationProducer;
+
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -63,10 +67,10 @@ class ReviewControllerTest {
         String username = "testUser";
         setAuthentication(username); // Set authentication here
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!","Game", 123);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!", "Game", 123);
         Review review = new Review();
         review.setId(1L);
-        review.setUser(new User(new UserSignUpDTO("Test User","testUser","123","CONTRIBUTOR")));
+        review.setUser(new User(new UserSignUpDTO("Test User", "testUser", "123", "CONTRIBUTOR")));
         review.setContent("Great game!");
         review.setLikes(0);
         review.setDislikes(0);
