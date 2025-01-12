@@ -1,33 +1,25 @@
 package com.team2.backend.kafka.Consumer;
 
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.team2.backend.repository.ReviewRepository;
-import com.team2.backend.repository.GameRepository;
-import com.team2.backend.dto.userreviewinteraction.NotificationDTO;
-import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
-import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
-import com.team2.backend.enums.NotificationType;
-import com.team2.backend.enums.ReviewInteraction;
-import com.team2.backend.models.Game;
-import com.team2.backend.models.Notification;
-import com.team2.backend.models.Review;
-import com.team2.backend.models.User;
-import com.team2.backend.repository.NotificationRepository;
-import com.team2.backend.repository.UserRepository;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
 
-import com.team2.backend.service.GameService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
+import com.team2.backend.enums.NotificationType;
+import com.team2.backend.models.Game;
+import com.team2.backend.models.Notification;
+import com.team2.backend.models.Review;
+import com.team2.backend.models.User;
+import com.team2.backend.repository.GameRepository;
+import com.team2.backend.repository.NotificationRepository;
+import com.team2.backend.repository.ReviewRepository;
+import com.team2.backend.repository.UserRepository;
 
 @Service
 public class ReviewInteractionConsumer {
@@ -106,7 +98,7 @@ public class ReviewInteractionConsumer {
             notification.setUser(review.getUser());
             notification.setGameName(game.getName());
             notification.setReviewId(interactionDTO.getReviewid());
-            notification.setAppId(interactionDTO.getAppid());
+            notification.setAppId(review.getAppid());
             notification.setUsername(interactionDTO.getUsername());
             notification.setType(interactionDTO.getType());
             notificationRepository.save(notification);
