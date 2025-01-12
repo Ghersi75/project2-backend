@@ -1,7 +1,6 @@
 package com.team2.backend.kafka.Consumer;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,14 +11,12 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.team2.backend.dto.userreviewinteraction.ProducerInteractionDTO;
 import com.team2.backend.enums.NotificationType;
-import com.team2.backend.models.Game;
 import com.team2.backend.models.Notification;
 import com.team2.backend.models.Review;
-import com.team2.backend.models.User;
-import com.team2.backend.repository.GameRepository;
+// import com.team2.backend.models.User;
 import com.team2.backend.repository.NotificationRepository;
 import com.team2.backend.repository.ReviewRepository;
-import com.team2.backend.repository.UserRepository;
+// import com.team2.backend.repository.UserRepository;
 
 @Service
 public class ReviewInteractionConsumer {
@@ -27,11 +24,8 @@ public class ReviewInteractionConsumer {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    @Autowired
-    private GameRepository gameRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    // @Autowired
+    // private UserRepository userRepository;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -68,12 +62,10 @@ public class ReviewInteractionConsumer {
     private void sendNotification(ProducerInteractionDTO interactionDTO, String message) {
         Notification notification = new Notification();
         Review review = reviewRepository.findById(interactionDTO.getReviewid()).get();
-        Optional<User> user = userRepository.findById(review.getUser().getId());
+        // Optional<User> user = userRepository.findById(review.getUser().getId());
 
-        System.out.println("****APID: " + review.getAppid());
+        // System.out.println("****APID: " + review.getAppid());
 
- 
-        
         // Define a set of equivalent types
         Set<NotificationType> equivalentTypes = new HashSet<>();
         equivalentTypes.add(NotificationType.LIKE);

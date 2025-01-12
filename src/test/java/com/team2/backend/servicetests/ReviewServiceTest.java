@@ -9,8 +9,8 @@ import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.enums.UserRole;
 import com.team2.backend.exceptions.ForbiddenException;
-import com.team2.backend.exceptions.ResourceNotFoundException;
 import com.team2.backend.exceptions.UserNotFoundException;
+import com.team2.backend.exceptions.ResourceNotFoundException;
 import com.team2.backend.models.Review;
 import com.team2.backend.models.User;
 import com.team2.backend.models.UserReviewInteraction;
@@ -25,13 +25,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class ReviewServiceTest {

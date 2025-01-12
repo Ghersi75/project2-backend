@@ -45,12 +45,12 @@ public class ReviewModelTest {
     @Test
     void testReviewDefaultValues() {
         Review review = new Review();
-        
+
         int defaultLikes = review.getLikes();
         int defaultDislikes = review.getDislikes();
 
-        assertEquals(0, defaultLikes); 
-        assertEquals(0, defaultDislikes); 
+        assertEquals(0, defaultLikes);
+        assertEquals(0, defaultDislikes);
     }
 
     @Test
@@ -175,7 +175,7 @@ public class ReviewModelTest {
         dto.setReviewid(review.getId());
         dto.setInteraction(ReviewInteraction.LIKE);
 
-        UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto,user,review);
+        UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto, user, review);
 
         assertNotNull(userReviewInteraction);
         assertEquals(user, userReviewInteraction.getUser());
