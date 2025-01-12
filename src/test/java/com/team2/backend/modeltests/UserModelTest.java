@@ -16,7 +16,7 @@ class UserModelTest {
         userSignUpDTO.setUsername("testuser");
         userSignUpDTO.setDisplayName("Test User");
         userSignUpDTO.setPassword("password123");
-        userSignUpDTO.setRole("ADMIN");  
+        userSignUpDTO.setRole("MODERATOR");  
 
         User user = new User(userSignUpDTO);
 

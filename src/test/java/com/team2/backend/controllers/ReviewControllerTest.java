@@ -123,30 +123,4 @@ class ReviewControllerTest {
         verify(reviewService, times(1)).updateReview(eq(username), eq(reviewId), eq(updateReviewDTO));
     }
 
-    @Test
-    void testGetAllReviewsByUser_Success() throws Exception {
-        String username = "testUser";
-        Review review = new Review();
-        review.setId(1L);
-        review.setUser(new User(new UserSignUpDTO("Test User", username, "123", "CONTRIBUTOR")));
-        review.setContent("Great game!");
-        review.setLikes(0);
-        review.setDislikes(0);
-        review.setPostedAt(OffsetDateTime.now());
-
-        List<Review> reviews = List.of(review);
-        when(reviewService.getAllReviewsByUser(eq(username))).thenReturn(reviews);
-
-        mockMvc.perform(get("/reviews/{username}", username))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].reviewId").value(1))
-                .andExpect(jsonPath("$[0].username").value("testUser"))
-                .andExpect(jsonPath("$[0].displayName").value("Test User"))
-                .andExpect(jsonPath("$[0].content").value("Great game!"))
-                .andExpect(jsonPath("$[0].likes").value(0))
-                .andExpect(jsonPath("$[0].dislikes").value(0));
-
-        verify(reviewService, times(1)).getAllReviewsByUser(eq(username));
-    }
 }

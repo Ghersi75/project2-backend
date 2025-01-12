@@ -33,7 +33,7 @@ public class GameService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        return gameRepository.findByUserAndAppId(user, appid).size() > 0;
+        return gameRepository.existsByUserAndAppId(user, appid);
     }
 
     @Transactional

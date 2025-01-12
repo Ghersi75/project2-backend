@@ -1,11 +1,8 @@
-/* package com.team2.backend.servicetests;
+package com.team2.backend.servicetests;
 
-import com.team2.backend.service.*;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.ReviewWithLikedDTO;
-import com.team2.backend.dto.review.UpdateReviewDTO;
-import com.team2.backend.dto.userreviewinteraction.UserInteractionResultDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.enums.UserRole;
@@ -18,176 +15,269 @@ import com.team2.backend.models.UserReviewInteraction;
 import com.team2.backend.repository.ReviewRepository;
 import com.team2.backend.repository.UserRepository;
 import com.team2.backend.repository.UserReviewInteractionRepository;
+import com.team2.backend.service.ReviewService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class ReviewServiceTest {
+
+    @InjectMocks
+    private ReviewService reviewService;
 
     @Mock
     private ReviewRepository reviewRepository;
 
     @Mock
-    private UserReviewInteractionRepository userReviewInteractionRepository;
-
-    @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private ReviewService reviewService;
+    @Mock
+    private UserReviewInteractionRepository userReviewInteractionRepository;
 
     private User user;
     private Review review;
-    private NewReviewDTO newReviewDTO;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
         user = new User();
+        user.setId(1L);
         user.setUsername("testUser");
-        user.setUserRole(UserRole.CONTRIBUTOR);
 
         review = new Review();
         review.setId(1L);
         review.setUser(user);
-        review.setContent("This is a review.");
-
-        newReviewDTO = new NewReviewDTO();
-        newReviewDTO.setContent("New Review Content");
     }
 
     @Test
-    void testGetAllReviewsByUser() {
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+    void testGetAllReviewsByUser_Success() {
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         when(reviewRepository.findByUser(user)).thenReturn(List.of(review));
 
-        List<Review> reviews = reviewService.getAllReviewsByUser("testUser");
+        List<Review> reviews = reviewService.getAllReviewsByUser(user.getUsername());
 
         assertNotNull(reviews);
         assertEquals(1, reviews.size());
-        verify(userRepository).findByUsername("testUser");
-        verify(reviewRepository).findByUser(user);
+        verify(userRepository, times(1)).findByUsername(user.getUsername());
+        verify(reviewRepository, times(1)).findByUser(user);
     }
 
     @Test
-    void testAddReview() {
+    void testGetAllReviewsByUser_UserNotFound() {
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> reviewService.getAllReviewsByUser(user.getUsername()));
+        verify(userRepository, times(1)).findByUsername(user.getUsername());
+    }
+
+    @Test
+    void testAddReview_Success() {
         NewReviewDTO newReviewDTO = new NewReviewDTO();
-        newReviewDTO.setAppid(123); // Set a valid appid
         newReviewDTO.setContent("Great game!");
-    
+        newReviewDTO.setAppid(123);
+
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(reviewRepository.save(any(Review.class))).thenReturn(review);
+
+        ReviewDTO reviewDTO = reviewService.addReview(user.getUsername(), newReviewDTO);
+
+        assertNotNull(reviewDTO);
+        assertEquals(review.getId(), reviewDTO.getReviewId());
+        assertEquals(user.getUsername(), reviewDTO.getUsername());
+        assertEquals(user.getDisplayName(), reviewDTO.getDisplayName());
+        assertEquals(review.getContent(), reviewDTO.getContent());
+        assertEquals(review.getLikes(), reviewDTO.getLikes());
+        assertEquals(review.getDislikes(), reviewDTO.getDislikes());
+        assertEquals(review.getPostedAt(), reviewDTO.getPostedAt());
+        verify(userRepository, times(1)).findByUsername(user.getUsername());
+        verify(reviewRepository, times(1)).save(any(Review.class));
+    }
+
+    @Test
+    void testDeleteReview_Success() {
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
+
+        reviewService.deleteReview(user.getUsername(), review.getId());
+
+        verify(userRepository, times(1)).findByUsername(user.getUsername());
+        verify(reviewRepository, times(1)).findById(review.getId());
+        verify(reviewRepository, times(1)).delete(review);
+    }
+
+    @Test
+    void testDeleteReview_Forbidden() {
+        User contributorUser = new User(2L, "contributorUser", "Contributor User", "password", UserRole.CONTRIBUTOR,
+                null, null, null);
+        User reviewOwner = new User(1L, "reviewOwner", "Review Owner", "password", UserRole.CONTRIBUTOR, null, null,
+                null);
+
+        Review review = new Review(reviewOwner, new NewReviewDTO("This is a test review.", 123));
+
+        when(userRepository.findByUsername(contributorUser.getUsername())).thenReturn(Optional.of(contributorUser));
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
+
+        assertThrows(ForbiddenException.class, () -> {
+            reviewService.deleteReview(contributorUser.getUsername(), review.getId());
+        });
+
+        verify(reviewRepository, never()).delete(review);
+    }
+
+    @Test
+    void testGetAllReviewsByGame_Success() {
         User user = new User();
-        user.setUsername("testUser");
-    
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(reviewRepository.save(any(Review.class))).thenAnswer(i -> i.getArgument(0));
-    
-        ReviewDTO result = reviewService.addReview("testUser", newReviewDTO);
-    
-        assertNotNull(result);
-        assertEquals("Great game!", result.getContent());
-    
-        verify(userRepository).findByUsername("testUser");
-        verify(reviewRepository).save(any(Review.class));
-    }
-    
+        user.setId(1L);
+        user.setUsername("Test User");
+        user.setDisplayName("testUser");
+        user.setPassword("password");
+        user.setUserRole(UserRole.CONTRIBUTOR);
 
-    @Test
-    void testDeleteReview() {
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(123);
+        review.setContent("This is review 1.");
+        review.setLikes(0);
+        review.setDislikes(0);
+        review.setPostedAt(null);
+        review.setUser(user);
 
-        reviewService.deleteReview("testUser", 1L);
+        when(reviewRepository.findByAppidOrderByPostedAtDesc(123))
+                .thenReturn(List.of(review));
 
-        verify(userRepository).findByUsername("testUser");
-        verify(reviewRepository).findById(1L);
-        verify(reviewRepository).delete(review);
-    }
-
-    @Test
-    void testUpdateReview() {
-        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO();
-        updateReviewDTO.setContent("Updated Content");
-
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-
-        reviewService.updateReview("testUser", 1L, updateReviewDTO);
-
-        assertEquals("Updated Content", review.getContent());
-        verify(userRepository).findByUsername("testUser");
-        verify(reviewRepository).findById(1L);
-        verify(reviewRepository).save(review);
-    }
-
-    @Test
-    void testLikeOrDislikeReview_Like() {
-        User differentUser = new User();
-        differentUser.setUsername("differentUser");
-    
-        review.setUser(differentUser);
-    
-        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, ReviewInteraction.LIKE);
-    
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
-        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
-        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
-    
-        UserInteractionResultDTO resultDTO = reviewService.likeOrDislikeReview("testUser", interactionDTO);
-    
-        assertNotNull(resultDTO);
-        assertEquals(1, review.getLikes());
-    
-        verify(userRepository).findByUsername("testUser");
-        verify(reviewRepository, times(2)).findById(1L);
-        verify(userReviewInteractionRepository).save(any(UserReviewInteraction.class));
-    }
-    
-
-    @Test
-    void testLikeOrDislikeReview_Dislike() {
-        User differentUser = new User();
-        differentUser.setUsername("differentUser");
-    
-        review.setUser(differentUser);
-    
-        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, ReviewInteraction.DISLIKE);
-    
-        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
         when(reviewRepository.findById(1L))
-            .thenReturn(Optional.of(review))
-            .thenReturn(Optional.of(review)); 
-    
-        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
-    
-        UserInteractionResultDTO resultDTO = reviewService.likeOrDislikeReview("testUser", interactionDTO);
-    
-        assertNotNull(resultDTO);
-        assertEquals(1, review.getDislikes());
-        
-        verify(userRepository).findByUsername("testUser");
-        verify(reviewRepository, times(2)).findById(1L); 
-        verify(userReviewInteractionRepository).save(any(UserReviewInteraction.class));
+                .thenReturn(Optional.of(review));
+
+        when(userRepository.findByUsername("Test User"))
+                .thenReturn(Optional.of(user));
+
+        UserReviewInteraction interaction = new UserReviewInteraction();
+        interaction.setUser(user);
+        interaction.setReview(review);
+        interaction.setInteraction(ReviewInteraction.LIKE);
+
+        when(userReviewInteractionRepository.findByUserAndReview(user, review))
+                .thenReturn(Optional.of(interaction));
+
+        List<ReviewWithLikedDTO> result = reviewService.getAllReviewsByGame(123, "Test User");
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals("Test User", result.get(0).getUsername());
+        assertNotNull(result.get(0).getLikedByUser());
     }
 
     @Test
-    void testGetById() {
-        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+    void testUpdateInteraction_LikeToDislike() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("Test User");
+        user.setDisplayName("Test Display Name");
 
-        Review foundReview = reviewService.getbyId(1L);
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(123);
+        review.setContent("Test review content.");
+        review.setLikes(5);
+        review.setDislikes(2);
 
-        assertNotNull(foundReview);
-        assertEquals(1L, foundReview.getId());
-        verify(reviewRepository).findById(1L);
+        UserReviewInteraction existingInteraction = new UserReviewInteraction();
+        existingInteraction.setUser(user);
+        existingInteraction.setReview(review);
+        existingInteraction.setInteraction(ReviewInteraction.LIKE);
+
+        when(userReviewInteractionRepository.findByUserAndReview(user, review))
+                .thenReturn(Optional.of(existingInteraction));
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
+
+        reviewService.updateInteraction(existingInteraction, ReviewInteraction.DISLIKE);
+
+        verify(userReviewInteractionRepository).save(existingInteraction);
+        verify(reviewRepository).save(review);
+
+        assertEquals(4, review.getLikes());
+        assertEquals(3, review.getDislikes());
+        assertEquals(ReviewInteraction.DISLIKE, existingInteraction.getInteraction());
     }
-} */
+
+    @Test
+    void testUpdateInteraction_DislikeToLike() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("Test User");
+        user.setDisplayName("Test Display Name");
+
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(123);
+        review.setContent("Test review content.");
+        review.setLikes(2);
+        review.setDislikes(5);
+
+        UserReviewInteraction existingInteraction = new UserReviewInteraction();
+        existingInteraction.setUser(user);
+        existingInteraction.setReview(review);
+        existingInteraction.setInteraction(ReviewInteraction.DISLIKE);
+
+        when(userReviewInteractionRepository.findByUserAndReview(user, review))
+                .thenReturn(Optional.of(existingInteraction));
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
+
+        reviewService.updateInteraction(existingInteraction, ReviewInteraction.LIKE);
+
+        verify(userReviewInteractionRepository).save(existingInteraction);
+        verify(reviewRepository).save(review);
+
+        assertEquals(3, review.getLikes());
+        assertEquals(4, review.getDislikes());
+        assertEquals(ReviewInteraction.LIKE, existingInteraction.getInteraction());
+    }
+
+    @Test
+    void testUpdateInteraction_SameInteraction() {
+        // Mock data setup
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("Test User");
+        user.setDisplayName("Test Display Name");
+
+        Review review = new Review();
+        review.setId(1L);
+        review.setAppid(123);
+        review.setContent("Test review content.");
+        review.setLikes(3);
+        review.setDislikes(2);
+
+        UserReviewInteraction existingInteraction = new UserReviewInteraction();
+        existingInteraction.setUser(user);
+        existingInteraction.setReview(review);
+        existingInteraction.setInteraction(ReviewInteraction.LIKE);
+
+        when(userReviewInteractionRepository.findByUserAndReview(user, review))
+                .thenReturn(Optional.of(existingInteraction));
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
+
+        reviewService.updateInteraction(existingInteraction, ReviewInteraction.LIKE);
+
+        verify(userReviewInteractionRepository).save(existingInteraction);
+
+        assertEquals(3, review.getLikes());
+        assertEquals(2, review.getDislikes());
+        assertEquals(ReviewInteraction.LIKE, existingInteraction.getInteraction());
+    }
+
+    
+}
