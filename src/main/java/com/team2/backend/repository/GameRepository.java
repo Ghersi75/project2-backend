@@ -19,7 +19,6 @@ public interface GameRepository extends JpaRepository<Game, Long> {
 
   Optional<Game> findByAppId(Long appid);
 
-  List<Game> findByUserAndAppid(User user, Integer appId);
 
   
 

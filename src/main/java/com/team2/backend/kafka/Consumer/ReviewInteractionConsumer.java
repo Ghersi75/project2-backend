@@ -76,8 +76,20 @@ public class ReviewInteractionConsumer {
         Review review = reviewRepository.findById(interactionDTO.getReviewid()).get();
        Optional< User> user = userRepository.findById(review.getUser().getId());
 
-        List<Game> games = gameRepository.findByUserAndAppId(user.get(), interactionDTO.getAppid());
+        List<Game> games = gameRepository.findByAppId(interactionDTO.getAppid());
+        
         Game game = games.get(0);
+
+                // Check for existing notification
+                Optional<Notification> existingNotification = notificationRepository.findByUserAndReviewIdAndType(
+                    review.getUser(), interactionDTO.getReviewid(), interactionDTO.getType());
+    
+            if (existingNotification.isPresent()) {
+                // Notification already exists, do not create a new one
+                System.out.println("Duplicate notification detected, skipping creation.");
+                return;
+            }
+            
         notification.setUser(review.getUser());
         notification.setGameName(game.getName());
         notification.setReviewId(interactionDTO.getReviewid());

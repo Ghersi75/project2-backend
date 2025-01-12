@@ -60,8 +60,11 @@ public class ReviewCreationConsumer {
         Game game = games.get(0);
         List<User> usersWithFavoriteGame = userRepository.findByFavoriteGamesContaining(game);
         List<User> allusers = userRepository.findAll();
-        for (User user : allusers) {
-            sendNotification(user, review);
+        for (User user : usersWithFavoriteGame) {
+              // Skip sending notification to the user who created the review
+              if (!user.getId().equals(review.getUser().getId())) {
+                sendNotification(user, review);
+            }
         }
     }
 
