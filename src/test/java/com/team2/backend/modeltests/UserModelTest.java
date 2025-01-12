@@ -17,7 +17,7 @@ class UserTest {
         userSignUpDTO.setUsername("testuser");
         userSignUpDTO.setDisplayName("Test User");
         userSignUpDTO.setPassword("password123");
-        userSignUpDTO.setRole("ADMIN");  
+        userSignUpDTO.setRole("MODERATOR");  
 
         User user = new User(userSignUpDTO);
 
@@ -39,4 +39,5 @@ class UserTest {
 
         assertNotNull(user);
         assertEquals(UserRole.CONTRIBUTOR, user.getUserRole()); 
+}
 }
