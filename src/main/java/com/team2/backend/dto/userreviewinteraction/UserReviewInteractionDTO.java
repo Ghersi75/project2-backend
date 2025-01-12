@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class UserReviewInteractionDTO {
     private Long reviewid;
     private Integer appid;
+    private String gameName;
     private ReviewInteraction interaction;
 }

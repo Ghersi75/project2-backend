@@ -72,9 +72,7 @@ public class ReviewInteractionConsumer {
 
         System.out.println("****APID: " + review.getAppid());
 
-        List<Game> games = gameRepository.findByAppId(review.getAppid());
-
-        Game game = games.get(0);
+ 
         
         // Define a set of equivalent types
         Set<NotificationType> equivalentTypes = new HashSet<>();
@@ -96,7 +94,7 @@ public class ReviewInteractionConsumer {
             // Create a new notification
             notification = new Notification();
             notification.setUser(review.getUser());
-            notification.setGameName(game.getName());
+            notification.setGameName(interactionDTO.getGameName());
             notification.setReviewId(interactionDTO.getReviewid());
             notification.setAppId(review.getAppid());
             notification.setUsername(interactionDTO.getUsername());

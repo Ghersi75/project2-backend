@@ -61,7 +61,7 @@ public class ReviewController {
 
         ReviewDTO newReview = reviewService.addReview(username, reviewDTO);
         ProducerInteractionDTO producerInteractionDTO = new ProducerInteractionDTO(username,
-                newReview.getReviewId(), reviewDTO.getAppid(), NotificationType.REVIEW);
+                newReview.getReviewId(), reviewDTO.getAppid(), reviewDTO.getGameName() ,NotificationType.REVIEW);
 
         reviewCreationProducer.sendReviewCreation(producerInteractionDTO);
         return newReview;
@@ -97,7 +97,7 @@ public class ReviewController {
         interactionDTO.setInteraction(ReviewInteraction.LIKE);
 
         ProducerInteractionDTO producerInteractionDTO = new ProducerInteractionDTO(username,
-                interactionDTO.getReviewid(), interactionDTO.getAppid(), NotificationType.LIKE);
+                interactionDTO.getReviewid(), interactionDTO.getAppid(), interactionDTO.getGameName(),NotificationType.LIKE);
 
         reviewInteractionProducer.sendReviewInteraction(producerInteractionDTO);
 
@@ -114,7 +114,7 @@ public class ReviewController {
         interactionDTO.setInteraction(ReviewInteraction.DISLIKE);
 
         ProducerInteractionDTO producerInteractionDTO = new ProducerInteractionDTO(username,
-                interactionDTO.getReviewid(), interactionDTO.getAppid(), NotificationType.DISLIKE);
+                interactionDTO.getReviewid(), interactionDTO.getAppid(), interactionDTO.getGameName(),NotificationType.DISLIKE);
 
         reviewInteractionProducer.sendReviewInteraction(producerInteractionDTO);
         return updatedDislikes;

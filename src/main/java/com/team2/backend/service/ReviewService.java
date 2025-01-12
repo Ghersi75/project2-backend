@@ -130,7 +130,7 @@ public class ReviewService {
                 updateInteraction(existingInteraction, interactionDTO.getInteraction());
             }
         } else {
-            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(review.getId(),review.getAppid(),
+            UserReviewInteractionDTO userReviewInteractionDTO = new UserReviewInteractionDTO(review.getId(),review.getAppid(),interactionDTO.getGameName(),
                     interactionDTO.getInteraction());
             UserReviewInteraction newInteraction = new UserReviewInteraction(userReviewInteractionDTO, user, review);
             userReviewInteractionRepository.save(newInteraction);
