@@ -66,8 +66,8 @@ class ReviewControllerTest {
     void testAddReview_Success() throws Exception {
         String username = "testUser";
         setAuthentication(username); // Set authentication here
-
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!", "Game", 123);
+    
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great Game!", "Game",123);
         Review review = new Review();
         review.setId(1L);
         review.setUser(new User(new UserSignUpDTO("Test User", "testUser", "123", "CONTRIBUTOR")));
@@ -75,11 +75,11 @@ class ReviewControllerTest {
         review.setLikes(0);
         review.setDislikes(0);
         review.setPostedAt(OffsetDateTime.now());
-
+    
         ReviewDTO reviewDTO = new ReviewDTO(review);
-
+    
         when(reviewService.addReview(eq(username), eq(newReviewDTO))).thenReturn(reviewDTO);
-
+    
         mockMvc.perform(post("/reviews/{username}", username)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newReviewDTO)))
@@ -91,7 +91,7 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.likes").value(0))
                 .andExpect(jsonPath("$.dislikes").value(0))
                 .andExpect(jsonPath("$.postedAt").exists());
-
+    
         verify(reviewService, times(1)).addReview(eq(username), eq(newReviewDTO));
     }
 
