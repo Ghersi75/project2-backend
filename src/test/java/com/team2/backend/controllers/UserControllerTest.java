@@ -146,42 +146,41 @@ public class UserControllerTest {
     }
 
     @Test
-void testChangePassword_Success() throws Exception {
-    String username = "testUser";
-    ChangePasswordDTO dto = new ChangePasswordDTO("oldPass", "newPass");
-    String token = "newToken";
+    void testChangePassword_Success() throws Exception {
+        String username = "testUser";
+        ChangePasswordDTO dto = new ChangePasswordDTO("oldPass", "newPass");
+        String token = "newToken";
 
-    when(userService.changePassword(eq(username), any(ChangePasswordDTO.class))).thenReturn(token);
+        when(userService.changePassword(eq(username), any(ChangePasswordDTO.class))).thenReturn(token);
 
-    mockMvc.perform(put("/user/password")
-            .param("username", username)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
-            .andExpect(content().string("Password changed successfully."));
+        mockMvc.perform(put("/user/password")
+                .param("username", username)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
+                .andExpect(content().string("Password changed successfully."));
 
-    verify(userService, times(1)).changePassword(eq(username), any(ChangePasswordDTO.class));
-}
+        verify(userService, times(1)).changePassword(eq(username), any(ChangePasswordDTO.class));
+    }
 
-@Test
-void testChangeDisplayName_Success() throws Exception {
-    String username = "testUser";
-    ChangeDisplayNameDTO dto = new ChangeDisplayNameDTO("New Display Name");
-    String token = "newToken";
+    @Test
+    void testChangeDisplayName_Success() throws Exception {
+        String username = "testUser";
+        ChangeDisplayNameDTO dto = new ChangeDisplayNameDTO("New Display Name");
+        String token = "newToken";
 
-    when(userService.changeDisplayName(eq(username), any(ChangeDisplayNameDTO.class))).thenReturn(token);
+        when(userService.changeDisplayName(eq(username), any(ChangeDisplayNameDTO.class))).thenReturn(token);
 
-    mockMvc.perform(put("/user/displayname")
-            .param("username", username)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(dto)))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
-            .andExpect(content().string("Display name changed successfully."));
+        mockMvc.perform(put("/user/displayname")
+                .param("username", username)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Set-Cookie", containsString("token=" + token)))
+                .andExpect(content().string("Display name changed successfully."));
 
-    verify(userService, times(1)).changeDisplayName(eq(username), any(ChangeDisplayNameDTO.class));
-}
-
+        verify(userService, times(1)).changeDisplayName(eq(username), any(ChangeDisplayNameDTO.class));
+    }
 
 }

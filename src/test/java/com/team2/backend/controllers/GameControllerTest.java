@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.team2.backend.models.*;
 
 import java.util.List;
 import java.util.Map;
@@ -45,10 +46,23 @@ class GameControllerTest {
     @Test
     void testGetFavoriteGames_Success() throws Exception {
         String username = "testUser";
-        List<Game> favoriteGames = List.of(new Game(1, "Test Game"));
+
+        User user = new User();
+        user.setUsername(username);
+
+        NewFavoriteGameDTO newFavoriteGameDTO = new NewFavoriteGameDTO(
+                123, 
+                "Test Game", 
+                "http://example.com/thumbnail.jpg", 
+                List.of("PC", "Console")
+        );
+    
+        Game game = new Game(newFavoriteGameDTO, user);
+        
+        List<Game> favoriteGames = List.of(game);
 
         when(gameService.getFavoriteGames(username)).thenReturn(favoriteGames);
-
+    
         mockMvc.perform(get("/game/favorites").param("username", username))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(favoriteGames.size()))
@@ -76,14 +90,19 @@ class GameControllerTest {
     @Test
     void testAddFavoriteGame_Success() throws Exception {
         String username = "testUser";
-        NewFavoriteGameDTO newFavoriteGame = new NewFavoriteGameDTO(123, "Test Game");
+        NewFavoriteGameDTO newFavoriteGame = new NewFavoriteGameDTO(
+                123, 
+                "Test Game", 
+                "http://example.com/thumbnail.jpg", 
+                List.of("PC", "Console")
+        );
 
         doNothing().when(gameService).addFavoriteGame(username, newFavoriteGame);
 
         mockMvc.perform(post("/game/favorites")
-                .param("username", username)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newFavoriteGame)))
+                        .param("username", username)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newFavoriteGame)))
                 .andExpect(status().isOk());
 
         verify(gameService, times(1)).addFavoriteGame(username, newFavoriteGame);
@@ -97,8 +116,8 @@ class GameControllerTest {
         doNothing().when(gameService).deleteFavoriteGame(username, appid);
 
         mockMvc.perform(delete("/game/favorites")
-                .param("username", username)
-                .param("appid", String.valueOf(appid)))
+                        .param("username", username)
+                        .param("appid", String.valueOf(appid)))
                 .andExpect(status().isOk());
 
         verify(gameService, times(1)).deleteFavoriteGame(username, appid);

@@ -36,7 +36,7 @@ public class GameTest {
     @Test
     public void testGameCreation() {
         assertNotNull(game);
-        assertEquals(123, game.getAppid());
+        assertEquals(123, game.getAppId());
         assertEquals("Test Game", game.getName());
         assertEquals("http://example.com/thumbnail.jpg", game.getThumbnailLink());
         assertEquals(List.of("PC", "Console"), game.getAvailableOn());
@@ -45,12 +45,12 @@ public class GameTest {
 
     @Test
     public void testSettersAndGetters() {
-        game.setAppid(456);
+        game.setAppId(456);
         game.setName("Updated Game");
         game.setThumbnailLink("http://example.com/new_thumbnail.jpg");
         game.setAvailableOn(List.of("Mobile"));
 
-        assertEquals(456, game.getAppid());
+        assertEquals(456, game.getAppId());
         assertEquals("Updated Game", game.getName());
         assertEquals("http://example.com/new_thumbnail.jpg", game.getThumbnailLink());
         assertEquals(List.of("Mobile"), game.getAvailableOn());
