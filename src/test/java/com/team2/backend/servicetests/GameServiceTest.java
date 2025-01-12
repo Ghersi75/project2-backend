@@ -1,6 +1,7 @@
 package com.team2.backend.servicetests;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.team2.backend.dto.game.NewFavoriteGameDTO;
@@ -66,12 +67,25 @@ public class GameServiceTest {
     }
 
     @Test
-    public void testIsFavoritedGame_Exists() {
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(gameRepository.findByUserAndAppId(user, 123)).thenReturn(List.of(game));
+    void testFavoriteGame_And_IsFavorited() {
+        NewFavoriteGameDTO newFavoriteGameDTO = new NewFavoriteGameDTO(game.getAppId(), game.getName(), game.getThumbnailLink(), game.getAvailableOn());
+    
+        when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
+    
+        when(gameRepository.save(any(Game.class))).thenReturn(game);
+    
+        when(gameRepository.findByUserAndAppId(user, game.getAppId())).thenReturn(List.of(game));
 
-        assertTrue(gameService.isFavoritedGame("testuser", 123));
+        gameService.addFavoriteGame(user.getUsername(), newFavoriteGameDTO);
+    
+        boolean result = gameService.isFavoritedGame(user.getUsername(), game.getAppId());
+    
+        assertTrue(result, "The game should be favorited by the user");
+    
+        verify(gameRepository, times(1)).save(any(Game.class)); // Verify the game was saved
+        verify(gameRepository, times(1)).findByUserAndAppId(user, game.getAppId()); // Verify the game was checked as favorited
     }
+    
 
     @Test
     public void testIsFavoritedGame_NotExists() {
@@ -90,7 +104,7 @@ public class GameServiceTest {
         newGameDTO.setAvailableOn(List.of("PC"));
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(gameRepository.findByAppId(123)).thenReturn(new ArrayList<>());
+        when(gameRepository.findByUserAndAppid(user,123)).thenReturn(new ArrayList<>());
 
         assertDoesNotThrow(() -> gameService.addFavoriteGame("testuser", newGameDTO));
 
@@ -103,7 +117,7 @@ public class GameServiceTest {
         newGameDTO.setAppId(123);
 
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(gameRepository.findByAppId(123)).thenReturn(List.of(game));
+        when(gameRepository.findByUserAndAppid(user,123)).thenReturn(List.of(game));
 
         assertThrows(InvalidFavoriteGameException.class, () -> {
             gameService.addFavoriteGame("testuser", newGameDTO);
@@ -113,7 +127,7 @@ public class GameServiceTest {
     @Test
     public void testDeleteFavoriteGame_Success() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(gameRepository.findByAppId(123)).thenReturn(List.of(game));
+        when(gameRepository.findByUserAndAppid(user,123)).thenReturn(List.of(game));
 
         assertDoesNotThrow(() -> gameService.deleteFavoriteGame("testuser", 123));
 
@@ -123,7 +137,7 @@ public class GameServiceTest {
     @Test
     public void testDeleteFavoriteGame_NotExists() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
-        when(gameRepository.findByAppId(123)).thenReturn(new ArrayList<>());
+        when(gameRepository.findByUserAndAppid(user,123)).thenReturn(new ArrayList<>());
 
         assertThrows(InvalidFavoriteGameException.class, () -> {
             gameService.deleteFavoriteGame("testuser", 123);
