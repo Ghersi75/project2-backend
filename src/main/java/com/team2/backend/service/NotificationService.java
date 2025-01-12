@@ -7,32 +7,41 @@ import org.springframework.stereotype.Service;
 
 import com.team2.backend.enums.NotificationType;
 import com.team2.backend.models.Notification;
+import com.team2.backend.models.User;
 import com.team2.backend.repository.NotificationRepository;
+import com.team2.backend.repository.UserRepository;
+
+import com.team2.backend.exceptions.InvalidCredentialsException;
 
 @Service
 public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public List<Notification> getUnseenNotifications(Long userId) {
-        return notificationRepository.findByUserId(userId);
+    @Autowired
+    private UserRepository userRepository;
+
+    public List<Notification> getUnseenNotifications(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username"));
+        return notificationRepository.findByUser(user);
     }
 
     public void deleteNotification(Long notificationId) {
         notificationRepository.deleteById(notificationId);
     }
 
-    public void deleteAllNotifications(Long userId) {
-        List<Notification> notifications = notificationRepository.findByUserId(userId);
+    public void deleteAllNotifications(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username"));
+        List<Notification> notifications = notificationRepository.findByUser(user);
         notificationRepository.deleteAll(notifications);
     }
 
-     public List<Notification> getNotificationsByType(Long userId, NotificationType type) {
-        return notificationRepository.findByUserIdAndType(userId, type);
+    public List<Notification> getNotificationsByType(String username, NotificationType type) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username"));
+        return notificationRepository.findByUserAndType(user, type);
     }
-
-    
-
-
 
 }

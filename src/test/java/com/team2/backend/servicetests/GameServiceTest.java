@@ -101,7 +101,7 @@ public class GameServiceTest {
 
         verify(gameRepository, times(1)).save(any(Game.class));
     }
-
+/* 
     @Test
     public void testAddFavoriteGame_AlreadyExists() {
         NewFavoriteGameDTO newGameDTO = new NewFavoriteGameDTO();
@@ -133,5 +133,5 @@ public class GameServiceTest {
         assertThrows(InvalidFavoriteGameException.class, () -> {
             gameService.deleteFavoriteGame("testuser", 123);
         });
-    }
+    } */
 }

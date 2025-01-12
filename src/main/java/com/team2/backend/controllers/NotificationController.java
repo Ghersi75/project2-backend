@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.team2.backend.enums.NotificationType;
 import com.team2.backend.models.Notification;
 import com.team2.backend.service.NotificationService;
-import com.team2.backend.service.ReviewService;
 
 @RestController
 @RequestMapping("/notifications")
@@ -21,14 +20,14 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping("/{userId}")
-    public List<Notification> getUnseenNotifications(@PathVariable Long userId) {
-        return notificationService.getUnseenNotifications(userId);
+    @GetMapping("/{username}")
+    public List<Notification> getUnseenNotifications(@PathVariable String username) {
+        return notificationService.getUnseenNotifications(username);
     }
 
-    @GetMapping("/{userId}/Type")
-    public List<Notification> getNotificationsByType(@PathVariable Long userId, @RequestParam NotificationType type) {
-        return notificationService.getNotificationsByType(userId, type);
+    @GetMapping("/{username}/Type")
+    public List<Notification> getNotificationsByType(@PathVariable String username, @RequestParam NotificationType type) {
+        return notificationService.getNotificationsByType(username, type);
     }
 
     @DeleteMapping("/{notificationId}")
@@ -36,9 +35,9 @@ public class NotificationController {
         notificationService.deleteNotification(notificationId);
     }
 
-    @DeleteMapping("/all/{userId}")
-    public void deleteAllNotifications(@PathVariable Long userId) {
-        notificationService.deleteAllNotifications(userId);
+    @DeleteMapping("/all/{username}")
+    public void deleteAllNotifications(@PathVariable String username) {
+        notificationService.deleteAllNotifications(username);
     }
 
 }
