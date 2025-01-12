@@ -3,11 +3,9 @@ package com.team2.backend.servicetests;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.ReviewWithLikedDTO;
-import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.enums.UserRole;
 import com.team2.backend.exceptions.ForbiddenException;
-import com.team2.backend.exceptions.ResourceNotFoundException;
 import com.team2.backend.exceptions.UserNotFoundException;
 import com.team2.backend.models.Review;
 import com.team2.backend.models.User;
@@ -22,13 +20,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class ReviewServiceTest {
@@ -124,7 +120,7 @@ class ReviewServiceTest {
         User reviewOwner = new User(1L, "reviewOwner", "Review Owner", "password", UserRole.CONTRIBUTOR, null, null,
                 null);
 
-        Review review = new Review(reviewOwner, new NewReviewDTO("This is a test review.", 123));
+        Review review = new Review(reviewOwner, new NewReviewDTO("This is a test review.", "test game", 123));
 
         when(userRepository.findByUsername(contributorUser.getUsername())).thenReturn(Optional.of(contributorUser));
         when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));

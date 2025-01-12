@@ -31,8 +31,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.*;
-
 @ExtendWith(MockitoExtension.class)
 class ReviewControllerTest {
 
@@ -65,7 +63,7 @@ class ReviewControllerTest {
         String username = "testUser";
         setAuthentication(username); // Set authentication here
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!", 123);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!", "test game", 123);
         Review review = new Review();
         review.setId(1L);
         review.setUser(new User(new UserSignUpDTO("Test User","testUser","123","CONTRIBUTOR")));

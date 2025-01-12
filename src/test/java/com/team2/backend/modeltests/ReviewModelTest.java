@@ -45,12 +45,12 @@ public class ReviewModelTest {
     @Test
     void testReviewDefaultValues() {
         Review review = new Review();
-        
+
         int defaultLikes = review.getLikes();
         int defaultDislikes = review.getDislikes();
 
-        assertEquals(0, defaultLikes); 
-        assertEquals(0, defaultDislikes); 
+        assertEquals(0, defaultLikes);
+        assertEquals(0, defaultDislikes);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ReviewModelTest {
 
         int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!", "test game", appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
@@ -91,7 +91,7 @@ public class ReviewModelTest {
         int likes = 0;
         int dislikes = 0;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO(content,appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO(content, "test game", appid);
         Review review = new Review(user, newReviewDTO);
 
         assertNotNull(review);
@@ -133,7 +133,7 @@ public class ReviewModelTest {
 
         int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!", "test game", appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interactionLike = new UserReviewInteraction();
@@ -168,14 +168,14 @@ public class ReviewModelTest {
 
         int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!", "test game", appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteractionDTO dto = new UserReviewInteractionDTO();
         dto.setReviewid(review.getId());
         dto.setInteraction(ReviewInteraction.LIKE);
 
-        UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto,user,review);
+        UserReviewInteraction userReviewInteraction = new UserReviewInteraction(dto, user, review);
 
         assertNotNull(userReviewInteraction);
         assertEquals(user, userReviewInteraction.getUser());

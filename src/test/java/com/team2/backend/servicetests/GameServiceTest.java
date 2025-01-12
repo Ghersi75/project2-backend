@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.team2.backend.dto.game.NewFavoriteGameDTO;
-import com.team2.backend.exceptions.InvalidFavoriteGameException;
 import com.team2.backend.exceptions.UserNotFoundException;
 import com.team2.backend.models.Game;
 import com.team2.backend.models.User;
