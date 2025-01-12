@@ -3,6 +3,8 @@ package com.team2.backend.servicetests;
 import com.team2.backend.dto.review.NewReviewDTO;
 import com.team2.backend.dto.review.ReviewDTO;
 import com.team2.backend.dto.review.ReviewWithLikedDTO;
+import com.team2.backend.dto.review.UpdateReviewDTO;
+import com.team2.backend.dto.user.UserSignUpDTO;
 import com.team2.backend.dto.userreviewinteraction.UserReviewInteractionDTO;
 import com.team2.backend.enums.ReviewInteraction;
 import com.team2.backend.enums.UserRole;
@@ -21,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -124,7 +127,7 @@ class ReviewServiceTest {
         User reviewOwner = new User(1L, "reviewOwner", "Review Owner", "password", UserRole.CONTRIBUTOR, null, null,
                 null);
 
-        Review review = new Review(reviewOwner, new NewReviewDTO("This is a test review.", 123));
+        Review review = new Review(reviewOwner, new NewReviewDTO("This is a test review.", "New Game", 123));
 
         when(userRepository.findByUsername(contributorUser.getUsername())).thenReturn(Optional.of(contributorUser));
         when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
@@ -279,5 +282,132 @@ class ReviewServiceTest {
         assertEquals(ReviewInteraction.LIKE, existingInteraction.getInteraction());
     }
 
-    
+    @Test
+    void testUpdateReview_UserNotFound() {
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.empty());
+
+        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO("Updated content");
+
+        assertThrows(UserNotFoundException.class, () -> reviewService.updateReview("testUser", 1L, updateReviewDTO));
+    }
+
+    @Test
+    void testUpdateReview_ReviewNotFound() {
+        UserSignUpDTO userSignUpDTO = new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR");
+        User user = new User(userSignUpDTO);
+
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.empty());
+
+        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO("Updated content");
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> reviewService.updateReview("testUser", 1L, updateReviewDTO));
+    }
+
+    @Test
+    void testUpdateReview_UserNotOwner() {
+        UserSignUpDTO userSignUpDTO1 = new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR");
+        UserSignUpDTO userSignUpDTO2 = new UserSignUpDTO("anotherUser", "Another User", "password", "CONTRIBUTOR");
+        User user = new User(userSignUpDTO1);
+        User anotherUser = new User(userSignUpDTO2);
+        Review review = new Review(1L, anotherUser, 123, "Original content", 0, 0, null, null);
+
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+
+        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO("Updated content");
+
+        assertThrows(ForbiddenException.class, () -> reviewService.updateReview("testUser", 1L, updateReviewDTO));
+    }
+
+    @Test
+    @Transactional
+    void testUpdateReview_Success() {
+        UserSignUpDTO userSignUpDTO = new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR");
+        User user = new User(userSignUpDTO);
+        Review review = new Review(1L, user, 123, "Original content", 0, 0, null, null);
+
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+
+        UpdateReviewDTO updateReviewDTO = new UpdateReviewDTO("Updated content");
+
+        reviewService.updateReview("testUser", 1L, updateReviewDTO);
+
+        assertEquals("Updated content", review.getContent());
+        verify(reviewRepository, times(1)).save(review);
+    }
+
+    @Test
+    void testLikeOrDislikeReview_UserNotFound() {
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.empty());
+
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, "GameName", ReviewInteraction.LIKE);
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                reviewService.likeOrDislikeReview("testUser", interactionDTO));
+    }
+
+    @Test
+    void testLikeOrDislikeReview_ReviewNotFound() {
+        User user = new User(new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR"));
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.empty());
+
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, "GameName", ReviewInteraction.LIKE);
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                reviewService.likeOrDislikeReview("testUser", interactionDTO));
+    }
+
+    @Test
+    void testLikeOrDislikeReview_UserLikingOwnReview() {
+        User user = new User(new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR"));
+        Review review = new Review(1L, user, 123, "Content", 0, 0, null, null);
+
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, "GameName", ReviewInteraction.LIKE);
+
+        assertThrows(ForbiddenException.class, () ->
+                reviewService.likeOrDislikeReview("testUser", interactionDTO));
+    }
+
+    @Test
+    void testLikeOrDislikeReview_ToggleInteraction() {
+        User user = new User(new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR"));
+        Review review = new Review(1L, new User(), 123, "Content", 1, 0, null, null);
+        UserReviewInteraction existingInteraction = new UserReviewInteraction(new UserReviewInteractionDTO(1L, 123, "GameName", ReviewInteraction.LIKE), user, review);
+
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.of(existingInteraction));
+
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, "GameName", ReviewInteraction.LIKE);
+
+        reviewService.likeOrDislikeReview("testUser", interactionDTO);
+
+        verify(userReviewInteractionRepository).delete(existingInteraction);
+        assertEquals(0, review.getLikes());
+        verify(reviewRepository, times(1)).save(review);
+    }
+    @Test
+    void testLikeOrDislikeReview_NewInteraction() {
+        User user = new User(new UserSignUpDTO("testUser", "Test User", "password", "CONTRIBUTOR"));
+        Review review = new Review(1L, new User(), 123, "Content", 0, 0, null, null);
+
+        when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(user));
+        when(reviewRepository.findById(1L)).thenReturn(Optional.of(review));
+        when(userReviewInteractionRepository.findByUserAndReview(user, review)).thenReturn(Optional.empty());
+
+        UserReviewInteractionDTO interactionDTO = new UserReviewInteractionDTO(1L, 123, "GameName", ReviewInteraction.LIKE);
+
+        reviewService.likeOrDislikeReview("testUser", interactionDTO);
+
+        assertEquals(1, review.getLikes());
+        verify(userReviewInteractionRepository, times(1)).save(any(UserReviewInteraction.class));
+        verify(reviewRepository, times(1)).save(review);
+    }
 }

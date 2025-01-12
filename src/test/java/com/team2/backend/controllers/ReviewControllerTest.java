@@ -65,7 +65,7 @@ class ReviewControllerTest {
         String username = "testUser";
         setAuthentication(username); // Set authentication here
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!", 123);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great game!","Game", 123);
         Review review = new Review();
         review.setId(1L);
         review.setUser(new User(new UserSignUpDTO("Test User","testUser","123","CONTRIBUTOR")));

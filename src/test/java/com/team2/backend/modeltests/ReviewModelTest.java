@@ -61,7 +61,7 @@ public class ReviewModelTest {
 
         int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!","Game",appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interaction = new UserReviewInteraction();
@@ -91,7 +91,7 @@ public class ReviewModelTest {
         int likes = 0;
         int dislikes = 0;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO(content,appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO(content,"Game",appid);
         Review review = new Review(user, newReviewDTO);
 
         assertNotNull(review);
@@ -133,7 +133,7 @@ public class ReviewModelTest {
 
         int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!","Game",appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteraction interactionLike = new UserReviewInteraction();
@@ -168,7 +168,7 @@ public class ReviewModelTest {
 
         int appid = 12345;
 
-        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!",appid);
+        NewReviewDTO newReviewDTO = new NewReviewDTO("Great review!","Game",appid);
         Review review = new Review(user, newReviewDTO);
 
         UserReviewInteractionDTO dto = new UserReviewInteractionDTO();
