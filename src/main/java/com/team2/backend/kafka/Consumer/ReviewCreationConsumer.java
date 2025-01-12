@@ -16,19 +16,15 @@ import com.team2.backend.models.User;
 import com.team2.backend.repository.GameRepository;
 import com.team2.backend.repository.NotificationRepository;
 import com.team2.backend.repository.ReviewRepository;
-import com.team2.backend.repository.UserRepository;
 
 @Service
 public class ReviewCreationConsumer {
 
-       @Autowired
+    @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
     private GameRepository gameRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -48,22 +44,13 @@ public class ReviewCreationConsumer {
     private void handleNewReview(ProducerInteractionDTO reviewDTO) {
         Review review = reviewRepository.findById(reviewDTO.getReviewid()).get();
         List<Game> games = gameRepository.findByAppId(review.getAppid());
-        Game game = games.get(0);
-        if(game == null) {
-            System.out.println("No One has this game in their favorite list");
-            return;
-        }
-        List<User> usersWithFavoriteGame = userRepository.findByFavoriteGamesContaining(game);
-        List<User> allusers = userRepository.findAll();
-        for (User user : usersWithFavoriteGame) {
-              // Skip sending notification to the user who created the review
-              if (!user.getId().equals(review.getUser().getId())) {
-                sendNotification(user, review,game);
+        for (Game game : games) {
+            // Skip sending notification to the user who created the review
+            if (!game.getUser().getId().equals(review.getUser().getId())) {
+                sendNotification(game.getUser(), review, game);
             }
         }
     }
-
-
 
     private void sendNotification(User user, Review review, Game game) {
         System.out.println("Sending review creation notification to user: " + user.getUsername());
@@ -74,9 +61,9 @@ public class ReviewCreationConsumer {
         notification.setAppId(review.getAppid());
         notification.setUsername(review.getUser().getUsername());
         notification.setType(NotificationType.REVIEW);
-        
+
         notificationRepository.save(notification);
-        
+
     }
 
 }
