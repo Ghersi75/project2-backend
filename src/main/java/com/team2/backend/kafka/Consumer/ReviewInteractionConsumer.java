@@ -19,8 +19,10 @@ import com.team2.backend.models.User;
 import com.team2.backend.repository.NotificationRepository;
 import com.team2.backend.repository.UserRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,7 @@ import com.team2.backend.service.GameService;
 @Service
 public class ReviewInteractionConsumer {
 
-       @Autowired
+    @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
@@ -61,11 +63,11 @@ public class ReviewInteractionConsumer {
         if (interactionDTO.getType() == NotificationType.LIKE) {
             System.out.println(
                     "Review " + interactionDTO.getReviewid() + " liked by user " + interactionDTO.getReviewid());
-                    sendNotification(interactionDTO, "Your review was liked!");
+            sendNotification(interactionDTO, "Your review was liked!");
         } else if (interactionDTO.getType() == NotificationType.DISLIKE) {
             System.out.println(
                     "Review " + interactionDTO.getReviewid() + " disliked by user " + interactionDTO.getReviewid());
-                    sendNotification(interactionDTO, "Your review was disliked!");
+            sendNotification(interactionDTO, "Your review was disliked!");
 
         }
         // Further processing (e.g., updating analytics or notifying users)
@@ -74,37 +76,44 @@ public class ReviewInteractionConsumer {
     private void sendNotification(ProducerInteractionDTO interactionDTO, String message) {
         Notification notification = new Notification();
         Review review = reviewRepository.findById(interactionDTO.getReviewid()).get();
-       Optional< User> user = userRepository.findById(review.getUser().getId());
+        Optional<User> user = userRepository.findById(review.getUser().getId());
 
-        List<Game> games = gameRepository.findByAppId(interactionDTO.getAppid());
-        
+        System.out.println("****APID: " + review.getAppid());
+
+        List<Game> games = gameRepository.findByAppId(review.getAppid());
+
         Game game = games.get(0);
-
-                // Check for existing notification
-                Optional<Notification> existingNotification = notificationRepository.findByUserAndReviewIdAndType(
-                    review.getUser(), interactionDTO.getReviewid(), interactionDTO.getType());
-    
-            if (existingNotification.isPresent()) {
-                // Notification already exists, do not create a new one
-                System.out.println("Duplicate notification detected, skipping creation.");
-                return;
-            }
-            
-        notification.setUser(review.getUser());
-        notification.setGameName(game.getName());
-        notification.setReviewId(interactionDTO.getReviewid());
-        notification.setAppId(interactionDTO.getAppid());
-        notification.setUsername(interactionDTO.getUsername()); 
-
-        if(interactionDTO.getType() == NotificationType.LIKE) {
-           notification.setType(NotificationType.LIKE);  
+        
+        // Define a set of equivalent types
+        Set<NotificationType> equivalentTypes = new HashSet<>();
+        equivalentTypes.add(NotificationType.LIKE);
+        equivalentTypes.add(NotificationType.DISLIKE);
+        
+        // Check for existing notification considering equivalent types
+        Optional<Notification> existingNotification = notificationRepository.findByUserAndReviewIdAndTypeIn(
+                review.getUser(), interactionDTO.getReviewid(), equivalentTypes);
+        
+        
+        if (existingNotification.isPresent()) {
+            // Notification already exists, update it with the new type
+            notification = existingNotification.get();
+            notification.setType(interactionDTO.getType());
+            notificationRepository.save(notification);
+            System.out.println("Notification updated due to like/dislike switch.");
+        } else {
+            // Create a new notification
+            notification = new Notification();
+            notification.setUser(review.getUser());
+            notification.setGameName(game.getName());
+            notification.setReviewId(interactionDTO.getReviewid());
+            notification.setAppId(interactionDTO.getAppid());
+            notification.setUsername(interactionDTO.getUsername());
+            notification.setType(interactionDTO.getType());
+            notificationRepository.save(notification);
+            System.out.println("New notification created.");
         }
-        else {
-            notification.setType(NotificationType.DISLIKE);
-        }     
-        
-        notificationRepository.save(notification);
-        
+
+
     }
 
 }
