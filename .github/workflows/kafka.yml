@@ -4,6 +4,7 @@ on:
       - models
     paths:
       - compose.kafka.yml
+      - .github/workflows/kafka.yml
 
 jobs:
   kafka_compose:
