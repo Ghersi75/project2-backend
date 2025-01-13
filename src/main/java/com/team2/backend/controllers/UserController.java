@@ -64,7 +64,7 @@ public class UserController {
                                 // Frontend uses jwt token for userInfo so it needs to be accessible by
                                 // javascript
                                 .httpOnly(false)
-                                .secure(true) // Only send over HTTPS
+                                .secure(false) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
                                 .sameSite("Strict") // Protect against CSRF
@@ -94,7 +94,7 @@ public class UserController {
                                 // Frontend uses jwt token for userInfo so it needs to be accessible by
                                 // javascript
                                 .httpOnly(false)
-                                .secure(true) // Only send over HTTPS
+                                .secure(false) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
                                 .sameSite("Strict") // Protect against CSRF
@@ -113,7 +113,7 @@ public class UserController {
                                 // Frontend uses jwt token for userInfo so it needs to be accessible by
                                 // javascript
                                 .httpOnly(false)
-                                .secure(true) // Only send over HTTPS
+                                .secure(false) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
                                 .sameSite("Strict") // Protect against CSRF
@@ -133,7 +133,7 @@ public class UserController {
                                 // Frontend uses jwt token for userInfo so it needs to be accessible by
                                 // javascript
                                 .httpOnly(false)
-                                .secure(true) // Only send over HTTPS
+                                .secure(false) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
                                 .sameSite("Strict") // Protect against CSRF
@@ -150,7 +150,7 @@ public class UserController {
                                 // Frontend uses jwt token for userInfo so it needs to be accessible by
                                 // javascript
                                 .httpOnly(false)
-                                .secure(true) // Only send over HTTPS
+                                .secure(false) // Only send over HTTPS
                                 .path("/")
                                 .maxAge(24 * 60 * 60) // 1 day
                                 .sameSite("Strict") // Protect against CSRF
