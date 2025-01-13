@@ -23,7 +23,18 @@ jobs:
             set
             /compose.kafka.yml
 
-      # Step 2: Confirm the file exists on the runner
-      - name: Verify File
+      # Step 2: Stop existing containers
+      - name: Stop existing containers
         run: |
-          ls -l compose.kafka.yml
+          docker compose -f compose.kafka.yml down
+
+      # Step 3: (Optional) Prune unused resources
+      - name: Prune Docker system
+        run: |
+          docker system prune -f
+        if: always()  # Ensures this step runs even if earlier steps fail
+
+      # Step 4: Build and deploy containers
+      - name: Deploy containers
+        run: |
+          docker compose -f compose.kafka.yml up --build --force-recreate -d
