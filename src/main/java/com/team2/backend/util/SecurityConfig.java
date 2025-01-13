@@ -33,7 +33,7 @@ public class SecurityConfig {
                     // If you need credentials (cookies), do NOT use "*"
                     configuration.setAllowedOrigins(List.of(
                             "http://localhost:8080", // Testing
-                            "http://172.31.1.83" // Private ip of frontend ec2 instance
+                            "http://172.31.1.83:8080" // Private ip of frontend ec2 instance
                     ));
                     // Or if no credentials needed, you can do "*"
                     // configuration.setAllowedOrigins(List.of("*"));
