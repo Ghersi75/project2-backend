@@ -30,23 +30,21 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
                 .cors(cors -> {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    // If you need credentials (cookies), do NOT use "*"
+                    // Add EVERY origin you need, exactly:
                     configuration.setAllowedOrigins(List.of(
-                            "http://localhost:8080", // Testing
-                            "http://172.31.1.83:8080" // Private ip of frontend ec2 instance
-                    ));
-                    // Or if no credentials needed, you can do "*"
-                    // configuration.setAllowedOrigins(List.of("*"));
-
+                            "http://localhost:8080",
+                            "http://172.31.1.83:8080",
+                            "http://ec2-3-137-66-132.us-east-2.compute.amazonaws.com:8080"));
                     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     configuration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
-                    configuration.setAllowCredentials(true); // if using cookies or Auth headers
+                    configuration.setAllowCredentials(true); // If you need cookies/credentials
 
                     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                     source.registerCorsConfiguration("/**", configuration);
 
                     cors.configurationSource(source);
                 })
+
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/user/register", "/user/login").permitAll() // Allow public access to these
                                                                                       // endpoints
