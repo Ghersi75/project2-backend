@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      - models
+    paths:
+      - compose.kafka.yml
+
+jobs:
+  kafka_compose:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo
+        run: echo nice
