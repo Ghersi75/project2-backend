@@ -8,8 +8,21 @@ on:
 jobs:
   kafka_compose:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, kafka]
 
     steps:
-      - name: Echo
-        run: echo nice
+      # Step 1: Checkout only the `compose.kafka.yml` file
+      - name: Checkout Single File
+        uses: actions/checkout@v4
+        with:
+          # Fetch only the last commit for minimal data
+          fetch-depth: 1
+          # Sparse checkout configuration to include only the required file
+          sparse-checkout-config: |
+            set
+            /compose.kafka.yml
+
+      # Step 2: Confirm the file exists on the runner
+      - name: Verify File
+        run: |
+          ls -l compose.kafka.yml
