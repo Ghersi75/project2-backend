@@ -13,11 +13,17 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListenerContainer;
+
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.core.ProducerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 @EnableKafka
@@ -25,6 +31,14 @@ public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConfig.class);
+
+    @PostConstruct
+    public void logKafkaConfig() {
+        LOGGER.info("Resolved Kafka bootstrap servers: {}", bootstrapServers);
+
+    }
 
     // producer config
     @Bean
@@ -51,5 +65,6 @@ public class KafkaConfig {
     }
 
     // Kafka Listener Container (Spring Boot auto-configuration handles this)
-    // Using @KafkaListener annotations onservice methods for automatic container management
+    // Using @KafkaListener annotations onservice methods for automatic container
+    // management
 }
